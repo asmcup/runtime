@@ -7,7 +7,7 @@ import java.util.*;
 public class Compiler implements VMConsts {
 	public static void main(String[] args) throws IOException {
 		if (args.length < 2) {
-			System.err.println("USAGE: bitc <in> <out>");
+			System.err.println("USAGE: asmcup-compile <in> <out>");
 			System.exit(1);
 			return;
 		}
