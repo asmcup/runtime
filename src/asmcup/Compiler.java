@@ -129,8 +129,14 @@ public class Compiler implements VMConsts {
 		case "push8":
 			push8(args);
 			break;
+		case "push8r":
+			push8r(args);
+			break;
 		case "pop8":
 			pop8(args);
+			break;
+		case "pop8r":
+			pop8r(args);
 			break;
 		case "pushf":
 			pushf(args);
@@ -139,7 +145,12 @@ public class Compiler implements VMConsts {
 			popf(args);
 			break;
 		case "jne":
-			jne(args);
+		case "jnz":
+			jnzr(args);
+			break;
+		case "jnzr":
+		case "jner":
+			jnzr(args);
 			break;
 		case "jmp":
 			jmp(args);
@@ -199,15 +210,45 @@ public class Compiler implements VMConsts {
 	}
 	
 	protected void pushLiteral8(String[] args) {
-		immediate(OP_PUSH, MAGIC_PUSH_BYTE_IMMEDIATE, args);
+		switch (parseLiteral(expectOne(args))) {
+		case 0:
+			immediate(OP_FUNC, F_ZERO8, NO_DATA);
+			break;
+		case 1:
+			immediate(OP_FUNC, F_ONE8, NO_DATA);
+			break;
+		case 2:
+			immediate(OP_FUNC, F_TWO8, NO_DATA);
+			break;
+		case 3:
+			immediate(OP_FUNC, F_THREE8, NO_DATA);
+			break;
+		case 4:
+			immediate(OP_FUNC, F_FOUR8, NO_DATA);
+			break;
+		case 255:
+			immediate(OP_FUNC, F_INF8, NO_DATA);
+			break;
+		default:
+			immediate(OP_PUSH, MAGIC_PUSH_BYTE_IMMEDIATE, args);
+			break;
+		}
 	}
 	
 	protected void pushMemory8(String[] args) {
 		reference(OP_PUSH, MAGIC_PUSH_BYTE_MEMORY, args);
 	}
 	
+	protected void push8r(String[] args) {
+		relative(OP_PUSH, args);
+	}
+	
 	protected void pop8(String[] args) {
 		reference(OP_POP, MAGIC_POP_BYTE, args);
+	}
+	
+	protected void pop8r(String[] args) {
+		relative(OP_POP, args);
 	}
 	
 	protected void pushf(String[] args) {
@@ -225,30 +266,42 @@ public class Compiler implements VMConsts {
 	}
 	
 	protected void pushLiteralFloat(String s) {
-		statements.add(new Statement() {
-			public int measure() {
-				return 5;
-			}
-			
-			public void compile() {
-				writeOp(OP_PUSH, MAGIC_PUSH_FLOAT_IMMEDIATE);
-				writeFloat(Float.parseFloat(s));
-			}
-		});
+		float f = Float.parseFloat(s);
+		
+		if (f == 0.0f) {
+			immediate(OP_FUNC, F_ZEROF, NO_DATA);
+		} else if (f == 1.0f) {
+			immediate(OP_FUNC, F_ONEF, NO_DATA);
+		} else if (f == 2.0f) {
+			immediate(OP_FUNC, F_TWOF, NO_DATA);
+		} else if (f == 3.0f) {
+			immediate(OP_FUNC, F_THREEF, NO_DATA);
+		} else if (f == 4.0f) {
+			immediate(OP_FUNC, F_FOURF, NO_DATA);
+		} else if (Float.isInfinite(f)) {
+			immediate(OP_FUNC, F_INF, NO_DATA);
+		} else {
+			immediateFloat(OP_PUSH, MAGIC_PUSH_FLOAT_IMMEDIATE, s);
+		}
 	}
 	
 	protected void popf(String[] args) {
 		reference(OP_BRANCH, MAGIC_POP_FLOAT, args);
 	}
 	
-	protected void jne(String[] args) {
+	protected void jnz(String[] args) {
 		String s = expectOne(args);
 		
 		if (isIndirect(s)) {
-			reference(OP_BRANCH, MAGIC_BRANCH_IMMEDIATE, s);
-		} else {
+			s = s.substring(1, s.length() - 1);
 			reference(OP_BRANCH, MAGIC_BRANCH_INDIRECT, s);
+		} else {
+			reference(OP_BRANCH, MAGIC_BRANCH_IMMEDIATE, s);
 		}
+	}
+	
+	protected void jnzr(String[] args) {
+		relative(OP_BRANCH, args);
 	}
 	
 	protected void jmp(String[] args) {
@@ -264,7 +317,19 @@ public class Compiler implements VMConsts {
 	}
 	
 	public static boolean isIndirect(String s) {
-		return s.startsWith("(");
+		return isEnclosed(s, "(", ")") || isEnclosed(s, "[", "]");
+	}
+	
+	public static boolean isEnclosed(String s, String start, String end) {
+		if (s.startsWith(start)) {
+			if (!s.endsWith(end)) {
+				throw new IllegalArgumentException(String.format("Expected '%s'", s));
+			}
+			
+			return true;
+		}
+		
+		return false;
 	}
 	
 	public static String expectOne(String[] args) {
@@ -375,6 +440,46 @@ public class Compiler implements VMConsts {
 	protected void immediate(int op, int data, String s) {
 		byte[] payload = new byte[] { (byte)parseLiteral(s) };
 		immediate(op, data, payload);
+	}
+	
+	protected void immediateFloat(int op, int data, String s) {
+		statements.add(new Statement() {
+			public int measure() {
+				return 5;
+			}
+			
+			public void compile() {
+				writeOp(op, data);
+				writeFloat(Float.parseFloat(s));
+			}
+		});
+	}
+	
+	protected void relative(int op, String s) {
+		if (isLiteral(s)) {
+			throw new IllegalArgumentException("Cannot address a literal for relative instruction");
+		}
+		
+		statements.add(new Statement() {
+			public int measure() {
+				return 1;
+			}
+			
+			public void compile() {
+				int addr = labels.get(s);
+				int r = addr - pc;
+				
+				if (r < -32 || r > 31) {
+					throw new IllegalArgumentException("Address is not within range");
+				}
+				
+				writeOp(op, 32 + r);
+			}
+		});
+	}
+	
+	protected void relative(int op, String[] args) {
+		relative(op, expectOne(args));
 	}
 	
 	protected abstract class Statement {
