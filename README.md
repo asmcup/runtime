@@ -1,7 +1,7 @@
 
-# bitwars
+# asmcup
 
-`bitwars` is a game where players create small and limited programs
+`asmcup` is a game where players create small and limited programs
 to power robots in a virtual environment to compete for prizes.
 
 ## Install
@@ -29,17 +29,17 @@ Execution begins at the first address (`0x00`) in memory.
 
 To compile an assembly program use:
 
-    java -cp bitwars.jar bitwars.Compiler program.asm program.bin
+    java -cp asmcup.jar asmcup.Compiler program.asm program.bin
 
 The resulting `program.bin` can be ran using the VM via:
 
-    java -cp bitwars.jar bitwars.Runtime program.bin
+    java -cp asmcup.jar asmcup.Sandbox program.bin
 
 ## Memory Size
 
 All programs are 256-bytes in size and are mapped into an 8-bit address
-space. While there are instructions to operate with 16-bit and 32-bit
-data the address bus itself is 8-bits.
+space. While there are instructions to operate 32-bit float data the address
+bus itself is 8-bits.
 
 ## Stack
 
@@ -72,68 +72,68 @@ are the same size (1 byte) but that they can modify the stack differently.
 Value | Command   | In | Out | Notes
 ------|-----------|----|-----|-------------------------
 0     | nop       | 0  | 0   | No Operation
-1     | or8       | 2  | 1   | OR Byte
-2     | or16      | 4  | 2   | OR Short
-3     | or32      | 8  | 4   | OR Int
-4     | and8      | 2  | 1   | AND Byte
-5     | and16     | 4  | 2   | AND Short
-6     | and32     | 8  | 4   | AND Int
-7     | xor8      | 2  | 1   | XOR Byte
-8     | xor16     | 4  | 2   | XOR Short
-9     | xor32     | 8  | 4   | XOR Int
-10    | not8      | 1  | 1   | Not Byte
-11    | not16     | 2  | 2   | Not Short
-12    | not32     | 4  | 4   | Not Int
-13    | add8      | 2  | 1   | Add Byte
-14    | add16     | 4  | 2   | Add Short
-15    | add32     | 8  | 4   | Add Int
-16    | sub8      | 2  | 1   | Subtract Byte
-17    | sub16     | 4  | 2   | Subtract Short
-18    | sub32     | 8  | 4   | Subtract Int
-19    | mul8      | 2  | 1   | Multiply Byte
-20    | mul16     | 4  | 2   | Multiply Short
-21    | mul32     | 8  | 2   | Multiply Int
-22    | div8      | 2  | 1   | Divide Byte
-23    | div16     | 4  | 2   | Divide Short
-24    | div32     | 8  | 4   | Divide Int
-25    | addmul8   | 3  | 1   | Add Multiply Byte
-26    | addmul16  | 6  | 2   | Add Multiply Short
-27    | addmul32  | 12 | 4   | Add Multiply Int
-28    | pushsp    | 0  | 1   | Push Stack Pointer (SP)
-29    | popsp     | 1  | 0   | Pop Stack Pointer (SP)
-30    | pushpc    | 0  | 1   | Push Program Counter (PC)
-31    | poppc     | 1  | 0   | Pop Program Counter (PC)
-32    | lt8       | 1  | 1   | Less Than Byte
-33    | lt16      | 4  | 1   | Less Than Short
-34    | lt32      | 8  | 1   | Less Than Int
-35    |           |    |     |
-36    | eq8       | 2  | 1   | Equal Byte
-37    | eq16      | 4  | 1   | Equal Short
-38    | eq32      | 8  | 1   | Equal Int
-39    | ne8       | 2  | 1   | Not Equal Byte
-40    | ne16      | 4  | 1   | Not Equal Short
-41    | ne32      | 8  | 1   | Not Equal Int
-42    | dup8      | 0  | 1   | Duplicate Byte
-43    | dup16     | 0  | 2   | Duplicate Short
-44    | dup32     | 0  | 4   | Duplicate Int
-45    | zero8     | 0  | 1   | Push Zero Byte
-46    | zero16    | 0  | 2   | Push Zero Short
-47    | zero32    | 0  | 4   | Push Zero Int
-48    | one8      | 0  | 1   | Push One Byte
-49    | one16     | 0  | 2   | Push One Short
-50    | one32     | 0  | 4   | Push One Int
-51    | read8     | 1  | 1   | Read Byte
-52    | read16    | 1  | 2   | Read Short
-53    | read32    | 1  | 4   | Read Int
-54    | write8    | 2  | 0   | Write Byte
-55    | write16   | 3  | 0   | Write Short
-56    | write32   | 5  | 0   | Write Int
-57    | b2s       | 1  | 2   | Byte to short
-58    | b2i       | 1  | 4   | Byte to Int
-59    | s2b       | 2  | 1   | Short to Byte
-60    | s2i       | 2  | 4   | Short to Int
-61    | i2b       | 4  | 1   | Int to Byte
-62    | i2s       | 4  | 2   | Int to Short
+1     | b2f       | 2  | 1   | Byte to Float
+2     | f2b       | 4  | 2   | Float to Byte
+3     | not8      | 1  | 1   | Byte NOT
+4     | or8       | 2  | 1   | Byte OR
+5     | and8      | 2  | 1   | Byte AND
+6     | xor8      | 2  | 1   | Byte XOR
+7     | shl8      | 2  | 1   | Byte Shift Left
+8     | shr8      | 2  | 1   | Byte Shift Right
+9     | add8      | 2  | 1   | Byte Add
+10    | sub8      | 2  | 1   | Byte Subtract
+11    | div8      | 2  | 1   | Byte Divide
+12    | mul8      | 2  | 1   | Byte Multiply
+13    | madd8     | 3  | 1   | Byte Multiply with Add 
+14    | negf      | 4  | 4   | Float Negate
+15    | addf      | 8  | 4   | Float Add
+16    | sub8      | 8  | 4   | Float Subtract
+17    | sub16     | 8  | 4   | Float Divide
+18    | sub32     | 8  | 4   | Float Multiply
+19    | mul8      | 12 | 4   | Float Multiply with Add
+20    | cosf      | 4  | 4   | Float Cosine
+21    | sinf      | 4  | 4   | Float Sine
+22    | tanf      | 4  | 4   | Float Tangent
+23    | acosf     | 4  | 4   | Float Arc Cosine
+24    | asinf     | 4  | 4   | Float Arc Sine
+25    | atanf     | 4  | 4   | Float Arc Tangent
+26    | absf      | 4  | 4   | Float Absolute Value
+27    | minf      | 8  | 4   | Float Minimum Value
+28    | maxf      | 8  | 4   | Float Maximum Value
+29    | powf      | 8  | 4   | Float Raise Power
+30    | logf      | 4  | 4   | Float Natural Logarithm
+31    | log10f    | 4  | 4   | Float Logorithm Base 10
+32    | if_eq8    | 2  | 1   | Byte Equal
+33    | if_ne8    | 2  | 1   | Byte Not Equal
+34    | if_lt8    | 2  | 1   | Byte Less Than
+35    | if_lte8   | 2  | 1   | Byte Less Than or Equal
+36    | if_gt8    | 2  | 1   | Byte Greater Than
+37    | if_gte8   | 2  | 1   | Byte Greater Than or Equal
+38    | if_ltf    | 8  | 1   | Float Less Than
+39    | if_ltef   | 8  | 1   | Float Less Than or Equal
+40    | if_gtf    | 8  | 1   | Float Greater Than
+41    | if_gtef   | 8  | 1   | Float Greater Than or Equal
+42    | zero8     | 0  | 1   | Push Byte `0x00`
+43    | one8      | 0  | 1   | Push Byte `0x01`
+44    | two8      | 0  | 1   | Push Byte `0x02`
+45    | three8    | 0  | 1   | Push Byte `0x03`
+46    | four8     | 0  | 1   | Push Byte `0x04`
+47    | inf8      | 0  | 1   | Push Byte `0xFF`
+48    | zerof     | 0  | 4   | Push Float `0.0f`
+49    | onef      | 0  | 4   | Push Float `1.0f`
+50    | twof      | 0  | 4   | Push Float `2.0f`
+51    | threef    | 0  | 4   | Push Float `3.0f`
+52    | fourf     | 0  | 4   | Push Float `4.0f`
+53    | inf       | 0  | 4   | Push Float Infinity
+54    | if_nan    | 4  | 1   | Float NaN Check
+55    | dup8      | 1  | 2   | Byte Duplicate
+56    | dupf      | 4  | 8   | Float Duplicate
+57    |           |    |     | Unused 1 
+58    |           |    |     | Unused 2
+59    |           |    |     | Unused 3
+60    |           |    |     | Unused 4
+61    |           |    |     | Unused 5
+62    |           |    |     | Unused 6
 63    | io        | ?  | ?   | Input / Output (IO)
 
 
@@ -144,17 +144,8 @@ Here are the basic ways to push data onto the stack:
 Variant       | Size | Description
 --------------|------|--------------------------
 push8 $f0     | 1-2  | Push Memory Byte
-push16 $f0    | 2    | Push Memory Short
-push32 $f0    | 2    | Push Memory Int
 push8 #42     | 2    | Push Immediate Byte
-push16 #beb   | 3    | Push Immediate Short
-push32 #dead1 | 5    | Push Immediate Int
-zero8         | 1    | Push Zero Byte
-zero16        | 1    | Push Zero Short
-zero32        | 1    | Push Zero Int
-one8          | 1    | Push One Byte
-one16         | 1    | Push One Short
-one32         | 1    | Push One Int
+pushf 0.0     | 5    | Push Immediate Float
 
 Note that push8 is 1 byte when pushing a value from memory within 63 bytes of the
 instruction doing the pushing.
@@ -165,9 +156,8 @@ Popping data from the stack can be done using many variants:
 
 Variant       | Size | Description
 --------------|------|--------------------------
-pop8 $f0      | 1-2  | Pop Byte Save
-pop16 $f0     | 2    | Pop Short Save
-pop32 $f0     | 2    | Pop Int Save
+pop8 $f0      | 1-2  | Pop Byte
+popf $f0      | 2    | Pop Float
 
 Note that pop8 is 1-byte when storing a value within 63 bytes of the
 instruction doing the popping.
@@ -176,7 +166,9 @@ instruction doing the popping.
 
 Variant       | Size | Description
 --------------|------|--------------------------
-jnz  $f0      | 1-2  | Jump Not Zero
+jnz $f0       | 1-2  | Jump Not Zero
+jnz [$f0]     | 2    | Jump Not Zero Indirect
+jmp $f0       | 2    | Jump Always
 
 ## IO
 
@@ -202,7 +194,7 @@ Casts a beam at the current looking direction.
 ```
 push8 #00
 io
-pull8 distance
+pop8 distance
  ```
 
 After `io` the stack will contain a byte of how far the beam
