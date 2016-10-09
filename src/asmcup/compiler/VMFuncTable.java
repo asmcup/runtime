@@ -1,8 +1,10 @@
-package asmcup;
+package asmcup.compiler;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+
+import asmcup.vm.VMFuncs;
 
 public class VMFuncTable {
 	private static final Map<String, Integer> funcs;

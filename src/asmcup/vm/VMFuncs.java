@@ -1,4 +1,4 @@
-package asmcup;
+package asmcup.vm;
 
 public interface VMFuncs {
 	public static final int F_NOP = 0;
@@ -58,20 +58,20 @@ public interface VMFuncs {
 	public static final int F_IF_GTEF = 41;
 	
 	// Integer constants
-	public static final int F_ZERO8 = 42;
-	public static final int F_ONE8 = 43;
-	public static final int F_TWO8 = 44;
-	public static final int F_THREE8 = 45;
-	public static final int F_FOUR8 = 46;
-	public static final int F_INF8 = 47;
+	public static final int F_C_0 = 42;
+	public static final int F_C_1 = 43;
+	public static final int F_C_2 = 44;
+	public static final int F_C_3 = 45;
+	public static final int F_C_4 = 46;
+	public static final int F_C_255 = 47;
 	
 	// Float constants
-	public static final int F_ZEROF = 48;
-	public static final int F_ONEF = 49;
-	public static final int F_TWOF = 50;
-	public static final int F_THREEF = 51;
-	public static final int F_FOURF = 52;
-	public static final int F_INF = 53;
+	public static final int F_C_0F = 48;
+	public static final int F_C_1F = 49;
+	public static final int F_C_2F = 50;
+	public static final int F_C_3F = 51;
+	public static final int F_C_4F = 52;
+	public static final int F_C_INF = 53;
 	public static final int F_ISNAN = 54;
 	
 	public static final int F_DUP8 = 55;

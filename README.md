@@ -7,9 +7,9 @@ to power robots in a virtual environment to compete for prizes.
 ## Install
 
  * Requires Java 7 or later
- * [Download Jar](https://github.com/krisives/asmcup/releases/latest/asmcup.jar)
- * `asmcup.Compiler` compiles assembly source into binaries
- * `asmcup.Runtime` provides an environment for testing your programs
+ * [Download Jar](https://github.com/asmcup/runtime/releases/latest/asmcup.jar)
+ * `asmcup.tools.Compiler` compiles assembly source into binaries
+ * `asmcup.runtime.Sandbox` provides an environment for testing your programs
 
 ## Compete
 
@@ -23,17 +23,15 @@ Robots are powered by a simple virtual machine with a simple RISC instruction
 set for managing memory and a stack. The instruction language supports native
 operations on 8-bit integers and 32-bit floats.
 
-Execution begins at the first address (`0x00`) in memory.
-
 ## Compiler
 
 To compile an assembly program use:
 
-    java -cp asmcup.jar asmcup.Compiler program.asm program.bin
+    java -cp asmcup.jar asmcup.tools.Compiler program.asm program.bin
 
 The resulting `program.bin` can be ran using the VM via:
 
-    java -cp asmcup.jar asmcup.Sandbox program.bin
+    java -cp asmcup.jar asmcup.runtime.Sandbox program.bin
 
 ## Memory Size
 
@@ -113,18 +111,18 @@ Value | Command   | In | Out | Notes
 39    | if_ltef   | 8  | 1   | Float Less Than or Equal
 40    | if_gtf    | 8  | 1   | Float Greater Than
 41    | if_gtef   | 8  | 1   | Float Greater Than or Equal
-42    | zero8     | 0  | 1   | Push Byte `0x00`
-43    | one8      | 0  | 1   | Push Byte `0x01`
-44    | two8      | 0  | 1   | Push Byte `0x02`
-45    | three8    | 0  | 1   | Push Byte `0x03`
-46    | four8     | 0  | 1   | Push Byte `0x04`
-47    | inf8      | 0  | 1   | Push Byte `0xFF`
-48    | zerof     | 0  | 4   | Push Float `0.0f`
-49    | onef      | 0  | 4   | Push Float `1.0f`
-50    | twof      | 0  | 4   | Push Float `2.0f`
-51    | threef    | 0  | 4   | Push Float `3.0f`
-52    | fourf     | 0  | 4   | Push Float `4.0f`
-53    | inf       | 0  | 4   | Push Float Infinity
+42    | c_0       | 0  | 1   | Push Byte `0x00`
+43    | c_1       | 0  | 1   | Push Byte `0x01`
+44    | c_2       | 0  | 1   | Push Byte `0x02`
+45    | c_3       | 0  | 1   | Push Byte `0x03`
+46    | c_4       | 0  | 1   | Push Byte `0x04`
+47    | c_255     | 0  | 1   | Push Byte `0xFF`
+48    | c_0f      | 0  | 4   | Push Float `0.0f`
+49    | c_1f      | 0  | 4   | Push Float `1.0f`
+50    | c_2f      | 0  | 4   | Push Float `2.0f`
+51    | c_3f      | 0  | 4   | Push Float `3.0f`
+52    | c_4f      | 0  | 4   | Push Float `4.0f`
+53    | c_inf     | 0  | 4   | Push Float Infinity
 54    | if_nan    | 4  | 1   | Float NaN Check
 55    | dup8      | 1  | 2   | Byte Duplicate
 56    | dupf      | 4  | 8   | Float Duplicate

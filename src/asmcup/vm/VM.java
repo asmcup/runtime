@@ -1,4 +1,4 @@
-package asmcup;
+package asmcup.vm;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -49,7 +49,7 @@ public class VM implements VMConsts {
 	}
 
 	public int read8() {
-		int value = ram[pc];
+		int value = ram[pc] & 0xFF;
 		pc = (pc + 1) & 0xFF;
 		return value;
 	}
@@ -119,6 +119,7 @@ public class VM implements VMConsts {
 	}
 
 	public void push32(int x) {
+		System.err.printf("push32 %d\n", x);
 		push16(x);
 		push16(x >> 16);
 	}
@@ -132,17 +133,16 @@ public class VM implements VMConsts {
 	}
 
 	public int pop8() {
-		int x = ram[0xFF - sp] & 0xFF;
 		sp = (sp - 1) & 0xFF;
-		return x;
+		return ram[0xFF - sp] & 0xFF;
 	}
 
 	public int pop16() {
-		return pop8() | (pop8() << 8);
+		return (pop8() << 8) | pop8();
 	}
 
 	public int pop32() {
-		return pop16() | (pop16() << 16);
+		return (pop16() << 16) | pop16();
 	}
 
 	public float popFloat() {
@@ -150,11 +150,11 @@ public class VM implements VMConsts {
 	}
 	
 	public int peek8() {
-		return ram[0xFF - sp] & 0xFF;
+		return peek8(0);
 	}
 	
 	public int peek8(int r) {
-		return ram[0xFF - ((sp + r) & 0xFF)] & 0xFF;
+		return ram[0xFF - ((sp + r + 1) & 0xFF)] & 0xFF;
 	}
 	
 	public int peek16() {
@@ -180,12 +180,12 @@ public class VM implements VMConsts {
 	}
 
 	public void tick() {
-		System.out.println("tick");
-		
 		int bits = read8();
 		int opcode = bits & 0b11;
 		int data = bits >> 2;
 
+		System.out.println(bits);
+		
 		switch (opcode) {
 		case OP_FUNC:
 			op_func(data);
@@ -329,41 +329,42 @@ public class VM implements VMConsts {
 			push8(popFloat() <= popFloat());
 			break;
 			
-		case F_ZERO8:
+		case F_C_0:
 			push8(0);
 			break;
-		case F_ONE8:
+		case F_C_1:
 			push8(1);
 			break;
-		case F_TWO8:
+		case F_C_2:
 			push8(2);
 			break;
-		case F_THREE8:
+		case F_C_3:
 			push8(3);
 			break;
-		case F_FOUR8:
+		case F_C_4:
 			push8(4);
 			break;
-		case F_INF8:
+		case F_C_255:
 			push8(0xFF);
 			break;
 			
-		case F_ZEROF:
+		case F_C_0F:
 			pushFloat(0.0f);
 			break;
-		case F_ONEF:
+		case F_C_1F:
+			System.out.println("pushfloat 1");
 			pushFloat(1.0f);
 			break;
-		case F_TWOF:
+		case F_C_2F:
 			pushFloat(2.0f);
 			break;
-		case F_THREEF:
+		case F_C_3F:
 			pushFloat(3.0f);
 			break;
-		case F_FOURF:
+		case F_C_4F:
 			pushFloat(4.0f);
 			break;
-		case F_INF:
+		case F_C_INF:
 			pushFloat(Float.POSITIVE_INFINITY);
 			break;
 		case F_ISNAN:

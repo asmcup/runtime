@@ -1,7 +1,9 @@
-package asmcup;
+package asmcup.compiler;
 
 import java.lang.reflect.Field;
 import java.util.*;
+
+import asmcup.runtime.Robot;
 
 public class RobotConstsTable {
 	private static final Map<String, Integer> consts;

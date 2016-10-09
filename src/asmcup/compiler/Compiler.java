@@ -1,33 +1,15 @@
-package asmcup;
+package asmcup.compiler;
 
-import java.io.*;
-import java.nio.file.Files;
 import java.util.*;
 
+import asmcup.vm.VMConsts;
+
 public class Compiler implements VMConsts {
-	public static void main(String[] args) throws IOException {
-		if (args.length < 2) {
-			System.err.println("USAGE: asmcup-compile <in> <out>");
-			System.exit(1);
-			return;
-		}
-
-		File inFile = new File(args[0]);
-		File outFile = new File(args[1]);
-		List<String> source = Files.readAllLines(inFile.toPath());
-		FileOutputStream output = new FileOutputStream(outFile);
-
-		Compiler compiler = new Compiler();
-		byte[] program = compiler.compile(source);
-		output.write(program);
-		output.close();
-	}
-	
 	protected ArrayList<Statement> statements;
 	protected HashMap<String, Integer> labels;
 	protected byte[] ram;
 	protected int pc;
-	
+		
 	protected void write8(int value) {
 		ram[pc] = (byte)(value & 0xFF);
 		pc = (pc + 1) & 0xFF;
@@ -59,7 +41,7 @@ public class Compiler implements VMConsts {
 		write32(Float.floatToRawIntBits(value));
 	}
 	
-	public byte[] compile(Iterable<String> lines) {
+	public byte[] compile(String[] lines) {
 		ram = new byte[256];
 		labels = new HashMap<>();
 		statements = new ArrayList<>();
@@ -90,6 +72,10 @@ public class Compiler implements VMConsts {
 		byte[] compiled = ram;
 		ram = null;
 		return compiled;
+	}
+	
+	public byte[] compile(String source) {
+		return compile(source.split("\n"));
 	}
 	
 	protected void parseLine(String line) {
@@ -212,22 +198,22 @@ public class Compiler implements VMConsts {
 	protected void pushLiteral8(String[] args) {
 		switch (parseLiteral(expectOne(args))) {
 		case 0:
-			immediate(OP_FUNC, F_ZERO8, NO_DATA);
+			immediate(OP_FUNC, F_C_0, NO_DATA);
 			break;
 		case 1:
-			immediate(OP_FUNC, F_ONE8, NO_DATA);
+			immediate(OP_FUNC, F_C_1, NO_DATA);
 			break;
 		case 2:
-			immediate(OP_FUNC, F_TWO8, NO_DATA);
+			immediate(OP_FUNC, F_C_2, NO_DATA);
 			break;
 		case 3:
-			immediate(OP_FUNC, F_THREE8, NO_DATA);
+			immediate(OP_FUNC, F_C_3, NO_DATA);
 			break;
 		case 4:
-			immediate(OP_FUNC, F_FOUR8, NO_DATA);
+			immediate(OP_FUNC, F_C_4, NO_DATA);
 			break;
 		case 255:
-			immediate(OP_FUNC, F_INF8, NO_DATA);
+			immediate(OP_FUNC, F_C_255, NO_DATA);
 			break;
 		default:
 			immediate(OP_PUSH, MAGIC_PUSH_BYTE_IMMEDIATE, args);
@@ -269,17 +255,17 @@ public class Compiler implements VMConsts {
 		float f = Float.parseFloat(s);
 		
 		if (f == 0.0f) {
-			immediate(OP_FUNC, F_ZEROF, NO_DATA);
+			immediate(OP_FUNC, F_C_0F, NO_DATA);
 		} else if (f == 1.0f) {
-			immediate(OP_FUNC, F_ONEF, NO_DATA);
+			immediate(OP_FUNC, F_C_1F, NO_DATA);
 		} else if (f == 2.0f) {
-			immediate(OP_FUNC, F_TWOF, NO_DATA);
+			immediate(OP_FUNC, F_C_2F, NO_DATA);
 		} else if (f == 3.0f) {
-			immediate(OP_FUNC, F_THREEF, NO_DATA);
+			immediate(OP_FUNC, F_C_3F, NO_DATA);
 		} else if (f == 4.0f) {
-			immediate(OP_FUNC, F_FOURF, NO_DATA);
+			immediate(OP_FUNC, F_C_4F, NO_DATA);
 		} else if (Float.isInfinite(f)) {
-			immediate(OP_FUNC, F_INF, NO_DATA);
+			immediate(OP_FUNC, F_C_INF, NO_DATA);
 		} else {
 			immediateFloat(OP_PUSH, MAGIC_PUSH_FLOAT_IMMEDIATE, s);
 		}

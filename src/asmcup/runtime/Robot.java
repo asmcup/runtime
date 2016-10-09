@@ -1,8 +1,10 @@
-package asmcup;
+package asmcup.runtime;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+
+import asmcup.vm.VM;
 
 public class Robot {
 	protected final int id;
@@ -47,6 +49,10 @@ public class Robot {
 		return battery <= 0;
 	}
 	
+	public void flash(byte[] ram) {
+		this.vm = new VM(ram);
+	}
+	
 	public void save(DataOutputStream stream) throws IOException {
 		stream.writeInt(id);
 		stream.writeFloat(x);
@@ -88,13 +94,13 @@ public class Robot {
 			speed = MAX_SPEED;
 		}
 		
-		float tx = x + (float)Math.cos(facing) * speed;
-		float ty = y + (float)Math.sin(facing) * speed;
+		x = x + (float)Math.cos(facing) * speed;
+		y = y + (float)Math.sin(facing) * speed;
 		
-		if (!world.isSolid(x, y)) {
-			x = tx;
-			y = ty;
-		}
+		//if (!world.isSolid(x, y)) {
+		//	x = tx;
+		//	y = ty;
+		//}
 	}
 	
 	protected void handleIO(World world) {
@@ -104,21 +110,23 @@ public class Robot {
 		
 		int offset, value;
 		
-		switch (vm.pop8()) {
+		value = vm.pop8();
+		
+		switch (value) {
 		case IO_MOTOR:
-			motor = popIOFloat();
+			motor = popFloatSafe(-1.0f, 1.0f);
 			break;
 		case IO_STEER:
-			steer = popIOFloat();
+			steer = popFloatSafe(-1.0f, 1.0f);
 			break;
 		case IO_SENSOR:
-			vm.push8(world.sensor(this));
+			vm.pushFloat(world.ray(x, y, facing));
 			break;
 		case IO_OVERCLOCK:
 			overclock = vm.pop8();
 			break;
 		case IO_LAZER:
-			lazer = popIOFloat();
+			lazer = popFloatSafe(0.0f, 1.0f);
 			break;
 		case IO_BATTERY:
 			vm.pushFloat(battery);
@@ -136,13 +144,22 @@ public class Robot {
 		}
 	}
 	
-	protected float popIOFloat() {
-		switch (vm.pop8() % 3) {
-		case 1: return 1.0f;
-		case 2: return -1.0f;
+	protected float popFloatSafe(float min, float max) {
+		float f = vm.popFloat();
+		
+		if (Float.isNaN(f)) {
+			return min;
 		}
 		
-		return 0.0f;
+		if (f < min) {
+			return min;
+		}
+		
+		if (f > max) {
+			return max;
+		}
+		
+		return f;
 	}
 	
 	public static final int IO_SENSOR = 0;
@@ -154,6 +171,6 @@ public class Robot {
 	public static final int IO_MARK = 6;
 	public static final int IO_MARK_READ = 7;
 	
-	public static final int MAX_SPEED = 10;
+	public static final int MAX_SPEED = 16;
 	public static final int MAX_BATTERY = 60 * 60 * 24;
 }

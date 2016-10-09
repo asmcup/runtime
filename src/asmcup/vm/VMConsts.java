@@ -1,4 +1,4 @@
-package asmcup;
+package asmcup.vm;
 
 public interface VMConsts extends VMFuncs {
 	public static final int OP_FUNC = 0;

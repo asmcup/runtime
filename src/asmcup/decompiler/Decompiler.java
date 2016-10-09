@@ -1,30 +1,9 @@
-package asmcup;
+package asmcup.decompiler;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
+import asmcup.compiler.VMFuncTable;
+import asmcup.vm.VMConsts;
 
 public class Decompiler implements VMConsts {
-	public static void main(String[] args) throws IOException {
-		if (args.length != 1) {
-			System.err.printf("USAGE: unbitc <file>\n");
-			System.exit(1);
-			return;
-		}
-
-		File in = new File(args[0]);
-		byte[] ram = Files.readAllBytes(in.toPath());
-
-		if (ram.length != 256) {
-			System.err.printf("ERROR: Program must be 256 bytes not %d\n", ram.length);
-			System.exit(1);
-			return;
-		}
-
-		Decompiler decompiler = new Decompiler();
-		decompiler.decompile(ram);
-	}
-
 	public void decompile(byte[] ram) {
 		int pc = 0;
 		int end = 255;
