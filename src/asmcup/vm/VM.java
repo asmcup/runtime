@@ -119,7 +119,6 @@ public class VM implements VMConsts {
 	}
 
 	public void push32(int x) {
-		System.err.printf("push32 %d\n", x);
 		push16(x);
 		push16(x >> 16);
 	}
@@ -183,8 +182,6 @@ public class VM implements VMConsts {
 		int bits = read8();
 		int opcode = bits & 0b11;
 		int data = bits >> 2;
-
-		System.out.println(bits);
 		
 		switch (opcode) {
 		case OP_FUNC:
@@ -352,7 +349,6 @@ public class VM implements VMConsts {
 			pushFloat(0.0f);
 			break;
 		case F_C_1F:
-			System.out.println("pushfloat 1");
 			pushFloat(1.0f);
 			break;
 		case F_C_2F:
