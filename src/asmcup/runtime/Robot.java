@@ -45,6 +45,10 @@ public class Robot {
 		return y;
 	}
 	
+	public float getFacing() {
+		return facing;
+	}
+	
 	public boolean isDead() {
 		return battery <= 0;
 	}
