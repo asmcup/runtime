@@ -1,6 +1,7 @@
 package asmcup.sandbox;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.*;
 
@@ -192,10 +193,18 @@ public class Sandbox {
 		}
 	}
 	
-	protected void drawRobot(Graphics g, Robot robot) {
+	protected void drawRobot(Graphics lg, Robot robot) {
+		Graphics2D g = (Graphics2D)lg;
 		int x = (int)robot.getX();
 		int y = (int)robot.getY();
-		g.drawImage(bot, 400 + x - panX , 300 + y - panY, null);
+		int sx = 400 + x - panX;
+		int sy = 300 + y - panY;
+		
+		AffineTransform t = g.getTransform();
+		g.rotate(robot.getFacing(), sx + 16, sy + 16);
+		g.drawImage(bot, sx, sy, null);
+		
+		g.setTransform(t);
 	}
 	
 	protected void drawItem(Graphics g, Item item) {
