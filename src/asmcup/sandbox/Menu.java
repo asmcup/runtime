@@ -31,10 +31,6 @@ public class Menu extends JMenuBar {
 		}
 	}
 	
-	protected void saveROM() {
-		
-	}
-	
 	protected void teleport() {
 		
 	}
@@ -58,9 +54,6 @@ public class Menu extends JMenuBar {
 	protected void addRobotMenu() {
 		JMenu menu = new JMenu("Robot");
 		menu.add(item("Load Robot", (e) -> { loadROM(); }));
-		menu.addSeparator();
-		menu.add(item("Save Robot", (e) -> { saveROM(); }));
-		menu.add(item("Save Robot As...", (e) -> { }));
 		menu.addSeparator();
 		menu.add(item("Teleport", (e) -> { teleport(); }));
 		menu.addSeparator();
