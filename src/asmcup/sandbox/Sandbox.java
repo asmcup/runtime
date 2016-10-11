@@ -76,7 +76,6 @@ public class Sandbox {
 	
 	protected Image[] loadImage(String path) throws IOException {
 		URL url = getClass().getResource(path);
-		System.out.println(url);
 		Image sheet = ImageIO.read(url);
 		Image[] variants = new Image[4];
 		
