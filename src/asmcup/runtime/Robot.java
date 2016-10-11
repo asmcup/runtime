@@ -49,6 +49,11 @@ public class Robot {
 		return facing;
 	}
 	
+	public void position(float x, float y) {
+		this.x = x;
+		this.y = y;
+	}
+	
 	public boolean isDead() {
 		return battery <= 0;
 	}
