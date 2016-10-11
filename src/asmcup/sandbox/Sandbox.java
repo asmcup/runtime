@@ -44,6 +44,14 @@ public class Sandbox {
 		coins = loadImage("/gold.png");
 	}
 	
+	public int getPanX() {
+		return panX;
+	}
+	
+	public int getPanY() {
+		return panY;
+	}
+	
 	public Mouse getMouse() {
 		return mouse;
 	}
@@ -75,6 +83,10 @@ public class Sandbox {
 	public void pan(int dx, int dy) {
 		panX += dx;
 		panY += dy;
+	}
+	
+	public void teleport(float x, float y) {
+		world.position(robot, x, y);
 	}
 	
 	protected Image[] loadImage(String path) throws IOException {
@@ -119,6 +131,18 @@ public class Sandbox {
 			int wait = (int)(1000 - span);
 			sleep(wait);
 		}
+	}
+	
+	public void reseed() {
+		world = new World();
+		world.addRobot(robot);
+		redraw();
+	}
+	
+	public void centerView() {
+		panX = (int)robot.getX();
+		panY = (int)robot.getY();
+		redraw();
 	}
 	
 	public void draw() {

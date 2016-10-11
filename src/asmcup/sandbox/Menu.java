@@ -14,50 +14,43 @@ public class Menu extends JMenuBar {
 		addRobotMenu();
 	}
 	
-	protected AbstractAction item(String name, ActionListener listener) {
+	public AbstractAction item(String name, ActionListener listener) {
 		return new AbstractAction(name) {
 			public void actionPerformed(ActionEvent e) {
 				listener.actionPerformed(e);
 			}
 		};
 	}
-	
-	protected void loadROM() {
-		JFileChooser chooser = new JFileChooser();
-		int result = chooser.showOpenDialog(sandbox.getFrame());
 		
-		if (result != JFileChooser.APPROVE_OPTION) {
-			return;
-		}
+	public void teleport() {
+		sandbox.getMouse().startTeleport();
 	}
 	
-	protected void teleport() {
-		
-	}
-	
-	protected void showCodeEditor() {
+	public void showCodeEditor() {
 		sandbox.getCodeEditor().setVisible(true);
 	}
 	
-	protected void showDebugger() {
+	public void showDebugger() {
 		
 	}
 	
-	protected void reseed() {
+	public void reseed() {
+		sandbox.reseed();
+	}
+	
+	public void showWorldInfo() {
 		
 	}
 	
-	protected void showWorldInfo() {
-		
+	public void centerView() {
+		sandbox.centerView();
 	}
 	
 	protected void addRobotMenu() {
 		JMenu menu = new JMenu("Robot");
-		menu.add(item("Load Robot", (e) -> { loadROM(); }));
-		menu.addSeparator();
 		menu.add(item("Teleport", (e) -> { teleport(); }));
 		menu.addSeparator();
-		menu.add(item("Center View", (e) -> {  }));
+		menu.add(item("Center View", (e) -> { centerView(); }));
 		menu.addSeparator();
 		menu.add(item("Show Code Editor", (e) -> { showCodeEditor(); }));
 		menu.add(item("Show Debugger", (e) -> { showDebugger(); }));
