@@ -31,7 +31,7 @@ public class Menu extends JMenuBar {
 	}
 	
 	public void showDebugger() {
-		
+		sandbox.getDebugger().setVisible(true);
 	}
 	
 	public void reseed() {

@@ -37,6 +37,10 @@ public class Robot {
 		this.vm = new VM(stream);
 	}
 	
+	public VM getVM() {
+		return vm;
+	}
+	
 	public float getX() {
 		return x;
 	}

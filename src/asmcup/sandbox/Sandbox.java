@@ -17,6 +17,7 @@ public class Sandbox {
 	protected Canvas canvas;
 	protected Frame frame;
 	protected CodeEditor codeEditor;
+	protected Debugger debugger;
 	
 	protected Image backBuffer;
 	protected World world;
@@ -32,6 +33,7 @@ public class Sandbox {
 		frame = new Frame(this);
 		codeEditor = new CodeEditor(this);
 		world = new World();
+		debugger = new Debugger(this);
 		
 		canvas.addMouseListener(mouse);
 		canvas.addMouseMotionListener(mouse);
@@ -70,6 +72,10 @@ public class Sandbox {
 	
 	public CodeEditor getCodeEditor() {
 		return codeEditor;
+	}
+	
+	public Debugger getDebugger() {
+		return debugger;
 	}
 	
 	public World getWorld() {
