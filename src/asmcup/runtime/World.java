@@ -68,7 +68,7 @@ public class World {
 	}
 	
 	public Cell getCellXY(float x, float y) {
-		return getCell((int)x, (int)y);
+		return getCellXY((int)x, (int)y);
 	}
 	
 	public int getTile(int column, int row) {
