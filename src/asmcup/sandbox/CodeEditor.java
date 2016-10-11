@@ -1,8 +1,11 @@
 package asmcup.sandbox;
 
 import java.awt.Font;
+import java.awt.datatransfer.*;
+import java.awt.dnd.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.List;
 
 import javax.swing.*;
 import javax.swing.text.PlainDocument;
@@ -29,6 +32,43 @@ public class CodeEditor extends JFrame {
 		new DefaultContextMenu().add(editor);
 		editor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 		editor.getDocument().putProperty(PlainDocument.tabSizeAttribute, 2);
+		
+		editor.setTransferHandler(new TransferHandler() {
+			@Override
+			public boolean canImport(TransferHandler.TransferSupport support) {
+				for (DataFlavor flavor : support.getDataFlavors()) {
+					if (flavor.isFlavorJavaFileListType()) {
+						return true;
+					}
+				}
+				
+				return false;
+			}
+			
+			@Override
+			@SuppressWarnings("unchecked")
+			public boolean importData(TransferHandler.TransferSupport support) {
+				if (!canImport(support)) {
+					return false;
+				}
+
+				List<File> files;
+				
+				try {
+					files = (List<File>) support.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+				} catch (Exception e) {
+					return false;
+				}
+
+				for (File file : files) {
+					currentFile = file;
+					openFile();
+					break;
+				}
+				
+				return true;
+			}
+		});
 	}
 	
 	public void openFile() {
@@ -45,6 +85,11 @@ public class CodeEditor extends JFrame {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void openFile(File file) {
+		currentFile = file;
+		openFile();
 	}
 	
 	public void closeFile() {
