@@ -39,6 +39,18 @@ public class World {
 		getCellXY(robot.getX(), robot.getY()).addRobot(robot);
 	}
 	
+	public void position(Robot robot, float x, float y) {
+		Cell oldCell = getCellXY(robot.getX(), robot.getY());
+		Cell cell = getCellXY(x, y);
+		
+		if (oldCell != cell) {
+			oldCell.removeRobot(robot);
+			cell.addRobot(robot);
+		}
+		
+		robot.position(x, y);
+	}
+	
 	public Cell getCell(int cellX, int cellY) {
 		int key = Cell.key(cellX, cellY);
 		Cell cell = cells.get(key);
