@@ -205,22 +205,32 @@ traveled until it hit an obstacle.
 ### Motor Control
 
 ```
-motorSpeed: db 55
+; Maximum Speed
+pushf 1.0
+push8 #IO_MOTOR
+io
 
-push8 #02
-push8 motorSpeed
+; Unpower motor
+pushf 0.0
+push8 #IO_MOTOR
+io
+
+; Reverse
+pushf -1.0
+push8 #IO_MOTOR
 io
 ```
 
 ### Steering Control
 
 ```
-steeringWheel: db 128
-steerLeft:     db 0
-steerRight:    db 255
+; Steer right
+pushf 1.0
+push8 #IO_STEER
+io
 
-push8 #03
-push8 steeringWheel
+pushf -1.0
+push8 #IO_STEER
 io
 ```
 
@@ -231,10 +241,8 @@ The CPU speed of the robot can be "overclocked" by pushing two
 bytes to the stack and calling `io`:
 
 ```
-cpuSpeed: db 125
-
-push8 #04
-push8 cpuSpeed
+push8 #100
+push8 #IO_OVERCLOCK
 io
 ```
 
