@@ -13,8 +13,6 @@ public class Frame extends JFrame {
 		setResizable(false);
 		setJMenuBar(sandbox.getMenu());
 		setContentPane(sandbox.getCanvas());
-		addMouseMotionListener(sandbox.getMouse());
-		addMouseListener(sandbox.getMouse());
 		pack();
 	}
 }

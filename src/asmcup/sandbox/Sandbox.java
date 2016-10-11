@@ -31,8 +31,11 @@ public class Sandbox {
 		canvas = new Canvas(this);
 		frame = new Frame(this);
 		codeEditor = new CodeEditor(this);
-		
 		world = new World();
+		
+		canvas.addMouseListener(mouse);
+		canvas.addMouseMotionListener(mouse);
+		
 		ground = loadImage("/ground.png");
 		wall = loadImage("/wall.png");
 		obstacles = loadImage("/obstacles.png");
