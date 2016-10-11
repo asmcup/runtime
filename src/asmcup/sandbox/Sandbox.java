@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.URL;
 
 import javax.imageio.ImageIO;
 
@@ -32,12 +33,12 @@ public class Sandbox {
 		codeEditor = new CodeEditor(this);
 		
 		world = new World();
-		ground = loadImage("img/ground.png");
-		wall = loadImage("img/wall.png");
-		obstacles = loadImage("img/obstacles.png");
-		hazards = loadImage("img/hazards.png");
-		bot = ImageIO.read(new File("img/robot.png"));
-		coins = loadImage("img/gold.png");
+		ground = loadImage("/ground.png");
+		wall = loadImage("/wall.png");
+		obstacles = loadImage("/obstacles.png");
+		hazards = loadImage("/hazards.png");
+		bot = ImageIO.read(getClass().getResource("/robot.png"));
+		coins = loadImage("/gold.png");
 	}
 	
 	public Mouse getMouse() {
@@ -74,7 +75,9 @@ public class Sandbox {
 	}
 	
 	protected Image[] loadImage(String path) throws IOException {
-		Image sheet = ImageIO.read(new File(path));
+		URL url = getClass().getResource(path);
+		System.out.println(url);
+		Image sheet = ImageIO.read(url);
 		Image[] variants = new Image[4];
 		
 		for (int i=0; i < 4; i++) {

@@ -4,16 +4,25 @@
 `asmcup` is a game where players create small and limited programs
 to power robots in a virtual environment to compete for prizes.
 
-## Install
+## Getting Started
 
- * Requires Java 7 or later
- * [Download Jar](https://github.com/asmcup/runtime/releases/latest/asmcup.jar)
- * `asmcup.tools.Compiler` compiles assembly source into binaries
- * `asmcup.runtime.Sandbox` provides an environment for testing your programs
+
+The quickest way to get started is to download
+[asmcup.jar](https://github.com/asmcup/runtime/releases)
+and run it. This will launch the Sandbox which allows you to write, compile,
+and debug your robot.
+
+asmcup.jar also has command line tools:
+
+ * `asmcup.compiler.Main` compiles assembly source into binaries
+ * `asmcup.decompiler.Main` decompiles binary files into source
+ * `asmcup.runtime.Main` simulates a game world via the command line
 
 ## Compete
 
 Made a robot you think can hold it's own on our servers?
+
+*Note we aren't ready for uploading until come November*
 
  * [Upload your robot](https://asmcup.github.io)
 
@@ -23,15 +32,6 @@ Robots are powered by a simple virtual machine with a simple RISC instruction
 set for managing memory and a stack. The instruction language supports native
 operations on 8-bit integers and 32-bit floats.
 
-## Compiler
-
-To compile an assembly program use:
-
-    java -cp asmcup.jar asmcup.tools.Compiler program.asm program.bin
-
-The resulting `program.bin` can be ran using the VM via:
-
-    java -cp asmcup.jar asmcup.runtime.Sandbox program.bin
 
 ## Memory Size
 
