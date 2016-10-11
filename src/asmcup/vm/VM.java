@@ -41,7 +41,7 @@ public class VM implements VMConsts {
 	}
 
 	public int getStackPointer() {
-		return sp;
+		return 0xFF - sp;
 	}
 
 	public byte[] getMemory() {

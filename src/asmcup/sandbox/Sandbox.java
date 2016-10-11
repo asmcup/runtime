@@ -122,6 +122,7 @@ public class Sandbox {
 			
 			synchronized (world) {
 				world.tick();
+				debugger.repaint();
 			}
 			
 			if (backBuffer != null) {
@@ -168,12 +169,18 @@ public class Sandbox {
 		
 		for (int cellY=top; cellY < bottom; cellY++) {
 			for (int cellX=left; cellX < right; cellX++) {
-				drawCell(g, world.getCell(cellX, cellY));
+				drawCellTiles(g, world.getCell(cellX, cellY));
+			}
+		}
+		
+		for (int cellY=top; cellY < bottom; cellY++) {
+			for (int cellX=left; cellX < right; cellX++) {
+				drawCellObjects(g, world.getCell(cellX, cellY));
 			}
 		}
 	}
 	
-	protected void drawCell(Graphics g, Cell cell) {
+	protected void drawCellTiles(Graphics g, Cell cell) {
 		int left = cell.getX() * 16;
 		int right = left + 16;
 		int top = cell.getY() * 16;
@@ -184,14 +191,6 @@ public class Sandbox {
 				int tile = cell.getTile(col - left, row - top);
 				drawTile(g, col, row, tile);
 			}
-		}
-		
-		for (Item item : cell.getItems()) {
-			drawItem(g, item);
-		}
-		
-		for (Robot robot : cell.getRobots()) {
-			drawRobot(g, robot);
 		}
 		
 		g.setColor(Color.WHITE);
@@ -225,6 +224,16 @@ public class Sandbox {
 		case 3:
 			drawVariant(g, hazards, x, y, variant);
 			break;
+		}
+	}
+	
+	protected void drawCellObjects(Graphics g, Cell cell) {
+		for (Item item : cell.getItems()) {
+			drawItem(g, item);
+		}
+		
+		for (Robot robot : cell.getRobots()) {
+			drawRobot(g, robot);
 		}
 	}
 	
