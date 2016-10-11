@@ -4,6 +4,10 @@
 `asmcup` is a game where players create small and limited programs
 to power robots in a virtual environment to compete for prizes.
 
+## Screenshot
+
+![](http://i.imgur.com/yEyYupp.png)
+
 ## Getting Started
 
 
