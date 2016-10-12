@@ -70,6 +70,8 @@ There are four basic types of operations:
 
 There are 63 total functions. Note that each of these instructions
 are the same size (1 byte) but that they can modify the stack differently.
+The *In* column is the number of bytes popped from the stack.
+The *Out* column is the number of bytes pushed to the stack.
 
 Value | Command   | In | Out | Notes
 ------|-----------|----|-----|-------------------------
