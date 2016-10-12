@@ -20,7 +20,7 @@ public class Main {
 		while (frames > 0) {
 			world.update(eventInput);
 			world.tick();
-			frames++;
+			frames--;
 		}
 		
 		world.save(dataOutput);
