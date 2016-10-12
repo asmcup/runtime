@@ -89,10 +89,10 @@ Value | Command   | In | Out | Notes
 13    | madd8     | 3  | 1   | Byte Multiply with Add 
 14    | negf      | 4  | 4   | Float Negate
 15    | addf      | 8  | 4   | Float Add
-16    | sub8      | 8  | 4   | Float Subtract
-17    | sub16     | 8  | 4   | Float Divide
-18    | sub32     | 8  | 4   | Float Multiply
-19    | mul8      | 12 | 4   | Float Multiply with Add
+16    | subf      | 8  | 4   | Float Subtract
+17    | divf      | 8  | 4   | Float Divide
+18    | mulf      | 8  | 4   | Float Multiply
+19    | maddf     | 12 | 4   | Float Multiply with Add
 20    | cosf      | 4  | 4   | Float Cosine
 21    | sinf      | 4  | 4   | Float Sine
 22    | tanf      | 4  | 4   | Float Tangent
