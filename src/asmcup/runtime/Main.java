@@ -18,6 +18,7 @@ public class Main {
 		World world = new World(snapshotInput);
 		
 		while (frames > 0) {
+			world.update(eventInput);
 			world.tick();
 			frames++;
 		}

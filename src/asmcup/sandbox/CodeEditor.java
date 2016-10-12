@@ -1,8 +1,7 @@
 package asmcup.sandbox;
 
 import java.awt.Font;
-import java.awt.datatransfer.*;
-import java.awt.dnd.*;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.event.*;
 import java.io.*;
 import java.util.List;

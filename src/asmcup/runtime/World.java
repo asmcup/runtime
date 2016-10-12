@@ -112,6 +112,22 @@ public class World {
 		
 		frame++;
 	}
+	
+	public void update(DataInputStream stream) throws IOException {
+		stream.mark(4);
+		int n = stream.readInt();
+		
+		if (n != frame) {
+			stream.reset();
+			return;
+		}
+		
+		int count = stream.readInt();
+		
+		for (int i=0; i < count; i++) {
+			addRobot(new Robot(stream));
+		}
+	}
 
 	public void mark(Robot robot, int offset, int value) {
 		
