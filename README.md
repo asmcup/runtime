@@ -180,16 +180,16 @@ While the VM itself allows you to construct arbitrary programs the IO
 controls the robot itself. The `io` command  takes the top value from the stack
 and executes a command:
 
- Value | Function  
--------|-----------
- 0     | Beam Sensor
- 1     | Proximity Sensor
- 2     | Motor Control
- 3     | Steering Control
- 4     | CPU Clock Control
- 5     | Mark
- 6     | Laser Attack
- 7     | Read Battery
+ Value | Constant     | Function  
+-------|--------------|----------
+ 0     | IO_SENSOR    | Beam Sensor
+ 1     | IO_MOTOR     | Control Motor
+ 2     | IO_STEER     | Control Steering
+ 3     | IO_OVERCLOCK | CPU Clock Control
+ 4     | IO_LASER     | Laser Attack
+ 5     | IO_BATTERY   | Read Battery
+ 6     | IO_MARK      | Mark ("pee")
+ 7     | IO_MARK_READ | Mark Read ("smell")
 
 ### Beam Sensor
 
