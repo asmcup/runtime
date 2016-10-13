@@ -14,7 +14,7 @@ to power robots in a virtual environment to compete for prizes.
 The quickest way to get started is to download
 [asmcup.jar](https://github.com/asmcup/runtime/releases)
 and run it. This will launch the Sandbox which allows you to write, compile,
-and debug your robot.
+and debug your robot. **You need to have Java installed to run the Jar file.**
 
 asmcup.jar also has command line tools:
 
