@@ -369,8 +369,10 @@ public class Compiler implements VMConsts {
 			throw new IllegalArgumentException("Expected #");
 		}
 		
-		s = s.substring(1);
-		
+		return parseValue(s.substring(1));
+	}
+	
+	protected static int parseValue(String s) {
 		if (RobotConstsTable.contains(s)) {
 			return RobotConstsTable.get(s);
 		}
@@ -389,12 +391,20 @@ public class Compiler implements VMConsts {
 			}
 			
 			public void compile() {
-				if (!labels.containsKey(s)) {
-					throw new IllegalArgumentException(String.format("Cannot find label '%s'", s));
+				int addr;
+				
+				if (isSymbol(s)) {
+					if (!labels.containsKey(s)) {
+						throw new IllegalArgumentException(String.format("Cannot find label '%s'", s));
+					}
+					
+					addr = labels.get(s);
+				} else {
+					addr = parseValue(s);
 				}
 				
 				writeOp(op, data);
-				write8(labels.get(s));
+				write8(addr);
 			}
 		});
 	}
