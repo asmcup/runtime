@@ -32,8 +32,8 @@ Made a robot you think can hold it's own on our servers?
 
 ## Virtual Machine
 
-Robots are powered by a simple virtual machine with a simple RISC instruction
-set for managing memory and a stack. The instruction language supports native
+Robots are powered by a simple virtual machine with a RISC instruction
+set for managing memory via a stack. The instruction language supports native
 operations on 8-bit integers and 32-bit floats.
 
 
