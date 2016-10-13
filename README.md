@@ -196,9 +196,9 @@ and executes a command:
 Casts a beam at the current looking direction.
 
 ```
-push8 #00
+push8 #IO_SENSOR
 io
-pop8 distance
+popf distance
  ```
 
 After `io` the stack will contain a byte of how far the beam
