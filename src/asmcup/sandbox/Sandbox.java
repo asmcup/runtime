@@ -135,7 +135,8 @@ public class Sandbox {
 			
 			long now = System.currentTimeMillis();
 			long span = now - lastTick;
-			int wait = (int)(1000 - span);
+			int msPerFrame = 1000 / 10;
+			int wait = (int)(msPerFrame - span);
 			sleep(wait);
 		}
 	}
@@ -211,17 +212,17 @@ public class Sandbox {
 		int variant = (tile >> 2) & 0b11;
 		
 		switch (tile & 0b11) {
-		case 0:
+		case Cell.TILE_GROUND:
 			drawVariant(g, ground, x, y, variant);
 			break;
-		case 1:
+		case Cell.TILE_OBSTACLE:
 			drawVariant(g, ground, x, y, variant ^ 0b11);
 			drawVariant(g, obstacles, x, y, variant);
 			break;
-		case 2:
+		case Cell.TILE_WALL:
 			drawVariant(g, wall, x, y, variant);
 			break;
-		case 3:
+		case Cell.TILE_HAZARD:
 			drawVariant(g, hazards, x, y, variant);
 			break;
 		}
@@ -245,10 +246,13 @@ public class Sandbox {
 		int sy = 300 + y - panY;
 		
 		AffineTransform t = g.getTransform();
-		g.rotate(robot.getFacing(), sx + 16, sy + 16);
-		g.drawImage(bot, sx, sy, null);
+		g.rotate(robot.getFacing(), sx, sy);
+		g.drawImage(bot, sx - 16, sy - 16, null);
 		
 		g.setTransform(t);
+		
+		g.setColor(Color.RED);
+		g.fillRect(sx-1, sy-1, 3, 3);
 	}
 	
 	protected void drawItem(Graphics g, Item item) {

@@ -99,21 +99,22 @@ public class Robot {
 			motor = 0.0f;
 		}
 		
-		if (Math.abs(speed) <= 0.01f) {
-			speed = 0.0f;
-		}
-		
 		if (speed > MAX_SPEED) {
 			speed = MAX_SPEED;
 		}
 		
-		x = x + (float)Math.cos(facing) * speed;
-		y = y + (float)Math.sin(facing) * speed;
+		if (Math.abs(speed) <= 0.01f) {
+			speed = 0.0f;
+			return;
+		}
 		
-		//if (!world.isSolid(x, y)) {
-		//	x = tx;
-		//	y = ty;
-		//}
+		float tx = x + (float)Math.cos(facing) * speed;
+		float ty = y + (float)Math.sin(facing) * speed;
+		
+		if (!world.isSolid(x, y, 16)) {
+			x = tx;
+			y = ty;
+		}
 	}
 	
 	protected void handleIO(World world) {
@@ -184,6 +185,6 @@ public class Robot {
 	public static final int IO_MARK = 6;
 	public static final int IO_MARK_READ = 7;
 	
-	public static final int MAX_SPEED = 16;
+	public static final float MAX_SPEED = 3.33f;
 	public static final int MAX_BATTERY = 60 * 60 * 24;
 }

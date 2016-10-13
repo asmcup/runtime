@@ -83,7 +83,11 @@ public class World {
 	}
 	
 	public boolean isSolid(float x, float y) {
-		return getTileXY(x, y) == 1;
+		return (getTileXY(x, y) & 0b11) >= 2;
+	}
+	
+	public boolean isSolid(float x, float y, float r) {
+		return isSolid(x - r, y - r) || isSolid(x + r, y + r) || isSolid(x - r, y + r) || isSolid(x + r, y - r);
 	}
 	
 	public float ray(float x, float y, float theta) {

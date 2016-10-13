@@ -20,9 +20,9 @@ public class Cell {
 			int p = random.nextInt(100);
 			
 			if (p < 80) {
-				tiles[i] = 0;
+				tiles[i] = TILE_GROUND;
 			} else {
-				tiles[i] = (1 + random.nextInt(2)) << 2;
+				tiles[i] = TILE_GROUND | ((1 + random.nextInt(2)) << 2);
 			}
 		}
 		
@@ -68,19 +68,19 @@ public class Cell {
 		int height = 15 - hpad * 2;
 		
 		for (int i=0; i <= width; i++) {
-			setTile(wpad + i, hpad, 2 | (random.nextInt(4) << 2));
-			setTile(wpad + i, 15 - hpad, 2 | (random.nextInt(4) << 2));
+			setTile(wpad + i, hpad, TILE_WALL | (random.nextInt(4) << 2));
+			setTile(wpad + i, 15 - hpad, TILE_WALL | (random.nextInt(4) << 2));
 		}
 		
 		for (int i=0; i < height; i++) {
-			setTile(wpad, hpad + i, 2 | (random.nextInt(4) << 2));
-			setTile(15 - wpad, hpad + i, 2 | (random.nextInt(4) << 2));
+			setTile(wpad, hpad + i, TILE_WALL | (random.nextInt(4) << 2));
+			setTile(15 - wpad, hpad + i, TILE_WALL | (random.nextInt(4) << 2));
 		}
 		
 		int exits = 1 + random.nextInt(3);
 		
 		for (int i=0; i < exits; i++) {
-			int variant = random.nextInt(4) << 2;
+			int variant = TILE_GROUND | (random.nextInt(4) << 2);
 			
 			switch (random.nextInt(4)) {
 			case 0:
@@ -149,14 +149,14 @@ public class Cell {
 	}
 	
 	protected void generateObstacle(Random random, int col, int row) {
-		setTile(col, row, 1 | (random.nextInt(4) << 2));
+		setTile(col, row, TILE_OBSTACLE | (random.nextInt(4) << 2));
 	}
 	
 	protected void generateRubble(Random random, int col, int row) {
 		int count = 1 + random.nextInt(10);
 		
 		for (int i=0; i < count; i++) {
-			setTile(col, row, 2 | (random.nextInt(4) << 2));
+			setTile(col, row, TILE_WALL | (random.nextInt(4) << 2));
 			
 			if (random.nextBoolean()) {
 				col = wiggle(random, col);
@@ -186,7 +186,7 @@ public class Cell {
 		}
 		
 		for (int i=0; i < count; i++) {
-			setTile(col, row, 3 | (variant << 2));
+			setTile(col, row, TILE_HAZARD | (variant << 2));
 			col = wiggle(random, col);
 			row = wiggle(random, row);
 		}
@@ -220,4 +220,9 @@ public class Cell {
 			robot.tick(world);
 		}
 	}
+	
+	public static final int TILE_GROUND = 0;
+	public static final int TILE_HAZARD = 1;
+	public static final int TILE_WALL = 2;
+	public static final int TILE_OBSTACLE = 3;
 }

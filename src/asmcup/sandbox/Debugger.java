@@ -19,6 +19,7 @@ public class Debugger extends JFrame {
 		scrollPane = new JScrollPane(memPane);
 		
 		setTitle("Debugger");
+		setResizable(false);
 		setContentPane(scrollPane);
 		pack();
 	}
