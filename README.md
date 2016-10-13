@@ -201,8 +201,9 @@ io
 popf distance
  ```
 
-After `io` the stack will contain a byte of how far the beam
-traveled until it hit an obstacle.
+After `io` the stack will contain a float of how far the beam
+traveled until it hit an obstacle. If no obstacle was hit `Infinity`
+will be the value.
 
 ### Motor Control
 
