@@ -182,14 +182,15 @@ and executes a command:
 
  Value | Constant     | Function  
 -------|--------------|----------
- 0     | IO_SENSOR    | Beam Sensor
- 1     | IO_MOTOR     | Control Motor
- 2     | IO_STEER     | Control Steering
- 3     | IO_OVERCLOCK | CPU Clock Control
- 4     | IO_LASER     | Laser Attack
- 5     | IO_BATTERY   | Read Battery
- 6     | IO_MARK      | Mark ("pee")
- 7     | IO_MARK_READ | Mark Read ("smell")
+ 0     | IO_SENSOR         | Beam Sensor
+ 1     | IO_MOTOR         | Control Motor
+ 2     | IO_STEER         | Control Steering
+ 3     | IO_OVERCLOCK     | CPU Clock Control
+ 4     | IO_LASER         | Laser Attack
+ 5     | IO_BATTERY       | Read Battery
+ 6     | IO_MARK          | Mark ("pee")
+ 7     | IO_MARK_READ     | Mark Read ("smell")
+ 8     | IO_ACCELEROMETER | Accelerometer
 
 ### Beam Sensor
 
@@ -249,4 +250,15 @@ push8 #IO_OVERCLOCK
 io
 ```
 
-The effective CPU speed becomes `1 + (cpuSpeed * 4)`
+The maximum CPU speed is 100, setting any number higher is the same as setting
+to 100. The game operates at 10 frames per second meaning a fully overclocked
+CPU will execute 1000 instructions per second, 100 per frame.
+
+### Accelerometer
+
+```
+push8 #IO_ACCELEROMETER
+io
+popf relY
+popf relX
+```

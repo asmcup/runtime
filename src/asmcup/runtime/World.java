@@ -8,7 +8,6 @@ public class World {
 	protected final HashMap<Integer, Cell> cells;
 	protected int seed;
 	protected int frame;
-	protected Random random;
 	
 	public World() {
 		this(new Random().nextInt());
@@ -17,7 +16,6 @@ public class World {
 	public World(int seed) {
 		this.robots = new ArrayList<>();
 		this.cells = new HashMap<>();
-		this.random = new Random(seed);
 		this.seed = seed;
 		this.frame = 0;
 	}
@@ -26,8 +24,23 @@ public class World {
 		this.robots = new ArrayList<>();
 		this.cells = new HashMap<>();
 		this.seed = stream.readInt();
-		this.random = new Random(seed);
 		this.frame = stream.readInt();
+		
+		int count = stream.readInt();
+		
+		for (int i=0; i < count; i++) {
+			robots.add(new Robot(stream));
+		}
+	}
+	
+	public void save(DataOutputStream stream) throws IOException {
+		stream.writeInt(seed);
+		stream.writeInt(frame);
+		stream.writeInt(robots.size());
+		
+		for (Robot robot : robots) {
+			robot.save(stream);
+		}
 	}
 	
 	public Iterable<Robot> getRobots() {
@@ -102,10 +115,6 @@ public class World {
 		}
 		
 		return Float.POSITIVE_INFINITY;
-	}
-	
-	public void save(DataOutputStream stream) throws IOException {
-		
 	}
 	
 	public void tick() {

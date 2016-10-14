@@ -17,6 +17,7 @@ public class Robot {
 	protected float motor;
 	protected float steer;
 	protected float lazer;
+	protected float lastX, lastY;
 	
 	public Robot(int id) {
 		this.id = id;
@@ -26,15 +27,34 @@ public class Robot {
 	
 	public Robot(DataInputStream stream) throws IOException {
 		this.id = stream.readInt();
-		this.x = stream.readInt();
-		this.y = stream.readInt();
+		this.x = stream.readFloat();
+		this.y = stream.readFloat();
 		this.facing = stream.readFloat();
+		this.speed = stream.readFloat();
 		this.battery = stream.readInt();
 		this.overclock = stream.readUnsignedByte() & 0xFF;
-		this.motor = stream.readUnsignedByte() & 0xFF;
-		this.steer = stream.readUnsignedByte() & 0xFF;
-		this.lazer = stream.readInt() & 0xFF;
+		this.motor = stream.readFloat();
+		this.steer = stream.readFloat();
+		this.lazer = stream.readFloat();
+		this.lastX = stream.readFloat();
+		this.lastY = stream.readFloat();
 		this.vm = new VM(stream);
+	}
+	
+	public void save(DataOutputStream stream) throws IOException {
+		stream.writeInt(id);
+		stream.writeFloat(x);
+		stream.writeFloat(y);
+		stream.writeFloat(facing);
+		stream.writeFloat(speed);
+		stream.writeInt(battery);
+		stream.writeByte(overclock);
+		stream.writeFloat(motor);
+		stream.writeFloat(steer);
+		stream.writeFloat(lazer);
+		stream.writeFloat(lastX);
+		stream.writeFloat(lastY);
+		vm.save(stream);
 	}
 	
 	public VM getVM() {
@@ -80,19 +100,6 @@ public class Robot {
 	
 	public void flash(byte[] ram) {
 		this.vm = new VM(ram);
-	}
-	
-	public void save(DataOutputStream stream) throws IOException {
-		stream.writeInt(id);
-		stream.writeFloat(x);
-		stream.writeFloat(y);
-		stream.writeFloat(facing);
-		stream.writeInt(battery);
-		stream.writeByte(overclock);
-		stream.writeFloat(motor);
-		stream.writeFloat(steer);
-		stream.writeFloat(lazer);
-		vm.save(stream);
 	}
 	
 	public void tick(World world) {
@@ -183,6 +190,12 @@ public class Robot {
 			value = world.markRead(this, offset);
 			vm.push8(value);
 			break;
+		case IO_ACCELEROMETER:
+			vm.pushFloat(x - lastX);
+			vm.pushFloat(y - lastY);
+			lastX = x;
+			lastY = y;
+			break;
 		}
 	}
 	
@@ -210,6 +223,7 @@ public class Robot {
 	public static final int IO_BATTERY = 5;
 	public static final int IO_MARK = 6;
 	public static final int IO_MARK_READ = 7;
+	public static final int IO_ACCELEROMETER = 8;
 	
 	public static final float MAX_SPEED = 3.33f;
 	public static final float MIN_SPEED = MAX_SPEED * -0.5f;
