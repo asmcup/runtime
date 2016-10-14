@@ -123,11 +123,11 @@ public class Sandbox {
 			synchronized (world) {
 				world.tick();
 				debugger.repaint();
-			}
-			
-			if (backBuffer != null) {
-				synchronized (backBuffer) {
-					draw();
+				
+				if (backBuffer != null) {
+					synchronized (backBuffer) {
+						draw();
+					}
 				}
 			}
 			
