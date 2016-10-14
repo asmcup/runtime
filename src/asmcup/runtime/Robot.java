@@ -80,7 +80,7 @@ public class Robot {
 	}
 	
 	public void tick(World world) {
-		int cycles = 1 + overclock * 4;
+		int cycles = 1 + Math.min(100, overclock);
 		
 		while (cycles > 0) {
 			vm.tick();
