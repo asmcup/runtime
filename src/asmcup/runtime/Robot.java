@@ -80,6 +80,11 @@ public class Robot {
 	}
 	
 	public void tick(World world) {
+		tickSoftware(world);
+		tickHardware(world);
+	}
+	
+	protected void tickSoftware(World world) {
 		int cycles = 1 + Math.min(100, overclock);
 		
 		while (cycles > 0) {
@@ -88,7 +93,9 @@ public class Robot {
 			cycles--;
 			battery--;
 		}
-		
+	}
+	
+	protected void tickHardware(World world) {
 		facing += steer;
 		speed += motor;
 		
@@ -102,9 +109,9 @@ public class Robot {
 		
 		if (speed > MAX_SPEED) {
 			speed = MAX_SPEED;
-		}
-		
-		if (Math.abs(speed) <= 0.01f) {
+		} else if (speed < MIN_SPEED) {
+			speed = MIN_SPEED;
+		} else if (Math.abs(speed) <= 0.01f) {
 			speed = 0.0f;
 			return;
 		}
@@ -191,5 +198,6 @@ public class Robot {
 	public static final int IO_MARK_READ = 7;
 	
 	public static final float MAX_SPEED = 3.33f;
+	public static final float MIN_SPEED = MAX_SPEED * -0.5f;
 	public static final int MAX_BATTERY = 60 * 60 * 24;
 }
