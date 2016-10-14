@@ -182,7 +182,7 @@ and executes a command:
 
  Value | Constant     | Function  
 -------|--------------|----------
- 0     | IO_SENSOR         | Beam Sensor
+ 0     | IO_SENSOR        | Beam Sensor
  1     | IO_MOTOR         | Control Motor
  2     | IO_STEER         | Control Steering
  3     | IO_OVERCLOCK     | CPU Clock Control
