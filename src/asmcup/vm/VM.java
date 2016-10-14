@@ -256,6 +256,7 @@ public class VM implements VMConsts {
 			break;
 		case F_MULF:
 			pushFloat(popFloat() * popFloat());
+			break;
 		case F_DIVF:
 			pushFloat(popFloat() / popFloat());
 			break;
