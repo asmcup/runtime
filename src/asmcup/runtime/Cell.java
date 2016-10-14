@@ -50,7 +50,11 @@ public class Cell {
 	}
 	
 	public static int key(int cellX, int cellY) {
-		return (cellX & 0xFFFF) | ((cellY & 0xFFFF) << 16);
+		return clampCell(cellX) | (clampCell(cellY) << 16);
+	}
+	
+	protected static int clampCell(int i) {
+		return Math.max(0, Math.min(0xFFFF, i));
 	}
 	
 	public Iterable<Robot> getRobots() {
@@ -200,7 +204,11 @@ public class Cell {
 	}
 	
 	public int getTile(int col, int row) {
-		return tiles[col + (row * 16)];
+		return tiles[clampTile(col) + (clampTile(row) * 16)];
+	}
+	
+	public static int clampTile(int i) {
+		return Math.max(0, Math.min(15, i));
 	}
 	
 	public void setTile(int col, int row, int value) {

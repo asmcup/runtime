@@ -83,6 +83,10 @@ public class World {
 	}
 	
 	public boolean isSolid(float x, float y) {
+		if (x <= 0 || y <= 0) {
+			return true;
+		}
+		
 		return (getTileXY(x, y) & 0b11) >= 2;
 	}
 	

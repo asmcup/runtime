@@ -168,6 +168,11 @@ public class Sandbox {
 		int top = (int)Math.floor((panY - 300.0) / (16.0 * 32.0));
 		int bottom = (int)Math.ceil((panY + 300.0) / (16.0 * 32.0));
 		
+		left = Math.max(0, left);
+		right = Math.max(0, right);
+		top = Math.max(0, top);
+		bottom = Math.max(0, bottom);
+		
 		for (int cellY=top; cellY < bottom; cellY++) {
 			for (int cellX=left; cellX < right; cellX++) {
 				drawCellTiles(g, world.getCell(cellX, cellY));
