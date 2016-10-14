@@ -27,12 +27,18 @@ public class Sandbox {
 	protected Image bot;
 	
 	public Sandbox() throws IOException {
+		panX = (int)(Math.random() * World.SIZE);
+		panY = (int)(Math.random() * World.SIZE);
+		world = new World();
+		robot = new Robot(1);
+		world.position(robot, panX, panY);
+		world.addRobot(robot);
+		
 		mouse = new Mouse(this);
 		menu = new Menu(this);
 		canvas = new Canvas(this);
 		frame = new Frame(this);
 		codeEditor = new CodeEditor(this);
-		world = new World();
 		debugger = new Debugger(this);
 		
 		canvas.addMouseListener(mouse);
@@ -111,34 +117,33 @@ public class Sandbox {
 	}
 	
 	public void run() {
-		robot = new Robot(1);
-		world.addRobot(robot);
-		frame.setVisible(true);
+		long lastTick;
 		
-		long lastTick = System.currentTimeMillis();
+		frame.setVisible(true);
 		
 		while (frame.isVisible()) {
 			lastTick = System.currentTimeMillis();
 			
 			synchronized (world) {
-				world.tick();
-				debugger.repaint();
-				
-				if (backBuffer != null) {
-					synchronized (backBuffer) {
-						draw();
-					}
-				}
+				tick();
 			}
 			
-			frame.repaint();
-			
-			long now = System.currentTimeMillis();
-			long span = now - lastTick;
-			int msPerFrame = 1000 / 10;
-			int wait = (int)(msPerFrame - span);
-			sleep(wait);
+			tickWait(lastTick);
 		}
+	}
+	
+	protected void tick() {
+		world.tick();
+		debugger.repaint();
+		redraw();
+	}
+	
+	protected void tickWait(long lastTick) {
+		long now = System.currentTimeMillis();
+		long span = now - lastTick;
+		int msPerFrame = 1000 / 10;
+		int wait = (int)(msPerFrame - span);
+		sleep(wait);
 	}
 	
 	public void reseed() {

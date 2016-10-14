@@ -145,4 +145,8 @@ public class World {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	
+	public static final int SIZE_TILE = 32;
+	public static final int SIZE_CELL = 16;
+	public static final int SIZE = SIZE_TILE * SIZE_CELL * 0xFFFF;
 }
