@@ -53,6 +53,22 @@ public class Robot {
 		return facing;
 	}
 	
+	public float getMotor() {
+		return motor;
+	}
+	
+	public float getSteer() {
+		return steer;
+	}
+	
+	public void setMotor(float f) {
+		motor = clampSafe(f, -1, 1);
+	}
+	
+	public void setSteer(float f) {
+		steer = clampSafe(f, -1, 1);
+	}
+	
 	public void position(float x, float y) {
 		this.x = x;
 		this.y = y;
@@ -171,18 +187,16 @@ public class Robot {
 	}
 	
 	protected float popFloatSafe(float min, float max) {
-		float f = vm.popFloat();
-		
-		if (Float.isNaN(f)) {
-			return min;
-		}
-		
-		if (f < min) {
-			return min;
-		}
-		
+		return clampSafe(vm.popFloat(), min, max);
+	}
+	
+	protected static float clampSafe(float f, float min, float max) {
 		if (f > max) {
 			return max;
+		} else if (f < min) {
+			return min;
+		} else if (Float.isNaN(f)) {
+			return 0;
 		}
 		
 		return f;

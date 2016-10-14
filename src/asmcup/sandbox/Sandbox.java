@@ -134,7 +134,7 @@ public class Sandbox {
 	
 	protected void tick() {
 		world.tick();
-		debugger.repaint();
+		debugger.updateDebugger();
 		redraw();
 	}
 	

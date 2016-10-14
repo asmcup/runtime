@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 import javax.swing.*;
+import javax.swing.event.*;
 
 import asmcup.runtime.Robot;
 
@@ -11,17 +12,55 @@ public class Debugger extends JFrame {
 	protected final Sandbox sandbox;
 	protected MemoryPane memPane;
 	protected JScrollPane scrollPane;
+	protected JSlider motorSlider, steerSlider;
 	
 	public Debugger(Sandbox sandbox) {
 		this.sandbox = sandbox;
 		
 		memPane = new MemoryPane();
 		scrollPane = new JScrollPane(memPane);
+		motorSlider = new JSlider(-100, 100, 0);
+		steerSlider = new JSlider(-100, 100, 0);
+		
+		ChangeListener listener = (e) -> { updateControls(); };
+		motorSlider.addChangeListener(listener);
+		steerSlider.addChangeListener(listener);
+		
+		JPanel panel = new JPanel(new BorderLayout());
+		JPanel bottomPane = new JPanel();
+		bottomPane.setLayout(new BoxLayout(bottomPane, BoxLayout.Y_AXIS));
+		bottomPane.add(hitem("Motor:", motorSlider));
+		bottomPane.add(hitem("Steer:", steerSlider));
+		
+		panel.add(scrollPane, BorderLayout.CENTER);
+		panel.add(bottomPane, BorderLayout.SOUTH);
 		
 		setTitle("Debugger");
 		setResizable(false);
-		setContentPane(scrollPane);
+		setContentPane(panel);
 		pack();
+	}
+	
+	public void updateDebugger() {
+		Robot robot = sandbox.getRobot();
+		motorSlider.setValue((int)(robot.getMotor() * 100));
+		steerSlider.setValue((int)(robot.getSteer() * 100));
+		repaint();
+	}
+	
+	public void updateControls() {
+		synchronized (sandbox.getWorld()) {
+			Robot robot = sandbox.getRobot();
+			robot.setMotor(motorSlider.getValue() / 100.0f);
+			robot.setSteer(steerSlider.getValue() / 100.0f);
+		}
+	}
+	
+	protected static JPanel hitem(String label, JSlider s) {
+		JPanel p = new JPanel(new BorderLayout());
+		p.add(s, BorderLayout.CENTER);
+		p.add(new JLabel(label), BorderLayout.WEST);
+		return p;
 	}
 	
 	protected class MemoryPane extends JComponent {
