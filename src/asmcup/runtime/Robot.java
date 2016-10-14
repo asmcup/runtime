@@ -86,6 +86,7 @@ public class Robot {
 			vm.tick();
 			handleIO(world);
 			cycles--;
+			battery--;
 		}
 		
 		facing += steer;
