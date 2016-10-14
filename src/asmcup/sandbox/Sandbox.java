@@ -31,7 +31,7 @@ public class Sandbox {
 		panY = (int)(Math.random() * World.SIZE);
 		world = new World();
 		robot = new Robot(1);
-		world.position(robot, panX, panY);
+		robot.position(panX, panY);
 		world.addRobot(robot);
 		
 		mouse = new Mouse(this);
@@ -98,7 +98,7 @@ public class Sandbox {
 	}
 	
 	public void teleport(float x, float y) {
-		world.position(robot, x, y);
+		robot.position(x, y);
 	}
 	
 	protected Image[] loadImage(String path) throws IOException {
@@ -180,18 +180,16 @@ public class Sandbox {
 		
 		for (int cellY=top; cellY < bottom; cellY++) {
 			for (int cellX=left; cellX < right; cellX++) {
-				drawCellTiles(g, world.getCell(cellX, cellY));
+				drawCell(g, world.getCell(cellX, cellY));
 			}
 		}
 		
-		for (int cellY=top; cellY < bottom; cellY++) {
-			for (int cellX=left; cellX < right; cellX++) {
-				drawCellObjects(g, world.getCell(cellX, cellY));
-			}
+		for (Robot robot : world.getRobots()) {
+			drawRobot(g, robot);
 		}
 	}
 	
-	protected void drawCellTiles(Graphics g, Cell cell) {
+	protected void drawCell(Graphics g, Cell cell) {
 		int left = cell.getX() * 16;
 		int right = left + 16;
 		int top = cell.getY() * 16;
@@ -214,6 +212,10 @@ public class Sandbox {
 		
 		msg = String.format("%x", cell.getKey());
 		g.drawString(msg, x + 100, y + 150);
+		
+		for (Item item : cell.getItems()) {
+			drawItem(g, item);
+		}
 	}
 	
 	protected void drawTile(Graphics g, int col, int row, int tile) {
@@ -235,16 +237,6 @@ public class Sandbox {
 		case Cell.TILE_HAZARD:
 			drawVariant(g, hazards, x, y, variant);
 			break;
-		}
-	}
-	
-	protected void drawCellObjects(Graphics g, Cell cell) {
-		for (Item item : cell.getItems()) {
-			drawItem(g, item);
-		}
-		
-		for (Robot robot : cell.getRobots()) {
-			drawRobot(g, robot);
 		}
 	}
 	

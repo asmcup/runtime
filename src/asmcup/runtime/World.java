@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.*;
 
 public class World {
+	protected final ArrayList<Robot> robots;
 	protected final HashMap<Integer, Cell> cells;
 	protected int seed;
 	protected int frame;
@@ -14,6 +15,7 @@ public class World {
 	}
 	
 	public World(int seed) {
+		this.robots = new ArrayList<>();
 		this.cells = new HashMap<>();
 		this.random = new Random(seed);
 		this.seed = seed;
@@ -21,10 +23,15 @@ public class World {
 	}
 	
 	public World(DataInputStream stream) throws IOException {
+		this.robots = new ArrayList<>();
 		this.cells = new HashMap<>();
 		this.seed = stream.readInt();
 		this.random = new Random(seed);
 		this.frame = stream.readInt();
+	}
+	
+	public Iterable<Robot> getRobots() {
+		return robots;
 	}
 	
 	public int getSeed() {
@@ -36,19 +43,7 @@ public class World {
 	}
 	
 	public void addRobot(Robot robot) {
-		getCellXY(robot.getX(), robot.getY()).addRobot(robot);
-	}
-	
-	public void position(Robot robot, float x, float y) {
-		Cell oldCell = getCellXY(robot.getX(), robot.getY());
-		Cell cell = getCellXY(x, y);
-		
-		if (oldCell != cell) {
-			oldCell.removeRobot(robot);
-			cell.addRobot(robot);
-		}
-		
-		robot.position(x, y);
+		robots.add(robot);
 	}
 	
 	public Cell getCell(int cellX, int cellY) {
@@ -113,9 +108,9 @@ public class World {
 		
 	}
 	
-	public void tick() { 
-		for (Cell cell : cells.values()) {
-			cell.tick(this);
+	public void tick() {
+		for (Robot robot : robots) {
+			robot.tick(this);
 		}
 		
 		frame++;

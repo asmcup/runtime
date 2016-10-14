@@ -5,7 +5,6 @@ import java.util.*;
 public class Cell {
 	protected final World world;
 	protected final int cellX, cellY;
-	protected final ArrayList<Robot> robots = new ArrayList<>();
 	protected final int[] tiles = new int[16 * 16];
 	protected final ArrayList<Item> items = new ArrayList<>();
 	
@@ -40,10 +39,6 @@ public class Cell {
 	public int getY() {
 		return cellY;
 	}
-		
-	public boolean isEmpty() {
-		return robots.isEmpty();
-	}
 	
 	public int getKey() {
 		return key(cellX, cellY);
@@ -55,10 +50,6 @@ public class Cell {
 	
 	protected static int clampCell(int i) {
 		return Math.max(0, Math.min(0xFFFF, i));
-	}
-	
-	public Iterable<Robot> getRobots() {
-		return robots;
 	}
 	
 	public Iterable<Item> getItems() {
@@ -213,20 +204,6 @@ public class Cell {
 	
 	public void setTile(int col, int row, int value) {
 		tiles[col + (row * 16)] = value;
-	}
-	
-	public void addRobot(Robot robot) {
-		robots.add(robot);
-	}
-	
-	public void removeRobot(Robot robot) {
-		robots.remove(robot);
-	}
-	
-	public void tick(World world) {
-		for (Robot robot : robots) {
-			robot.tick(world);
-		}
 	}
 	
 	public static final int TILE_GROUND = 0;
