@@ -203,8 +203,8 @@ popf distance
  ```
 
 After `io` the stack will contain a float of how far the beam
-traveled until it hit an obstacle. If no obstacle was hit `Infinity`
-will be the value.
+traveled until it hit an obstacle. If no obstacle was hit the value on the
+stack will be `160`
 
 ### Motor Control
 

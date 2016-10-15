@@ -103,18 +103,19 @@ public class World {
 	}
 	
 	public float ray(float x, float y, float theta) {
-		float distance = 0.0f;
+		float cos = (float)Math.cos(theta);
+		float sin = (float)Math.sin(theta);
 		
 		for (int i=0; i < 10; i++) {
-			if (isSolid(x, y)) {
-				return distance;
-			}
+			float tx = x + (cos * i * 16);
+			float ty = y + (sin * i * 16);
 			
-			x += Math.cos(theta) * 16;
-			y += Math.sin(theta) * 16;
+			if (isSolid(tx, ty)) {
+				return i * 16;
+			}
 		}
 		
-		return Float.POSITIVE_INFINITY;
+		return 10 * 16;
 	}
 	
 	public void tick() {
