@@ -11,7 +11,6 @@ public class Robot {
 	protected VM vm;
 	protected float x, y;
 	protected float facing;
-	protected float speed;
 	protected int overclock;
 	protected int battery;
 	protected float motor;
@@ -22,7 +21,7 @@ public class Robot {
 	public Robot(int id) {
 		this.id = id;
 		this.vm = new VM();
-		this.battery = MAX_BATTERY;
+		this.battery = BATTERY_MAX;
 	}
 	
 	public Robot(DataInputStream stream) throws IOException {
@@ -30,7 +29,6 @@ public class Robot {
 		this.x = stream.readFloat();
 		this.y = stream.readFloat();
 		this.facing = stream.readFloat();
-		this.speed = stream.readFloat();
 		this.battery = stream.readInt();
 		this.overclock = stream.readUnsignedByte() & 0xFF;
 		this.motor = stream.readFloat();
@@ -46,7 +44,6 @@ public class Robot {
 		stream.writeFloat(x);
 		stream.writeFloat(y);
 		stream.writeFloat(facing);
-		stream.writeFloat(speed);
 		stream.writeInt(battery);
 		stream.writeByte(overclock);
 		stream.writeFloat(motor);
@@ -119,28 +116,27 @@ public class Robot {
 	}
 	
 	protected void tickHardware(World world) {
-		facing += steer;
-		speed += motor;
-		
 		if (Math.abs(steer) <= 0.01f) {
 			steer = 0.0f;
 		}
 		
+		facing += steer * STEER_RATE;
+		
 		if (Math.abs(motor) <= 0.01f) {
 			motor = 0.0f;
-		}
-		
-		if (speed > MAX_SPEED) {
-			speed = MAX_SPEED;
-		} else if (speed < MIN_SPEED) {
-			speed = MIN_SPEED;
-		} else if (Math.abs(speed) <= 0.01f) {
-			speed = 0.0f;
 			return;
 		}
 		
-		float tx = x + (float)Math.cos(facing) * speed;
-		float ty = y + (float)Math.sin(facing) * speed;
+		float s;
+		
+		if (motor < 0) {
+			s = motor * 0.5f * SPEED_MAX;
+		} else {
+			s = motor * SPEED_MAX;
+		}
+		
+		float tx = x + (float)Math.cos(facing) * s;
+		float ty = y + (float)Math.sin(facing) * s;
 		
 		if (!world.isSolid(tx, ty, 15)) {
 			x = tx;
@@ -225,7 +221,7 @@ public class Robot {
 	public static final int IO_MARK_READ = 7;
 	public static final int IO_ACCELEROMETER = 8;
 	
-	public static final float MAX_SPEED = 3.33f;
-	public static final float MIN_SPEED = MAX_SPEED * -0.5f;
-	public static final int MAX_BATTERY = 60 * 60 * 24;
+	public static final float SPEED_MAX = 8;
+	public static final float STEER_RATE = (float)(Math.PI * 0.1);
+	public static final int BATTERY_MAX = 60 * 60 * 24;
 }
