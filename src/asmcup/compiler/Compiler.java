@@ -272,7 +272,7 @@ public class Compiler implements VMConsts {
 	}
 	
 	protected void popf(String[] args) {
-		reference(OP_BRANCH, MAGIC_POP_FLOAT, args);
+		reference(OP_POP, MAGIC_POP_FLOAT, args);
 	}
 	
 	protected void jnz(String[] args) {

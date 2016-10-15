@@ -404,10 +404,10 @@ public class VM implements VMConsts {
 	public void op_pop(int data) {
 		switch (data) {
 		case MAGIC_POP_BYTE:
-			write8(pop8(), pop8());
+			write8(read8(), pop8());
 			break;
 		case MAGIC_POP_FLOAT:
-			writeFloat(pop8(), popFloat());
+			writeFloat(read8(), popFloat());
 			break;
 		case MAGIC_POP_BYTE_INDIRECT:
 			write8(read8indirect(), pop8());
