@@ -61,6 +61,9 @@ public class CodeEditor extends JFrame {
 		if (currentFile == null) {
 			currentFile = findFileOpen();
 		}
+		if (currentFile == null) {
+			return;
+		}
 		
 		try {
 			String text = Utils.readAsString(currentFile);
