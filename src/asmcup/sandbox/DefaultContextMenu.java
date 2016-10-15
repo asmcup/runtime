@@ -27,8 +27,9 @@ public class DefaultContextMenu extends JPopupMenu
 
     private JTextComponent jTextComponent;
 
-    public DefaultContextMenu()
+    public DefaultContextMenu(JTextComponent jTextComponent)
     {
+    	setTextComponent(jTextComponent);
         undoManager = new UndoManager();
         clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 
@@ -86,8 +87,10 @@ public class DefaultContextMenu extends JPopupMenu
         add(selectAll);
     }
 
-    public void add(JTextComponent jTextComponent)
+    private void setTextComponent(JTextComponent jTextComponent)
     {
+    	this.jTextComponent = jTextComponent;
+    	
         jTextComponent.addKeyListener(new KeyAdapter()
         {
             @Override
