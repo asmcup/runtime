@@ -1,7 +1,8 @@
 package asmcup.sandbox;
 
 import java.awt.Font;
-import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.*;
+import java.awt.dnd.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.List;
@@ -28,46 +29,32 @@ public class CodeEditor extends JFrame {
 		setContentPane(new JScrollPane(editor));
 		setJMenuBar(menu);
 		
-		new DefaultContextMenu().add(editor);
 		editor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 		editor.getDocument().putProperty(PlainDocument.tabSizeAttribute, 2);
+		new DefaultContextMenu(editor);
 		
-		editor.setTransferHandler(new TransferHandler() {
-			@Override
-			public boolean canImport(TransferHandler.TransferSupport support) {
-				for (DataFlavor flavor : support.getDataFlavors()) {
-					if (flavor.isFlavorJavaFileListType()) {
-						return true;
-					}
-				}
-				
-				return false;
-			}
-			
-			@Override
-			@SuppressWarnings("unchecked")
-			public boolean importData(TransferHandler.TransferSupport support) {
-				if (!canImport(support)) {
-					return false;
-				}
-
-				List<File> files;
-				
+		editor.setDropTarget(new DropTarget() {
+			public synchronized void drop(DropTargetDropEvent e) {
 				try {
-					files = (List<File>) support.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
-				} catch (Exception e) {
-					return false;
+					dropFiles(e);
+				} catch (Exception ex) {
+					ex.printStackTrace();
 				}
-
-				for (File file : files) {
-					currentFile = file;
-					openFile();
-					break;
-				}
-				
-				return true;
 			}
 		});
+	}
+	
+	public void dropFiles(DropTargetDropEvent e) throws Exception {
+		e.acceptDrop(DnDConstants.ACTION_COPY);
+		Object obj = e.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+
+		@SuppressWarnings("unchecked")
+		List<File> droppedFiles = (List<File>) obj;
+
+		for (File file : droppedFiles) {
+			openFile(file);
+			return;
+		}
 	}
 	
 	public void openFile() {
@@ -84,6 +71,8 @@ public class CodeEditor extends JFrame {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		setTitle(currentFile.getName() + " - Code Editor");
 	}
 	
 	public void openFile(File file) {
@@ -93,6 +82,7 @@ public class CodeEditor extends JFrame {
 	
 	public void closeFile() {
 		editor.setText("");
+		setTitle("Code Editor");
 	}
 	
 	public void closeEditor() {
@@ -179,12 +169,12 @@ public class CodeEditor extends JFrame {
 		
 		protected void addFileMenu() {
 			JMenu menu = new JMenu("File");
-			menu.add(item("New Code", (e) -> { closeFile(); }));
-			menu.add(item("Open Code...", (e) -> { openFile(); }));
+			menu.add(item("New Code", e -> closeFile()));
+			menu.add(item("Open Code...", e -> openFile(null)));
 			menu.addSeparator();
-			menu.add(item("Save Code", (e) -> { saveFile(); }));
-			menu.add(item("Save Code As...", (e) -> { saveFileAs(); }));
-			menu.add(item("Save ROM", (e) -> { saveROM(); }));
+			menu.add(item("Save Code", e -> saveFile()));
+			menu.add(item("Save Code As...", e -> saveFileAs()));
+			menu.add(item("Save ROM", e -> saveROM()));
 			menu.addSeparator();
 			menu.add(item("Close Editor", (e) -> { closeEditor(); }));
 			add(menu);
@@ -192,11 +182,11 @@ public class CodeEditor extends JFrame {
 		
 		protected void addCompileMenu() {
 			JMenu menu = new JMenu("Tools");
-			menu.add(item("Compile & Flash", (e) -> { compileAndFlash(); }));
-			menu.add(item("Compile", (e) -> { compile(); }));
-			menu.add(item("Flash", (e) -> { flash(); }));
+			menu.add(item("Compile & Flash", e -> compileAndFlash()));
+			menu.add(item("Compile", e -> compile()));
+			menu.add(item("Flash", e -> flash()));
 			menu.addSeparator();
-			menu.add(item("Check Syntax", (e) -> { checkSyntax(); }));
+			menu.add(item("Check Syntax", e -> { checkSyntax(); }));
 			add(menu);
 		}
 	}
