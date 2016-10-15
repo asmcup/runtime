@@ -118,11 +118,11 @@ public class CodeEditor extends JFrame {
 	}
 	
 	public File findFileSave() {
-		return Utils.findFileSave(sandbox.getFrame(), "asm", "Source File");
+		return Utils.findFileSave(sandbox.getFrame(), "asm", "Source File (.asm)");
 	}
 	
 	public File findFileOpen() {
-		return Utils.findFileOpen(sandbox.getFrame(), "asm", "Source File");
+		return Utils.findFileOpen(sandbox.getFrame(), "asm", "Source File (.asm)");
 	}
 	
 	public void saveFile() {
