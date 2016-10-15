@@ -171,6 +171,7 @@ public class CodeEditor extends JFrame {
 			JMenu menu = new JMenu("File");
 			menu.add(item("New Code", e -> closeFile()));
 			menu.add(item("Open Code...", e -> openFile(null)));
+			menu.add(item("Reload Code", e -> openFile()));
 			menu.addSeparator();
 			menu.add(item("Save Code", e -> saveFile()));
 			menu.add(item("Save Code As...", e -> saveFileAs()));
