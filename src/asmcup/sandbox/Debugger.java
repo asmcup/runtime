@@ -13,6 +13,7 @@ public class Debugger extends JFrame {
 	protected MemoryPane memPane;
 	protected JScrollPane scrollPane;
 	protected JSlider motorSlider, steerSlider;
+	protected JProgressBar batteryIndicator, overclockIndicator;
 	
 	public Debugger(Sandbox sandbox) {
 		this.sandbox = sandbox;
@@ -21,6 +22,10 @@ public class Debugger extends JFrame {
 		scrollPane = new JScrollPane(memPane);
 		motorSlider = new JSlider(-100, 100, 0);
 		steerSlider = new JSlider(-100, 100, 0);
+		batteryIndicator = new JProgressBar(0, Robot.BATTERY_MAX);
+		batteryIndicator.setStringPainted(true);
+		overclockIndicator = new JProgressBar(0, 255);
+		overclockIndicator.setStringPainted(true);
 		
 		ChangeListener listener = (e) -> { updateControls(); };
 		motorSlider.addChangeListener(listener);
@@ -31,6 +36,8 @@ public class Debugger extends JFrame {
 		bottomPane.setLayout(new BoxLayout(bottomPane, BoxLayout.Y_AXIS));
 		bottomPane.add(hitem("Motor:", motorSlider));
 		bottomPane.add(hitem("Steer:", steerSlider));
+		bottomPane.add(hitem("Battery:", batteryIndicator));
+		bottomPane.add(hitem("Clock:", overclockIndicator));
 		
 		panel.add(scrollPane, BorderLayout.CENTER);
 		panel.add(bottomPane, BorderLayout.SOUTH);
@@ -45,6 +52,9 @@ public class Debugger extends JFrame {
 		Robot robot = sandbox.getRobot();
 		motorSlider.setValue((int)(robot.getMotor() * 100));
 		steerSlider.setValue((int)(robot.getSteer() * 100));
+		batteryIndicator.setValue(robot.getBattery());
+		overclockIndicator.setValue(robot.getOverclock());
+		overclockIndicator.setString(String.valueOf(robot.getOverclock()));
 		repaint();
 	}
 	
@@ -56,9 +66,9 @@ public class Debugger extends JFrame {
 		}
 	}
 	
-	protected static JPanel hitem(String label, JSlider s) {
+	protected static JPanel hitem(String label, JComponent c) {
 		JPanel p = new JPanel(new BorderLayout());
-		p.add(s, BorderLayout.CENTER);
+		p.add(c, BorderLayout.CENTER);
 		p.add(new JLabel(label), BorderLayout.WEST);
 		return p;
 	}
