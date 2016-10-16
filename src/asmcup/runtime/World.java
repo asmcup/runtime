@@ -152,6 +152,14 @@ public class World {
 		return 0;
 	}
 	
+	public void send(Robot robot, float frequency, int data) {
+		
+	}
+	
+	public int recv(Robot robot, float frequency) {
+		return 0;
+	}
+	
 	public static final int RAY_INTERVAL = 16;
 	public static final int RAY_STEPS = 16;
 	

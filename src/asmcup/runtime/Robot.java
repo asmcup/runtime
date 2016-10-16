@@ -17,6 +17,7 @@ public class Robot {
 	protected float steer;
 	protected float lazer;
 	protected float lastX, lastY;
+	protected float frequency;
 	
 	public Robot(int id) {
 		this.id = id;
@@ -201,6 +202,15 @@ public class Robot {
 			lastX = x;
 			lastY = y;
 			break;
+		case IO_RADIO:
+			frequency = popFloatSafe(-FREQUENCY_MAX, FREQUENCY_MAX);
+			break;
+		case IO_SEND:
+			world.send(this, frequency, vm.pop8());
+			break;
+		case IO_RECV:
+			vm.push8(world.recv(this, frequency));
+			break;
 		}
 	}
 	
@@ -229,9 +239,13 @@ public class Robot {
 	public static final int IO_MARK = 6;
 	public static final int IO_MARK_READ = 7;
 	public static final int IO_ACCELEROMETER = 8;
+	public static final int IO_RADIO = 9;
+	public static final int IO_SEND = 10;
+	public static final int IO_RECV = 11;
 	
 	public static final float SPEED_MAX = 8;
 	public static final float STEER_RATE = (float)(Math.PI * 0.1);
 	public static final int BATTERY_MAX = 60 * 60 * 24;
 	public static final int OVERCLOCK_MAX = 100;
+	public static final float FREQUENCY_MAX = 1000 * 10;
 }
