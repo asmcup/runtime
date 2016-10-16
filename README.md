@@ -64,8 +64,8 @@ The internal battery currently holds enough charge for executing 86400 instructi
 
 ## Instructions
 
-Every instruction consists of an opcode (2 least significant bytes) and a data part
-(6 remaining bytes). It may be followed by a data block to hold e.g. a float constant.
+Every instruction consists of an opcode (2 least significant bits) and a data part
+(6 remaining bits). It may be followed by a data block to hold e.g. a float constant.
 
 There are four basic types of operations:
 
