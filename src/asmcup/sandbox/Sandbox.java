@@ -107,9 +107,10 @@ public class Sandbox {
 		Image[] variants = new Image[4];
 		
 		for (int i=0; i < 4; i++) {
-			Image img = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
+			Image img = new BufferedImage(World.TILE_SIZE, World.TILE_SIZE,
+					BufferedImage.TYPE_INT_ARGB);
 			Graphics g = img.getGraphics();
-			g.drawImage(sheet, -i * 32, 0, null);
+			g.drawImage(sheet, -i * World.TILE_SIZE, 0, null);
 			variants[i] = img;
 		}
 		
@@ -141,7 +142,7 @@ public class Sandbox {
 	protected void tickWait(long lastTick) {
 		long now = System.currentTimeMillis();
 		long span = now - lastTick;
-		int msPerFrame = 1000 / 10;
+		int msPerFrame = 1000 / FRAMERATE;
 		int wait = (int)(msPerFrame - span);
 		sleep(wait);
 	}
@@ -166,12 +167,12 @@ public class Sandbox {
 		Graphics g = backBuffer.getGraphics();
 		
 		g.setColor(Color.BLACK);
-		g.fillRect(0, 0, 800, 600);
+		g.fillRect(0, 0, WIDTH, HEIGHT);
 		
-		int left = (int)Math.floor((panX - 400.0) / (16.0 * 32.0));
-		int right = (int)Math.ceil((panX + 400.0) / (16.0 * 32.0));
-		int top = (int)Math.floor((panY - 300.0) / (16.0 * 32.0));
-		int bottom = (int)Math.ceil((panY + 300.0) / (16.0 * 32.0));
+		int left = (int)Math.floor((panX - WIDTH/2.0) / World.CELL_SIZE);
+		int right = (int)Math.ceil((panX + WIDTH/2.0) / World.CELL_SIZE);
+		int top = (int)Math.floor((panY - HEIGHT/2.0) / World.CELL_SIZE);
+		int bottom = (int)Math.ceil((panY + HEIGHT/2.0) / World.CELL_SIZE);
 		
 		left = Math.max(0, left);
 		right = Math.max(0, right);
@@ -190,10 +191,10 @@ public class Sandbox {
 	}
 	
 	protected void drawCell(Graphics g, Cell cell) {
-		int left = cell.getX() * 16;
-		int right = left + 16;
-		int top = cell.getY() * 16;
-		int bottom = top + 16;
+		int left = cell.getX() * World.TILES_PER_CELL;
+		int right = left + World.TILES_PER_CELL;
+		int top = cell.getY() * World.TILES_PER_CELL;
+		int bottom = top + World.TILES_PER_CELL;
 		
 		for (int row=top; row < bottom; row++) {
 			for (int col=left; col < right; col++) {
@@ -203,9 +204,9 @@ public class Sandbox {
 		}
 		
 		g.setColor(Color.WHITE);
-		int x = 400 + left * 32 - panX;
-		int y = 300 + top * 32 - panY;
-		g.drawRect(x, y, 16 * 32, 16 * 32);
+		int x = WIDTH/2 + left * World.TILE_SIZE - panX;
+		int y = HEIGHT/2 + top * World.TILE_SIZE - panY;
+		g.drawRect(x, y, World.CELL_SIZE, World.CELL_SIZE);
 		
 		String msg = String.format("%d, %d", cell.getX(), cell.getY());
 		g.drawString(msg, x + 100, y + 100);
@@ -219,8 +220,8 @@ public class Sandbox {
 	}
 	
 	protected void drawTile(Graphics g, int col, int row, int tile) {
-		int x = 400 + col * 32 - panX;
-		int y = 300 + row * 32 - panY;
+		int x = WIDTH/2 + col * World.TILE_SIZE - panX;
+		int y = HEIGHT/2 + row * World.TILE_SIZE - panY;
 		int variant = (tile >> 2) & 0b11;
 		
 		switch (tile & 0b11) {
@@ -244,12 +245,12 @@ public class Sandbox {
 		Graphics2D g = (Graphics2D)lg;
 		int x = (int)robot.getX();
 		int y = (int)robot.getY();
-		int sx = 400 + x - panX;
-		int sy = 300 + y - panY;
+		int sx = WIDTH/2 + x - panX;
+		int sy = HEIGHT/2 + y - panY;
 		
 		AffineTransform t = g.getTransform();
 		g.rotate(robot.getFacing(), sx, sy);
-		g.drawImage(bot, sx - 16, sy - 16, null);
+		g.drawImage(bot, sx - World.TILE_SIZE/2, sy - World.TILE_SIZE/2, null);
 		
 		g.setTransform(t);
 		
@@ -270,8 +271,8 @@ public class Sandbox {
 	}
 	
 	protected void drawItemGold(Graphics g, Item.Gold gold) {
-		int x = 400 + (int)gold.getX() - panX;
-		int y = 300 + (int)gold.getY() - panY;
+		int x = WIDTH/2 + (int)gold.getX() - panX;
+		int y = HEIGHT/2 + (int)gold.getY() - panY;
 		drawVariant(g, coins, x, y, gold.getVariant());
 	}
 	
@@ -292,7 +293,7 @@ public class Sandbox {
 	}
 	
 	protected Image createBackBuffer() {
-		Image img = frame.createVolatileImage(800, 600);
+		Image img = frame.createVolatileImage(WIDTH, HEIGHT);
 		
 		if (img == null) {
 			return null;
@@ -300,7 +301,7 @@ public class Sandbox {
 		
 		Graphics g = img.getGraphics();
 		g.setColor(Color.BLACK);
-		g.fillRect(0, 0, 800, 600);
+		g.fillRect(0, 0, WIDTH, HEIGHT);
 		
 		return img;
 	}
@@ -326,4 +327,8 @@ public class Sandbox {
 	public void quit() {
 		System.exit(0);
 	}
+
+	public static final int WIDTH = 800;
+	public static final int HEIGHT = 600;
+	public static final int FRAMERATE = 10;
 }

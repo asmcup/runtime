@@ -5,7 +5,7 @@ import java.util.*;
 public class Cell {
 	protected final World world;
 	protected final int cellX, cellY;
-	protected final int[] tiles = new int[16 * 16];
+	protected final int[] tiles = new int[World.TILES_PER_CELL * World.TILES_PER_CELL];
 	protected final ArrayList<Item> items = new ArrayList<>();
 	
 	public Cell(World world, int cellX, int cellY) {
@@ -15,7 +15,7 @@ public class Cell {
 		
 		Random random = world.getCellRandom(cellX, cellY);
 		
-		for (int i=0; i < 16 * 16; i++) {
+		for (int i = 0; i < World.TILES_PER_CELL * World.TILES_PER_CELL; i++) {
 			int p = random.nextInt(100);
 			
 			if (p < 80) {
@@ -49,7 +49,7 @@ public class Cell {
 	}
 	
 	protected static int clampCell(int i) {
-		return Math.max(0, Math.min(0xFFFF, i));
+		return Math.max(0, Math.min(World.CELL_COUNT, i));
 	}
 	
 	public Iterable<Item> getItems() {
@@ -59,17 +59,22 @@ public class Cell {
 	protected void generateRoom(Random random) {
 		int wpad = 1 + random.nextInt(5);
 		int hpad = 1 + random.nextInt(5);
-		int width = 15 - wpad * 2;
-		int height = 15 - hpad * 2;
+		int width = World.TILES_PER_CELL - 1 - wpad * 2;
+		int height = World.TILES_PER_CELL - 1 - hpad * 2;
 		
-		for (int i=0; i <= width; i++) {
+		if (width < 3 || height < 3)
+			return;
+		
+		for (int i = 0; i <= width; i++) {
 			setTile(wpad + i, hpad, TILE_WALL | (random.nextInt(4) << 2));
-			setTile(wpad + i, 15 - hpad, TILE_WALL | (random.nextInt(4) << 2));
+			setTile(wpad + i, World.TILES_PER_CELL - 1 - hpad,
+					TILE_WALL | (random.nextInt(4) << 2));
 		}
 		
-		for (int i=0; i < height; i++) {
+		for (int i = 0; i < height; i++) {
 			setTile(wpad, hpad + i, TILE_WALL | (random.nextInt(4) << 2));
-			setTile(15 - wpad, hpad + i, TILE_WALL | (random.nextInt(4) << 2));
+			setTile(World.TILES_PER_CELL - 1 - wpad, hpad + i,
+					TILE_WALL | (random.nextInt(4) << 2));
 		}
 		
 		int exits = 1 + random.nextInt(3);
@@ -82,13 +87,15 @@ public class Cell {
 				setTile(wpad + 1 + random.nextInt(width - 2), hpad, variant);
 				break;
 			case 1:
-				setTile(wpad, hpad + 1+ random.nextInt(height - 2), variant);
+				setTile(wpad, hpad + 1 + random.nextInt(height - 2), variant);
 				break;
 			case 2:
-				setTile(wpad + 1 + random.nextInt(width - 2), 15 - hpad, variant);
+				setTile(wpad + 1 + random.nextInt(width - 2),
+						World.TILES_PER_CELL - 1 - hpad, variant);
 				break;
 			case 3:
-				setTile(15 - wpad, hpad + 1 + random.nextInt(height - 2), variant);
+				setTile(World.TILES_PER_CELL - 1 - wpad,
+						hpad + 1 + random.nextInt(height - 2), variant);
 				break;
 			}
 		}
@@ -96,7 +103,7 @@ public class Cell {
 		int count = random.nextInt(10);
 		int goldLimit = random.nextInt(1000 * 10) - random.nextInt(5000);
 		
-		for (int i=0; i < count; i++) {
+		for (int i = 0; i < count; i++) {
 			Item item;
 			
 			switch (random.nextInt(2)) {
@@ -112,13 +119,13 @@ public class Cell {
 				break;
 			}
 			
-			float x = (cellX + random.nextFloat()) * 16f * 32f;
-			float y = (cellY + random.nextFloat()) * 16f * 32f;
+			float x = (cellX + random.nextFloat()) * World.CELL_SIZE;
+			float y = (cellY + random.nextFloat()) * World.CELL_SIZE;
 			
-			x = Math.max(x, (cellX * 16 + 1 + wpad) * 32);
-			x = Math.min(x, (cellX * 16 + 15 - wpad - 1) * 32);
-			y = Math.max(y, (cellY * 16 + 1 + hpad) * 32);
-			y = Math.min(y, (cellY * 16 + 15 - hpad - 1) * 32);
+			x = Math.max(x, (cellX * World.TILES_PER_CELL + 1 + wpad) *     World.TILE_SIZE);
+			x = Math.min(x, ((cellX+1) * World.TILES_PER_CELL - wpad - 2) * World.TILE_SIZE);
+			y = Math.max(y, (cellY * World.TILES_PER_CELL + 1 + hpad) *     World.TILE_SIZE);
+			y = Math.min(y, ((cellY+1) * World.TILES_PER_CELL - hpad - 2) * World.TILE_SIZE);
 			
 			item.position(x, y);
 			items.add(item);
@@ -128,9 +135,9 @@ public class Cell {
 	protected void generateOpenArea(Random random) {
 		int count = random.nextInt(15);
 		
-		for (int i=0; i < count; i++) {
-			int col = random.nextInt(16);
-			int row = random.nextInt(16);
+		for (int i = 0; i < count; i++) {
+			int col = random.nextInt(World.TILES_PER_CELL);
+			int row = random.nextInt(World.TILES_PER_CELL);
 			int p = random.nextInt(100);
 			
 			if (p < 10) {
@@ -189,21 +196,21 @@ public class Cell {
 	
 	protected int wiggle(Random random, int x) {
 		x += random.nextInt(3) - 1;
-		x = Math.min(x, 15);
+		x = Math.min(x, World.TILES_PER_CELL - 1);
 		x = Math.max(x, 0);
 		return x;
 	}
 	
 	public int getTile(int col, int row) {
-		return tiles[clampTile(col) + (clampTile(row) * 16)];
+		return tiles[clampTile(col) + (clampTile(row) * World.TILES_PER_CELL)];
 	}
 	
 	public static int clampTile(int i) {
-		return Math.max(0, Math.min(15, i));
+		return Math.max(0, Math.min(World.TILES_PER_CELL - 1, i));
 	}
 	
 	public void setTile(int col, int row, int value) {
-		tiles[col + (row * 16)] = value;
+		tiles[col + (row * World.TILES_PER_CELL)] = value;
 	}
 	
 	public static final int TILE_GROUND = 0;
