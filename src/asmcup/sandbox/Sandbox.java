@@ -97,7 +97,9 @@ public class Sandbox {
 		panY += dy;
 	}
 	
-	public void teleport(float x, float y) {
+	public void teleport(float canvasX, float canvasY) {
+		float x = panX + canvasX - WIDTH/2;
+		float y = panY + canvasY - HEIGHT/2;
 		robot.position(x, y);
 	}
 	

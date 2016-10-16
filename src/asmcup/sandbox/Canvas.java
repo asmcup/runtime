@@ -9,7 +9,7 @@ public class Canvas extends JComponent {
 	
 	public Canvas(Sandbox sandbox) {
 		this.sandbox = sandbox;
-		setPreferredSize(new Dimension(800, 600));
+		setPreferredSize(new Dimension(Sandbox.WIDTH, Sandbox.HEIGHT));
 	}
 	
 	@Override
