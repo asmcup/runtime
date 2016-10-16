@@ -32,6 +32,10 @@ public class Menu extends JMenuBar {
 		sandbox.getMouse().startTeleport();
 	}
 	
+	public void pauseResume() {
+		sandbox.pauseResume();
+	}
+	
 	public void showCodeEditor() {
 		sandbox.getCodeEditor().setVisible(true);
 	}
@@ -56,6 +60,8 @@ public class Menu extends JMenuBar {
 		JMenu menu = new JMenu("Robot");
 		menu.add(item("Teleport", e -> teleport(),
 				KeyStroke.getKeyStroke(KeyEvent.VK_T, 0)));
+		menu.add(item("Pause/Resume", e -> pauseResume(),
+				KeyStroke.getKeyStroke(KeyEvent.VK_P, 0)));
 		menu.addSeparator();
 		menu.add(item("Center View", e -> centerView(),
 				KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0)));
