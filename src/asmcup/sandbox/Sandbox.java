@@ -130,9 +130,7 @@ public class Sandbox {
 			lastTick = System.currentTimeMillis();
 			
 			if (!paused) {
-				synchronized (world) {
-					tick();
-				}
+				tick();
 			}
 			
 			tickWait(lastTick);
@@ -140,9 +138,11 @@ public class Sandbox {
 	}
 	
 	protected void tick() {
-		world.tick();
-		debugger.updateDebugger();
-		redraw();
+		synchronized (world) {
+			world.tick();
+			debugger.updateDebugger();
+			redraw();
+		}
 	}
 	
 	protected void tickWait(long lastTick) {
@@ -156,6 +156,14 @@ public class Sandbox {
 	public void pauseResume()
 	{
 		paused = !paused;
+		redraw();
+	}
+	
+	public void singleTick()
+	{
+		if (paused) {
+			tick();
+		}
 	}
 	
 	public void reseed() {

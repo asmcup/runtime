@@ -31,9 +31,13 @@ public class Menu extends JMenuBar {
 	public void teleport() {
 		sandbox.getMouse().startTeleport();
 	}
-	
+
 	public void pauseResume() {
 		sandbox.pauseResume();
+	}
+	
+	public void singleTick() {
+		sandbox.singleTick();
 	}
 	
 	public void showCodeEditor() {
@@ -62,6 +66,8 @@ public class Menu extends JMenuBar {
 				KeyStroke.getKeyStroke(KeyEvent.VK_T, 0)));
 		menu.add(item("Pause/Resume", e -> pauseResume(),
 				KeyStroke.getKeyStroke(KeyEvent.VK_P, 0)));
+		menu.add(item("Single tick", e -> singleTick(),
+				KeyStroke.getKeyStroke(KeyEvent.VK_S, 0)));
 		menu.addSeparator();
 		menu.add(item("Center View", e -> centerView(),
 				KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0)));
