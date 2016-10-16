@@ -72,7 +72,7 @@ public class World {
 	}
 	
 	public Cell getCellXY(int x, int y) {
-		return getCell(x / (16 * 32), y / (16 * 32));
+		return getCell(x / CELL_SIZE, y / CELL_SIZE);
 	}
 	
 	public Cell getCellXY(float x, float y) {
@@ -80,14 +80,15 @@ public class World {
 	}
 	
 	public int getTile(int column, int row) {
-		int cellX = column / 16;
-		int cellY = row / 16;
+		int cellX = column / TILES_PER_CELL;
+		int cellY = row / TILES_PER_CELL;
 		Cell cell = getCell(cellX, cellY);
-		return cell.getTile(column - cellX * 16, row - cellY * 16);
+		return cell.getTile(column - cellX * TILES_PER_CELL,
+		                    row - cellY * TILES_PER_CELL);
 	}
 	
 	public int getTileXY(float x, float y) {
-		return getTile((int)(x / 32), (int)(y / 32));
+		return getTile((int)(x / TILE_SIZE), (int)(y / TILE_SIZE));
 	}
 	
 	public boolean isSolid(float x, float y) {
@@ -106,16 +107,16 @@ public class World {
 		float cos = (float)Math.cos(theta);
 		float sin = (float)Math.sin(theta);
 		
-		for (int i=0; i < 10; i++) {
-			float tx = x + (cos * i * 16);
-			float ty = y + (sin * i * 16);
+		for (int i = 0; i < RAY_STEPS; i++) {
+			float tx = x + (cos * i * RAY_INTERVAL);
+			float ty = y + (sin * i * RAY_INTERVAL);
 			
 			if (isSolid(tx, ty)) {
-				return i * 16;
+				return i * RAY_INTERVAL;
 			}
 		}
 		
-		return 10 * 16;
+		return RAY_STEPS * RAY_INTERVAL;
 	}
 	
 	public void tick() {
@@ -151,7 +152,12 @@ public class World {
 		return 0;
 	}
 	
-	public static final int SIZE_TILE = 32;
-	public static final int SIZE_CELL = 16;
-	public static final int SIZE = SIZE_TILE * SIZE_CELL * 0xFFFF;
+	public static final int RAY_INTERVAL = 16;
+	public static final int RAY_STEPS = 16;
+	
+	public static final int TILE_SIZE = 32;
+	public static final int TILES_PER_CELL = 16;
+	public static final int CELL_SIZE = TILES_PER_CELL * TILE_SIZE;
+	public static final int CELL_COUNT = 0xFFFF;
+	public static final int SIZE = TILE_SIZE * TILES_PER_CELL * CELL_COUNT;
 }

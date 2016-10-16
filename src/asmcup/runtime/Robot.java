@@ -138,12 +138,13 @@ public class Robot {
 		float tx = x + (float)Math.cos(facing) * s;
 		float ty = y + (float)Math.sin(facing) * s;
 		
-		if (!world.isSolid(tx, ty, 15)) {
+		int radius = World.TILE_SIZE/2 - 1;
+		if (!world.isSolid(tx, ty, radius)) {
 			x = tx;
 			y = ty;
-		} else if (!world.isSolid(tx, y, 15)) {
+		} else if (!world.isSolid(tx, y, radius)) {
 			x = tx;
-		} else if (!world.isSolid(x, ty, 15)) {
+		} else if (!world.isSolid(x, ty, radius)) {
 			y = ty;
 		}
 	}

@@ -61,9 +61,7 @@ public class Mouse extends MouseAdapter {
 	
 	public void finishTeleport(MouseEvent e) {
 		sandbox.getFrame().setCursor(Cursor.getDefaultCursor());
-		float x = sandbox.getPanX() + e.getX() - 400 - 16;
-		float y = sandbox.getPanY() + e.getY() - 300 - 16;
-		sandbox.teleport(x, y);
+		sandbox.teleport(e.getX(), e.getY());
 		teleport = false;
 	}
 }
