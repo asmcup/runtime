@@ -61,6 +61,9 @@ public class CodeEditor extends JFrame {
 		if (currentFile == null) {
 			currentFile = findFileOpen();
 		}
+		if (currentFile == null) {
+			return;
+		}
 		
 		try {
 			String text = Utils.readAsString(currentFile);
@@ -118,11 +121,11 @@ public class CodeEditor extends JFrame {
 	}
 	
 	public File findFileSave() {
-		return Utils.findFileSave(sandbox.getFrame(), "asm", "Source File");
+		return Utils.findFileSave(sandbox.getFrame(), "asm", "Source File (.asm)");
 	}
 	
 	public File findFileOpen() {
-		return Utils.findFileOpen(sandbox.getFrame(), "asm", "Source File");
+		return Utils.findFileOpen(sandbox.getFrame(), "asm", "Source File (.asm)");
 	}
 	
 	public void saveFile() {
@@ -159,34 +162,48 @@ public class CodeEditor extends JFrame {
 			addCompileMenu();
 		}
 		
-		protected AbstractAction item(String label, ActionListener f) {
-			return new AbstractAction(label) {
+		protected JMenuItem item(String label, ActionListener f,
+				KeyStroke shortcut) {
+			JMenuItem item = new JMenuItem();
+			item.setAction(new AbstractAction(label) {
 				public void actionPerformed(ActionEvent e) {
 					f.actionPerformed(e);
 				}
-			};
+			});
+			if (shortcut != null) {
+				item.setAccelerator(shortcut);
+			}
+			return item;
 		}
 		
 		protected void addFileMenu() {
 			JMenu menu = new JMenu("File");
-			menu.add(item("New Code", e -> closeFile()));
-			menu.add(item("Open Code...", e -> openFile(null)));
+			menu.add(item("New Code", e -> closeFile(),
+					KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK)));
+			menu.add(item("Open Code...", e -> openFile(null),
+					KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK)));
+			menu.add(item("Reload Code", e -> openFile(),
+					KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.CTRL_MASK)));
 			menu.addSeparator();
-			menu.add(item("Save Code", e -> saveFile()));
-			menu.add(item("Save Code As...", e -> saveFileAs()));
-			menu.add(item("Save ROM", e -> saveROM()));
+			menu.add(item("Save Code", e -> saveFile(),
+					KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK)));
+			menu.add(item("Save Code As...", e -> saveFileAs(),
+					KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.ALT_MASK | ActionEvent.CTRL_MASK)));
+			menu.add(item("Save ROM", e -> saveROM(), null));
 			menu.addSeparator();
-			menu.add(item("Close Editor", (e) -> { closeEditor(); }));
+			menu.add(item("Close Editor", (e) -> { closeEditor(); },
+					KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK)));
 			add(menu);
 		}
 		
 		protected void addCompileMenu() {
 			JMenu menu = new JMenu("Tools");
-			menu.add(item("Compile & Flash", e -> compileAndFlash()));
-			menu.add(item("Compile", e -> compile()));
-			menu.add(item("Flash", e -> flash()));
+			menu.add(item("Compile & Flash", e -> compileAndFlash(),
+					KeyStroke.getKeyStroke(KeyEvent.VK_E, ActionEvent.CTRL_MASK)));
+			menu.add(item("Compile", e -> compile(), null));
+			menu.add(item("Flash", e -> flash(), null));
 			menu.addSeparator();
-			menu.add(item("Check Syntax", e -> { checkSyntax(); }));
+			menu.add(item("Check Syntax", e -> checkSyntax(), null));
 			add(menu);
 		}
 	}
