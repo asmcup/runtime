@@ -20,7 +20,7 @@ public class Sandbox {
 	protected Debugger debugger;
 	
 	protected Image backBuffer;
-	protected World world;
+	protected SandboxWorld world;
 	protected Robot robot;
 	protected int panX, panY;
 	protected boolean paused;
@@ -30,7 +30,7 @@ public class Sandbox {
 	public Sandbox() throws IOException {
 		panX = (int)(Math.random() * World.SIZE);
 		panY = (int)(Math.random() * World.SIZE);
-		world = new World();
+		world = new SandboxWorld();
 		robot = new Robot(1);
 		robot.position(panX, panY);
 		world.addRobot(robot);
@@ -167,7 +167,7 @@ public class Sandbox {
 	}
 	
 	public void reseed() {
-		world = new World();
+		world = new SandboxWorld();
 		world.addRobot(robot);
 		redraw();
 	}
@@ -208,10 +208,32 @@ public class Sandbox {
 			drawRobot(g, robot);
 		}
 		
+		g.setColor(Color.BLUE);
+		
+		for (SandboxWorld.Ray ray : world.getRays()) {
+			drawRay(g, ray);
+		}
+		
 		if (paused) {
 			g.setColor(Color.WHITE);
 			g.drawString("PAUSED", 25, 50);
 		}
+	}
+	
+	protected void drawRay(Graphics g, SandboxWorld.Ray ray) {
+		int x1 = screenX(ray.x);
+		int y1 = screenY(ray.y);
+		int x2 = screenX(ray.x + (float)Math.cos(ray.theta) * ray.d);
+		int y2 = screenY(ray.y + (float)Math.sin(ray.theta) * ray.d);
+		g.drawLine(x1, y1, x2, y2);
+	}
+	
+	public int screenX(float x) {
+		return (int)(WIDTH/2 + x - panX);
+	}
+	
+	public int screenY(float y) {
+		return (int)(HEIGHT/2 + y - panY);
 	}
 	
 	protected void drawCell(Graphics g, Cell cell) {
