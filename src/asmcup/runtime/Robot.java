@@ -78,6 +78,14 @@ public class Robot {
 		return steer;
 	}
 	
+	public int getBattery() {
+		return battery;
+	}
+	
+	public int getOverclock() {
+		return overclock;
+	}
+	
 	public void setMotor(float f) {
 		motor = clampSafe(f, -1, 1);
 	}
@@ -105,7 +113,7 @@ public class Robot {
 	}
 	
 	protected void tickSoftware(World world) {
-		int cycles = 1 + Math.min(100, overclock);
+		int cycles = 1 + overclock;
 		
 		while (cycles > 0) {
 			vm.tick();
@@ -169,7 +177,7 @@ public class Robot {
 			vm.pushFloat(world.ray(x, y, facing));
 			break;
 		case IO_OVERCLOCK:
-			overclock = vm.pop8();
+			overclock = Math.min(vm.pop8(), OVERCLOCK_MAX);
 			break;
 		case IO_LAZER:
 			lazer = popFloatSafe(0.0f, 1.0f);
@@ -225,4 +233,5 @@ public class Robot {
 	public static final float SPEED_MAX = 8;
 	public static final float STEER_RATE = (float)(Math.PI * 0.1);
 	public static final int BATTERY_MAX = 60 * 60 * 24;
+	public static final int OVERCLOCK_MAX = 100;
 }
