@@ -23,6 +23,7 @@ public class Sandbox {
 	protected World world;
 	protected Robot robot;
 	protected int panX, panY;
+	protected boolean paused;
 	protected Image[] ground, wall, obstacles, hazards, coins;
 	protected Image bot;
 	
@@ -33,6 +34,7 @@ public class Sandbox {
 		robot = new Robot(1);
 		robot.position(panX, panY);
 		world.addRobot(robot);
+		paused = false;
 		
 		mouse = new Mouse(this);
 		menu = new Menu(this);
@@ -127,7 +129,7 @@ public class Sandbox {
 		while (frame.isVisible()) {
 			lastTick = System.currentTimeMillis();
 			
-			synchronized (world) {
+			if (!paused) {
 				tick();
 			}
 			
@@ -136,9 +138,11 @@ public class Sandbox {
 	}
 	
 	protected void tick() {
-		world.tick();
-		debugger.updateDebugger();
-		redraw();
+		synchronized (world) {
+			world.tick();
+			debugger.updateDebugger();
+			redraw();
+		}
 	}
 	
 	protected void tickWait(long lastTick) {
@@ -147,6 +151,19 @@ public class Sandbox {
 		int msPerFrame = 1000 / FRAMERATE;
 		int wait = (int)(msPerFrame - span);
 		sleep(wait);
+	}
+	
+	public void pauseResume()
+	{
+		paused = !paused;
+		redraw();
+	}
+	
+	public void singleTick()
+	{
+		if (paused) {
+			tick();
+		}
 	}
 	
 	public void reseed() {
@@ -189,6 +206,11 @@ public class Sandbox {
 		
 		for (Robot robot : world.getRobots()) {
 			drawRobot(g, robot);
+		}
+		
+		if (paused) {
+			g.setColor(Color.WHITE);
+			g.drawString("PAUSED", 25, 50);
 		}
 	}
 	
