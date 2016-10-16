@@ -100,6 +100,14 @@ public class Robot {
 		this.y = y;
 	}
 	
+	public void kill() {
+		battery = 0;
+	}
+	
+	public void damage(int dmg) {
+		battery -= dmg;
+	}
+	
 	public boolean isDead() {
 		return battery <= 0;
 	}

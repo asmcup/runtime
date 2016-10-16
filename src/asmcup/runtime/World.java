@@ -103,6 +103,16 @@ public class World {
 		return isSolid(x - r, y - r) || isSolid(x + r, y + r) || isSolid(x - r, y + r) || isSolid(x + r, y - r);
 	}
 	
+	public int getHazard(float x, float y) {
+		int tile = getTileXY(x, y);
+		
+		if ((tile & 0b11) != Cell.TILE_HAZARD) {
+			return -1;
+		}
+		
+		return tile >> 2;
+	}
+	
 	public float ray(float x, float y, float theta) {
 		float cos = (float)Math.cos(theta);
 		float sin = (float)Math.sin(theta);
@@ -122,9 +132,27 @@ public class World {
 	public void tick() {
 		for (Robot robot : robots) {
 			robot.tick(this);
+			tickHazards(robot);
 		}
 		
 		frame++;
+	}
+	
+	protected void tickHazards(Robot robot) {
+		switch (getHazard(robot.getX(), robot.getY())) {
+		case 0:
+			robot.damage(Robot.BATTERY_MAX / 500);
+			break;
+		case 1:
+			robot.damage(Robot.BATTERY_MAX / 250);
+			break;
+		case 2:
+			robot.damage(Robot.BATTERY_MAX / 100);
+			break;
+		case 3:
+			robot.kill();
+			break;
+		}
 	}
 	
 	public void update(DataInputStream stream) throws IOException {
