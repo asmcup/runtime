@@ -4,6 +4,8 @@
 `asmcup` is a game where players create small and limited programs
 to power robots in a virtual environment to compete for prizes.
 
+It is currently in active alpha development.
+
 ## Screenshot
 
 ![](http://i.imgur.com/yEyYupp.png)
@@ -15,6 +17,8 @@ The quickest way to get started is to download
 [asmcup.jar](https://github.com/asmcup/runtime/releases)
 and run it. This will launch the Sandbox which allows you to write, compile,
 and debug your robot. **You need to have Java installed to run the Jar file.**
+
+You can find sample bots to try out over [here](https://github.com/asmcup/bots).
 
 asmcup.jar also has command line tools:
 
@@ -39,7 +43,7 @@ operations on 8-bit integers and 32-bit floats.
 
 ## Memory Size
 
-All programs are 256-bytes in size and are mapped into an 8-bit address
+All programs are 256 bytes in size and are mapped into an 8-bit address
 space. While there are instructions to operate 32-bit float data the address
 bus itself is 8-bits.
 
@@ -48,15 +52,20 @@ bus itself is 8-bits.
 The stack is located in memory at `0xFF` and grows downwards as
 you push data onto it. Since the memory size is limited to 256 bytes
 this means your stack can overflow into your memory if not careful.
+Note that there are no registers, although you can of course reserve
+a part of the stack for this purpose.
 
 ## Battery
 
 Robots are powered via their internal battery used to power each instruction. If
 the battery reaches zero they will die. Robots can control their CPU clock speed
 from 1 hz (1 instruction per second) to 1 khz (1024 instructions per second).
-
+The internal battery currently holds enough charge for executing 86400 instructions.
 
 ## Instructions
+
+Every instruction consists of an opcode (2 least significant bytes) and a data part
+(6 remaining bytes). It may be followed by a data block to hold e.g. a float constant.
 
 There are four basic types of operations:
 
@@ -65,8 +74,20 @@ There are four basic types of operations:
 * `POP` saves data from the stack
 * `BRANCH` jumps if the top 8-bits of the stack are non-zero
 
+## Values and Addressing
 
-## FUNC
+Literal values are denoted by a `#` in front of them. Float values can only be literals,
+so the `#` can be/must be (*not yet decided*) omitted for float literals.
+Any values that are not literals are taken to be memory addresses.
+Values preceded by a `$` are interpreted as hexadecimal, otherwise they
+will be treated as decimals.
+
+For example, `pushf #1.0` and `pushf 1.0` will push the float value 1.0 to the stack.
+`pushf 1` would however push the content of the float (4 bytes of memory starting at)
+address 1 to the stack, as would `pushf $01`. Another legal example would be
+`push8 #$ff`, which pushes the literal value 255 to the stack.
+
+## FUNC opcode
 
 There are 63 total functions. Note that each of these instructions
 are the same size (1 byte) but that they can modify the stack differently.
@@ -141,38 +162,70 @@ Value | Command   | In | Out | Notes
 63    | io        | ?  | ?   | Input / Output (IO)
 
 
-## PUSH
+## PUSH opcode
 
 Here are the basic ways to push data onto the stack:
 
-Variant       | Size | Description
+Statement     | Size | Description
 --------------|------|--------------------------
-push8 $f0     | 1-2  | Push Memory Byte
-push8 #42     | 2    | Push Immediate Byte
-pushf 0.0     | 5    | Push Immediate Float
+pushf 0.1     | 5    | Push immediate float to stack
+push8 #42     | 2    | Push immediate byte to stack
+push8 $f0     | 2    | Push value at memory address 0xf0 to stack
+push8r $f0    | 1    | Push value at memory address 0xf0. Only legal if executed within 31 bytes of the target address
 
-Note that push8 is 1 byte when pushing a value from memory within 63 bytes of the
-instruction doing the pushing.
+`push8r` stores the relative location of the target address in its data bytes,
+thereby saving ROM space but being restricted to nearby addresses.
 
-## POP
+Note that the compiler will transform pushes of common constants into function calls
+as appropriate. For example, `pushf 0.0` would be translated into function call c_0f
+instead of the push, thereby only using 1 byte of memory instead of 5.
 
-Popping data from the stack can be done using many variants:
+## POP opcode
 
-Variant       | Size | Description
+Popping data from the stack can be done using multiple variants:
+
+Statement     | Size | Description
 --------------|------|--------------------------
-pop8 $f0      | 1-2  | Pop Byte
-popf $f0      | 2    | Pop Float
+popf $f0      | 2    | Pop float from stack to memory address 0xf0-0xf3
+pop8 $f0      | 2    | Pop byte from stack to memory address 0xf0
+pop8r $f0     | 1    | Pop byte from stack to memory address 0xf0. Only legal if executed within 31 bytes of the target address
 
-Note that pop8 is 1-byte when storing a value within 63 bytes of the
-instruction doing the popping.
+`pop8r` stores the relative location of the target address in its data bytes,
+thereby saving ROM space but being restricted to nearby addresses.
 
-## BRANCH
+## BRANCH opcode
 
-Variant       | Size | Description
+Statement     | Size | Description
 --------------|------|--------------------------
-jnz $f0       | 1-2  | Jump Not Zero
-jnz [$f0]     | 2    | Jump Not Zero Indirect
 jmp $f0       | 2    | Jump Always
+jnz $f0       | 2    | Jump Not Zero
+jnz [$f0]     | 2    | Jump Not Zero Indirect
+jnzr $f0      | 1    | Jump Not Zero Relative
+
+`jnzr` stores the relative location of the target address in its data bytes,
+thereby saving ROM space but being restricted to nearby addresses.
+The `jne` and `jner` commands are equivalent to `jnz` and `jnzr`, respectively.
+
+
+## Further compiler information
+
+Line contents after a semicolon (;) are ignored by the compiler.
+
+You may define labels (e.g. `start:`) and refer to them using their name (e.g.
+`jmp start`), which will be replaced by the memory location in the compiled code
+that they were defined at. A statement (including more labels) may follow on
+the same line.
+
+The compiler also accepts statements of these forms:
+
+Statement     | Size | Description
+--------------|------|--------------------------
+db8 #$f0      | 1    | Data byte (replaced by 0xf0 in ROM)
+db #$f0       | 1    | Same as db8
+dbf 0.1       | 4    | Data bytes from float
+
+A common idiom is using `myVar: db8 #0` to create named variables.
+This allows using statements like `push8 myVar`.
 
 ## IO
 
@@ -186,11 +239,14 @@ and executes a command:
  1     | IO_MOTOR         | Control Motor
  2     | IO_STEER         | Control Steering
  3     | IO_OVERCLOCK     | CPU Clock Control
- 4     | IO_LASER         | Laser Attack
+ 4     | IO_LASER         | Laser Attack (not yet implemented)
  5     | IO_BATTERY       | Read Battery
- 6     | IO_MARK          | Mark ("pee")
- 7     | IO_MARK_READ     | Mark Read ("smell")
+ 6     | IO_MARK          | Mark ("pee") (not yet implemented)
+ 7     | IO_MARK_READ     | Mark Read ("smell") (not yet implemented)
  8     | IO_ACCELEROMETER | Accelerometer
+ 9     | IO_RADIO         | (Planned) Set radio strength
+ 10    | IO_SEND          | (Planned) Emit data via radio
+ 10    | IO_RECV          | (Planned) Receive data via radio
 
 ### Beam Sensor
 
@@ -200,11 +256,13 @@ Casts a beam at the current looking direction.
 push8 #IO_SENSOR
 io
 popf distance
- ```
+```
 
 After `io` the stack will contain a float of how far the beam
 traveled until it hit an obstacle. If no obstacle was hit the value on the
-stack will be `160`
+stack will be `256.0`.
+A planned change to the beam sensor will allow it to return whether an and
+which item was hit.
 
 ### Motor Control
 
@@ -254,6 +312,12 @@ The maximum CPU speed is 100, setting any number higher is the same as setting
 to 100. The game operates at 10 frames per second meaning a fully overclocked
 CPU will execute 1000 instructions per second, 100 per frame.
 
+### Laser
+
+*Not yet implemented*
+
+Will deal battery damage to other bots.
+
 ### Accelerometer
 
 ```
@@ -262,3 +326,38 @@ io
 popf relY
 popf relX
 ```
+
+---
+
+## World
+
+The world consists of tiles of size 32x32. Aside from normal ground tiles,
+there are tiles with items, hazards, obstacles and walls/rooms.
+
+It is planned that multiple robots will be able to compete in the same world,
+including the ability to fight each other.
+
+### Hazards
+
+There are currently 4 levels of hazards:
+
+- Mud pit (low battery damage)
+- Water pit (medium battery damage)
+- Fire pit (severe battery damage)
+- Deep pit  (instant death)
+
+### Obstacles
+
+There are currently no functional differences between the 4 types of obstacles. Only their frequency and distribution vary.
+
+### Walls and rooms
+
+Walls form rectangular rooms with one or more entrances. Gold can (currently) only be found in rooms
+
+### Items
+	
+Item pickup is **WIP**.
+
+**Gold:** Points!
+
+**Battery:** Recharges the internal battery. Vital to keep a bot running.
