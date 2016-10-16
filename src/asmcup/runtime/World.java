@@ -160,8 +160,8 @@ public class World {
 		return 0;
 	}
 	
-	public static final int RAY_INTERVAL = 16;
-	public static final int RAY_STEPS = 16;
+	public static final int RAY_INTERVAL = 4;
+	public static final int RAY_STEPS = 64;
 	
 	public static final int TILE_SIZE = 32;
 	public static final int TILES_PER_CELL = 16;
