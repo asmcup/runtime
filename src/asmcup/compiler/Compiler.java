@@ -132,7 +132,7 @@ public class Compiler implements VMConsts {
 			break;
 		case "jne":
 		case "jnz":
-			jnzr(args);
+			jnz(args);
 			break;
 		case "jnzr":
 		case "jner":
