@@ -108,6 +108,7 @@ public class World {
 	public void tick() {
 		for (Robot robot : robots) {
 			robot.tick(this);
+			tickItems(robot);
 			tickHazards(robot);
 		}
 		
@@ -129,6 +130,18 @@ public class World {
 			robot.kill();
 			break;
 		}
+	}
+	
+	protected void tickItems(Robot robot) {
+		Cell cell = getCellXY(robot.getX(), robot.getY());
+		Item item = cell.getItem(robot);
+		
+		if (item == null) {
+			return;
+		}
+		
+		item.collect(robot);
+		cell.removeItem(item);
 	}
 
 	public void mark(Robot robot, int offset, int value) {

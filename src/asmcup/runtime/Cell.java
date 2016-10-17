@@ -205,6 +205,20 @@ public class Cell {
 		return tiles[clampTile(col) + (clampTile(row) * World.TILES_PER_CELL)];
 	}
 	
+	public Item getItem(Robot robot) {
+		for (Item item : items) {
+			if (item.withinDistance(robot)) {
+				return item;
+			}
+		}
+		
+		return null;
+	}
+	
+	public void removeItem(Item item) {
+		items.remove(item);
+	}
+	
 	public static int clampTile(int i) {
 		return Math.max(0, Math.min(World.TILES_PER_CELL - 1, i));
 	}

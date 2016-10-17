@@ -79,11 +79,19 @@ public class Robot {
 		battery -= dmg;
 	}
 	
+	public void addBattery(int charge) {
+		if (charge < 0) {
+			throw new IllegalArgumentException("Recharge amount cannot be negative");
+		}
+		
+		battery += charge;
+	}
+	
 	public boolean isDead() {
 		return battery <= 0;
 	}
 	
-	public int getGoldCollected() {
+	public int getGold() {
 		return gold;
 	}
 	

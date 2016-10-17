@@ -14,6 +14,7 @@ public class Debugger extends JFrame {
 	protected JScrollPane scrollPane;
 	protected JSlider motorSlider, steerSlider;
 	protected JProgressBar batteryIndicator, overclockIndicator;
+	protected JLabel goldLabel;
 	
 	public Debugger(Sandbox sandbox) {
 		this.sandbox = sandbox;
@@ -26,6 +27,7 @@ public class Debugger extends JFrame {
 		batteryIndicator.setStringPainted(true);
 		overclockIndicator = new JProgressBar(0, 255);
 		overclockIndicator.setStringPainted(true);
+		goldLabel = new JLabel("0");
 		
 		ChangeListener listener = (e) -> { updateControls(); };
 		motorSlider.addChangeListener(listener);
@@ -38,6 +40,7 @@ public class Debugger extends JFrame {
 		bottomPane.add(hitem("Steer:", steerSlider));
 		bottomPane.add(hitem("Battery:", batteryIndicator));
 		bottomPane.add(hitem("Clock:", overclockIndicator));
+		bottomPane.add(hitem("Gold:", goldLabel));
 		
 		panel.add(scrollPane, BorderLayout.CENTER);
 		panel.add(bottomPane, BorderLayout.SOUTH);
@@ -55,6 +58,7 @@ public class Debugger extends JFrame {
 		batteryIndicator.setValue(robot.getBattery());
 		overclockIndicator.setValue(robot.getOverclock());
 		overclockIndicator.setString(String.valueOf(robot.getOverclock()));
+		goldLabel.setText(String.valueOf(robot.getGold()));
 		repaint();
 	}
 	

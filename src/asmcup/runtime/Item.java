@@ -18,8 +18,24 @@ public abstract class Item {
 		this.y = y;
 	}
 	
+	public boolean withinDistance(Robot robot) {
+		return withinDistance(robot.getX(), robot.getY());
+	}
+	
+	public boolean withinDistance(float tx, float ty) {
+		float dx = tx - (x + 16);
+		float dy = ty - (y + 16);
+		return Math.sqrt(dx * dx + dy * dy) <= 20;
+	}
+	
+	public abstract void collect(Robot robot);
+	
 	public static class Battery extends Item {
+		protected int value;
 		
+		public void collect(Robot robot) {
+			robot.addBattery(value);
+		}
 	}
 	
 	public static class Gold extends Item {
@@ -40,6 +56,10 @@ public abstract class Item {
 		
 		public int getVariant() {
 			return (int)((value / 1000.0) * 4);
+		}
+		
+		public void collect(Robot robot) {
+			robot.addGold(value);
 		}
 	}
 }
