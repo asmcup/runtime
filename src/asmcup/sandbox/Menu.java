@@ -83,11 +83,6 @@ public class Menu extends JMenuBar {
 		JMenu menu = new JMenu("World");
 		menu.add(item("Generate New", e -> { reseed(); }, null));
 		menu.addSeparator();
-		menu.add(item("Load Snapshot...", e -> {  }, null));
-		menu.addSeparator();
-		menu.add(item("Save Snapshot", e -> {  }, null));
-		menu.add(item("Save Snapshot As...", e -> {  }, null));
-		menu.addSeparator();
 		menu.add(item("Show Info", e -> { showWorldInfo(); }, null));
 		menu.addSeparator();
 		menu.add(item("Quit", e -> { sandbox.quit(); },
