@@ -1,6 +1,5 @@
 package asmcup.runtime;
 
-import java.io.*;
 import java.util.*;
 
 public class World {
@@ -18,29 +17,6 @@ public class World {
 		this.cells = new HashMap<>();
 		this.seed = seed;
 		this.frame = 0;
-	}
-	
-	public World(DataInputStream stream) throws IOException {
-		this.robots = new ArrayList<>();
-		this.cells = new HashMap<>();
-		this.seed = stream.readInt();
-		this.frame = stream.readInt();
-		
-		int count = stream.readInt();
-		
-		for (int i=0; i < count; i++) {
-			robots.add(new Robot(stream));
-		}
-	}
-	
-	public void save(DataOutputStream stream) throws IOException {
-		stream.writeInt(seed);
-		stream.writeInt(frame);
-		stream.writeInt(robots.size());
-		
-		for (Robot robot : robots) {
-			robot.save(stream);
-		}
 	}
 	
 	public Iterable<Robot> getRobots() {
@@ -154,37 +130,22 @@ public class World {
 			break;
 		}
 	}
-	
-	public void update(DataInputStream stream) throws IOException {
-		stream.mark(4);
-		int n = stream.readInt();
-		
-		if (n != frame) {
-			stream.reset();
-			return;
-		}
-		
-		int count = stream.readInt();
-		
-		for (int i=0; i < count; i++) {
-			addRobot(new Robot(stream));
-		}
-	}
 
 	public void mark(Robot robot, int offset, int value) {
-		
+		// TODO read data from tile
 	}
 
 	public int markRead(Robot robot, int offset) {
-		// TODO Auto-generated method stub
+		// TODO write data to tile
 		return 0;
 	}
 	
 	public void send(Robot robot, float frequency, int data) {
-		
+		// TODO send data on radio
 	}
 	
 	public int recv(Robot robot, float frequency) {
+		// TODO read data on radio
 		return 0;
 	}
 	

@@ -1,9 +1,5 @@
 package asmcup.runtime;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-
 import asmcup.vm.VM;
 
 public class Robot {
@@ -18,41 +14,12 @@ public class Robot {
 	protected float lazer;
 	protected float lastX, lastY;
 	protected float frequency;
+	protected int gold;
 	
 	public Robot(int id) {
 		this.id = id;
 		this.vm = new VM();
 		this.battery = BATTERY_MAX;
-	}
-	
-	public Robot(DataInputStream stream) throws IOException {
-		this.id = stream.readInt();
-		this.x = stream.readFloat();
-		this.y = stream.readFloat();
-		this.facing = stream.readFloat();
-		this.battery = stream.readInt();
-		this.overclock = stream.readUnsignedByte() & 0xFF;
-		this.motor = stream.readFloat();
-		this.steer = stream.readFloat();
-		this.lazer = stream.readFloat();
-		this.lastX = stream.readFloat();
-		this.lastY = stream.readFloat();
-		this.vm = new VM(stream);
-	}
-	
-	public void save(DataOutputStream stream) throws IOException {
-		stream.writeInt(id);
-		stream.writeFloat(x);
-		stream.writeFloat(y);
-		stream.writeFloat(facing);
-		stream.writeInt(battery);
-		stream.writeByte(overclock);
-		stream.writeFloat(motor);
-		stream.writeFloat(steer);
-		stream.writeFloat(lazer);
-		stream.writeFloat(lastX);
-		stream.writeFloat(lastY);
-		vm.save(stream);
 	}
 	
 	public VM getVM() {
@@ -105,11 +72,28 @@ public class Robot {
 	}
 	
 	public void damage(int dmg) {
+		if (dmg < 0) {
+			throw new IllegalArgumentException("Damage cannot be negative");
+		}
+		
 		battery -= dmg;
 	}
 	
 	public boolean isDead() {
 		return battery <= 0;
+	}
+	
+	public int getGoldCollected() {
+		return gold;
+	}
+	
+	public void addGold(int g) {
+		if (g < 0) {
+			throw
+			new IllegalArgumentException("Gold amount cannot be negetive");
+		}
+		
+		gold += g;
 	}
 	
 	public void flash(byte[] ram) {
