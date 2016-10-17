@@ -155,6 +155,6 @@ public class World {
 	public static final int TILE_SIZE = 32;
 	public static final int TILES_PER_CELL = 16;
 	public static final int CELL_SIZE = TILES_PER_CELL * TILE_SIZE;
-	public static final int CELL_COUNT = 0xFFFF;
+	public static final int CELL_COUNT = 0xFF;
 	public static final int SIZE = TILE_SIZE * TILES_PER_CELL * CELL_COUNT;
 }
