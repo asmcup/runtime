@@ -12,6 +12,7 @@ public class Menu extends JMenuBar {
 		
 		addWorldMenu();
 		addRobotMenu();
+		addViewMenu();
 	}
 	
 	protected JMenuItem item(String label, ActionListener f,
@@ -22,12 +23,22 @@ public class Menu extends JMenuBar {
 				f.actionPerformed(e);
 			}
 		});
+		
 		if (shortcut != null) {
 			item.setAccelerator(shortcut);
 		}
+		
 		return item;
 	}
-		
+	
+	protected JMenuItem item(String label, ActionListener f) {
+		return item(label, f, null);
+	}
+	
+	protected JMenuItem item(String label, ActionListener f, int key) {
+		return item(label, f, KeyStroke.getKeyStroke(key, 0));
+	}
+	
 	public void teleport() {
 		sandbox.getMouse().startTeleport();
 	}
@@ -60,33 +71,36 @@ public class Menu extends JMenuBar {
 		sandbox.centerView();
 	}
 	
+	public void toggleGrid() {
+		sandbox.toggleGrid();
+	}
+	
 	protected void addRobotMenu() {
 		JMenu menu = new JMenu("Robot");
-		menu.add(item("Teleport", e -> teleport(),
-				KeyStroke.getKeyStroke(KeyEvent.VK_T, 0)));
-		menu.add(item("Pause/Resume", e -> pauseResume(),
-				KeyStroke.getKeyStroke(KeyEvent.VK_P, 0)));
-		menu.add(item("Single tick", e -> singleTick(),
-				KeyStroke.getKeyStroke(KeyEvent.VK_S, 0)));
+		menu.add(item("Teleport", e -> teleport(), KeyEvent.VK_T));
+		menu.add(item("Pause/Resume", e -> pauseResume(), KeyEvent.VK_P));
+		menu.add(item("Single tick", e -> singleTick(), KeyEvent.VK_S));
 		menu.addSeparator();
-		menu.add(item("Center View", e -> centerView(),
-				KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0)));
+		menu.add(item("Center View", e -> centerView(), KeyEvent.VK_SPACE));
 		menu.addSeparator();
-		menu.add(item("Show Code Editor", e -> showCodeEditor(),
-				KeyStroke.getKeyStroke(KeyEvent.VK_E, 0)));
-		menu.add(item("Show Debugger", e -> showDebugger(),
-				KeyStroke.getKeyStroke(KeyEvent.VK_D, 0)));
+		menu.add(item("Show Code Editor", e -> showCodeEditor(), KeyEvent.VK_E));
+		menu.add(item("Show Debugger", e -> showDebugger(), KeyEvent.VK_D));
 		add(menu);
 	}
 	
 	protected void addWorldMenu() {
 		JMenu menu = new JMenu("World");
-		menu.add(item("Generate New", e -> { reseed(); }, null));
+		menu.add(item("Generate New", e -> reseed()));
 		menu.addSeparator();
-		menu.add(item("Show Info", e -> { showWorldInfo(); }, null));
+		menu.add(item("Show Info", e -> showWorldInfo()));
 		menu.addSeparator();
-		menu.add(item("Quit", e -> { sandbox.quit(); },
-				KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0)));
+		menu.add(item("Quit", e -> sandbox.quit(), KeyEvent.VK_ESCAPE));
+		add(menu);
+	}
+	
+	protected void addViewMenu() {
+		JMenu menu = new JMenu("View");
+		menu.add(item("Toggle Grid", e-> toggleGrid(), KeyEvent.VK_G));
 		add(menu);
 	}
 }

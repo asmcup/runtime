@@ -26,6 +26,7 @@ public class Sandbox {
 	protected boolean paused;
 	protected Image[] ground, wall, obstacles, hazards, coins;
 	protected Image bot;
+	protected boolean showGrid;
 	
 	public Sandbox() throws IOException {
 		panX = (int)(Math.random() * World.SIZE);
@@ -249,19 +250,21 @@ public class Sandbox {
 			}
 		}
 		
-		g.setColor(Color.WHITE);
-		int x = WIDTH/2 + left * World.TILE_SIZE - panX;
-		int y = HEIGHT/2 + top * World.TILE_SIZE - panY;
-		g.drawRect(x, y, World.CELL_SIZE, World.CELL_SIZE);
-		
-		String msg = String.format("%d, %d", cell.getX(), cell.getY());
-		g.drawString(msg, x + 100, y + 100);
-		
-		msg = String.format("%x", cell.getKey());
-		g.drawString(msg, x + 100, y + 150);
-		
 		for (Item item : cell.getItems()) {
 			drawItem(g, item);
+		}
+		
+		if (showGrid) {
+			g.setColor(Color.WHITE);
+			int x = WIDTH/2 + left * World.TILE_SIZE - panX;
+			int y = HEIGHT/2 + top * World.TILE_SIZE - panY;
+			g.drawRect(x, y, World.CELL_SIZE, World.CELL_SIZE);
+			
+			String msg = String.format("%d, %d", cell.getX(), cell.getY());
+			g.drawString(msg, x + 100, y + 100);
+			
+			msg = String.format("%x", cell.getKey());
+			g.drawString(msg, x + 100, y + 150);
 		}
 	}
 	
@@ -372,6 +375,10 @@ public class Sandbox {
 	
 	public void quit() {
 		System.exit(0);
+	}
+	
+	public void toggleGrid() {
+		showGrid = !showGrid;
 	}
 
 	public static final int WIDTH = 800;
