@@ -81,23 +81,28 @@ public class Cell {
 		
 		for (int i=0; i < exits; i++) {
 			int variant = TILE_GROUND | (random.nextInt(4) << 2);
+			int col, row;
 			
 			switch (random.nextInt(4)) {
 			case 0:
-				setTile(wpad + 1 + random.nextInt(width - 2), hpad, variant);
+				col = wpad + 1 + random.nextInt(width - 2);
+				row = hpad;
 				break;
 			case 1:
-				setTile(wpad, hpad + 1 + random.nextInt(height - 2), variant);
+				col = wpad;
+				row = hpad + 1 + random.nextInt(height - 2);
 				break;
 			case 2:
-				setTile(wpad + 1 + random.nextInt(width - 2),
-						World.TILES_PER_CELL - 1 - hpad, variant);
+				col = wpad + 1 + random.nextInt(width - 2);
+				row = World.TILES_PER_CELL - 1 - hpad;
 				break;
-			case 3:
-				setTile(World.TILES_PER_CELL - 1 - wpad,
-						hpad + 1 + random.nextInt(height - 2), variant);
+			default:
+				col = World.TILES_PER_CELL - 1 - wpad;
+				row = hpad + 1 + random.nextInt(height - 2);
 				break;
 			}
+			
+			setTile(col, row, variant);
 		}
 		
 		int count = random.nextInt(10);
