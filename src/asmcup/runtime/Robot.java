@@ -66,6 +66,14 @@ public class Robot {
 		steer = clampSafe(f, -1, 1);
 	}
 	
+	public void setLazer(float f) {
+		lazer = clampSafe(f, 0, 1.0f);
+	}
+	
+	public void setOverclock(int v) {
+		overclock = Math.min(100, Math.max(0, v));
+	}
+	
 	public void position(float x, float y) {
 		this.x = x;
 		this.y = y;
@@ -129,18 +137,26 @@ public class Robot {
 	}
 	
 	protected void tickHardware(World world) {
+		tickSteer(world);
+		tickMotor(world);
+		tickLazer(world);
+	}
+	
+	protected void tickSteer(World world) {
 		if (Math.abs(steer) <= 0.01f) {
 			steer = 0.0f;
 		}
 		
 		facing += steer * STEER_RATE;
+	}
+	
+	protected void tickMotor(World world) {
+		float s;
 		
 		if (Math.abs(motor) <= 0.01f) {
 			motor = 0.0f;
 			return;
 		}
-		
-		float s;
 		
 		if (motor < 0) {
 			s = motor * 0.5f * SPEED_MAX;
@@ -160,6 +176,10 @@ public class Robot {
 		} else if (!world.isSolid(x, ty, radius)) {
 			y = ty;
 		}
+	}
+	
+	protected void tickLazer(World world) {
+		
 	}
 	
 	protected void handleIO(World world) {
@@ -182,7 +202,7 @@ public class Robot {
 			vm.pushFloat(world.ray(x, y, facing));
 			break;
 		case IO_OVERCLOCK:
-			overclock = Math.min(vm.pop8(), OVERCLOCK_MAX);
+			setOverclock(vm.pop8());
 			break;
 		case IO_LAZER:
 			lazer = popFloatSafe(0.0f, 1.0f);
