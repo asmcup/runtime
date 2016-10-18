@@ -318,6 +318,13 @@ public class Sandbox {
 		
 		g.rotate(robot.getFacing(), sx, sy);
 		g.drawImage(bot, sx - World.TILE_HALF, sy - World.TILE_HALF, null);
+		
+		if (robot.getLazer() > 0) {
+			int w = (int)(robot.getLazer() * Robot.LAZER_RANGE);
+			g.setColor(Color.RED);
+			g.drawLine(sx, sy, sx + w, sy);
+		}
+		
 		g.setTransform(t);
 		
 		if (showGrid) {

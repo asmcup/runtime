@@ -54,6 +54,10 @@ public class Robot {
 		return overclock;
 	}
 	
+	public float getLazer() {
+		return lazer;
+	}
+	
 	public void setMotor(float f) {
 		motor = clampSafe(f, -1, 1);
 	}
@@ -248,4 +252,5 @@ public class Robot {
 	public static final int BATTERY_MAX = 60 * 60 * 24;
 	public static final int OVERCLOCK_MAX = 100;
 	public static final float FREQUENCY_MAX = 1000 * 10;
+	public static final int LAZER_RANGE = 100;
 }
