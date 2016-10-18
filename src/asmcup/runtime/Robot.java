@@ -15,6 +15,7 @@ public class Robot {
 	protected float lastX, lastY;
 	protected float frequency;
 	protected int gold;
+	protected float sensor;
 	
 	public Robot(int id) {
 		this.id = id;
@@ -52,6 +53,10 @@ public class Robot {
 	
 	public int getOverclock() {
 		return overclock;
+	}
+	
+	public float getSensor() {
+		return sensor;
 	}
 	
 	public float getLazer() {
@@ -199,7 +204,8 @@ public class Robot {
 			steer = popFloatSafe(-1.0f, 1.0f);
 			break;
 		case IO_SENSOR:
-			vm.pushFloat(world.ray(x, y, facing));
+			sensor = world.ray(x, y, facing);
+			vm.pushFloat(sensor);
 			break;
 		case IO_OVERCLOCK:
 			setOverclock(vm.pop8());

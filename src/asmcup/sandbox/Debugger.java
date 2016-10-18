@@ -4,7 +4,6 @@ import java.awt.*;
 import java.awt.event.*;
 
 import javax.swing.*;
-import javax.swing.event.*;
 
 import asmcup.runtime.Robot;
 
@@ -12,38 +11,35 @@ public class Debugger extends JFrame {
 	protected final Sandbox sandbox;
 	protected MemoryPane memPane;
 	protected JScrollPane scrollPane;
-	protected JSlider motorSlider, steerSlider, overclockSlider, lazerSlider;
-	protected JProgressBar batteryIndicator;
+	protected JSlider motorSlider, steerSlider, overclockSlider;
+	protected JSlider lazerSlider;
+	protected JProgressBar batteryBar, sensorBar;
 	protected JLabel goldLabel;
+	protected JPanel panel, bottomPane;
 	
 	public Debugger(Sandbox sandbox) {
 		this.sandbox = sandbox;
 		
 		memPane = new MemoryPane();
 		scrollPane = new JScrollPane(memPane);
-		motorSlider = new JSlider(-100, 100, 0);
-		steerSlider = new JSlider(-100, 100, 0);
-		lazerSlider = new JSlider(0, 100);
-		batteryIndicator = new JProgressBar(0, Robot.BATTERY_MAX);
-		batteryIndicator.setStringPainted(true);
-		overclockSlider = new JSlider(0, 100, 0);
+		motorSlider = slider(-100, 100);
+		steerSlider = slider(-100, 100);
+		lazerSlider = slider(0, 100);
+		overclockSlider = slider(0, 100);
+		sensorBar =  bar(0, 256);
+		batteryBar = bar(0, Robot.BATTERY_MAX);
 		goldLabel = new JLabel("0");
 		
-		ChangeListener listener = (e) -> { updateControls(); };
-		motorSlider.addChangeListener(listener);
-		steerSlider.addChangeListener(listener);
-		overclockSlider.addChangeListener(listener);
-		lazerSlider.addChangeListener(listener);
-		
-		JPanel panel = new JPanel(new BorderLayout());
-		JPanel bottomPane = new JPanel();
+		panel = new JPanel(new BorderLayout());
+		bottomPane = new JPanel();
 		bottomPane.setLayout(new BoxLayout(bottomPane, BoxLayout.Y_AXIS));
-		bottomPane.add(hitem("Motor:", motorSlider));
-		bottomPane.add(hitem("Steer:", steerSlider));
-		bottomPane.add(hitem("Clock:", overclockSlider));
-		bottomPane.add(hitem("Lazer:", lazerSlider));
-		bottomPane.add(hitem("Battery:", batteryIndicator));
-		bottomPane.add(hitem("Gold:", goldLabel));
+		hitem("Motor:", motorSlider);
+		hitem("Steer:", steerSlider);
+		hitem("Lazer:", lazerSlider);
+		hitem("Clock:", overclockSlider);
+		hitem("Battery:", batteryBar);
+		hitem("Sensor:", sensorBar);
+		hitem("Gold:", goldLabel);
 		
 		panel.add(scrollPane, BorderLayout.CENTER);
 		panel.add(bottomPane, BorderLayout.SOUTH);
@@ -54,13 +50,26 @@ public class Debugger extends JFrame {
 		pack();
 	}
 	
+	protected JSlider slider(int min, int max) {
+		JSlider slider = new JSlider(min, max, 0);
+		slider.addChangeListener((e) -> updateControls());
+		return slider;
+	}
+	
+	protected JProgressBar bar(int min, int max) {
+		JProgressBar bar = new JProgressBar(min, max);
+		bar.setStringPainted(true);
+		return bar;
+	}
+	
 	public void updateDebugger() {
 		Robot robot = sandbox.getRobot();
 		motorSlider.setValue((int)(robot.getMotor() * 100));
 		steerSlider.setValue((int)(robot.getSteer() * 100));
 		lazerSlider.setValue((int)(robot.getLazer() * 100));
 		overclockSlider.setValue(robot.getOverclock());
-		batteryIndicator.setValue(robot.getBattery());
+		sensorBar.setValue((int)robot.getSensor());
+		batteryBar.setValue(robot.getBattery());
 		goldLabel.setText(String.valueOf(robot.getGold()));
 		repaint();
 	}
@@ -75,11 +84,11 @@ public class Debugger extends JFrame {
 		}
 	}
 	
-	protected static JPanel hitem(String label, JComponent c) {
+	protected void hitem(String label, JComponent c) {
 		JPanel p = new JPanel(new BorderLayout());
 		p.add(c, BorderLayout.CENTER);
 		p.add(new JLabel(label), BorderLayout.WEST);
-		return p;
+		bottomPane.add(p);
 	}
 	
 	protected class MemoryPane extends JComponent {
