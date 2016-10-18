@@ -1,7 +1,5 @@
 package asmcup.runtime;
 
-import java.util.Random;
-
 public abstract class Item {
 	protected float x, y;
 	
@@ -23,8 +21,8 @@ public abstract class Item {
 	}
 	
 	public boolean withinDistance(float tx, float ty) {
-		float dx = tx - (x + 16);
-		float dy = ty - (y + 16);
+		float dx = tx - x;
+		float dy = ty - y;
 		return Math.sqrt(dx * dx + dy * dy) <= 20;
 	}
 	
@@ -33,21 +31,24 @@ public abstract class Item {
 	public static class Battery extends Item {
 		protected int value;
 		
+		public Battery(int value) {
+			this.value = value;
+		}
+		
 		public void collect(Robot robot) {
 			robot.addBattery(value);
+		}
+		
+		public int getVariant() {
+			return value / 25;
 		}
 	}
 	
 	public static class Gold extends Item {
 		protected int value;
 		
-		public Gold(Random random, int limit) {
-			int a = 1 + random.nextInt(10);
-			int b = 1 + random.nextInt(100);
-			int c = random.nextInt(1000);
-			value = a * b - c;
-			value = Math.min(value, limit);
-			value = Math.max(value, 1);
+		public Gold(int value) {
+			this.value = value;
 		}
 		
 		public int getValue() {
@@ -55,7 +56,7 @@ public abstract class Item {
 		}
 		
 		public int getVariant() {
-			return (int)((value / 1000.0) * 4);
+			return value / 25;
 		}
 		
 		public void collect(Robot robot) {
