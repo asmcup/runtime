@@ -8,7 +8,7 @@ It is currently in active alpha development.
 
 ## Screenshot
 
-![](http://i.imgur.com/yEyYupp.png)
+![](http://i.imgur.com/Snvjuon.gif)
 
 ## Getting Started
 
