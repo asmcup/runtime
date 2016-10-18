@@ -204,7 +204,7 @@ Statement     | Size | Description
 --------------|------|--------------------------
 jmp $f0       | 2    | Jump Always
 jnz $f0       | 2    | Jump Not Zero
-jnz [$f0]     | 2    | Jump Not Zero Indirect
+jmp [$f0]     | 2    | Jump Always Indirect
 jnzr $f0      | 1    | Jump Not Zero Relative
 
 `jnzr` stores the relative location of the target address in its data bytes,
