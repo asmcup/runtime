@@ -18,13 +18,13 @@ public class Sandbox {
 	protected Frame frame;
 	protected CodeEditor codeEditor;
 	protected Debugger debugger;
-	
 	protected Image backBuffer;
 	protected SandboxWorld world;
 	protected Robot robot;
 	protected int panX, panY;
 	protected boolean paused;
-	protected Image[] ground, wall, obstacles, hazards, coins;
+	protected Image[] ground, wall, obstacles, hazards, floor;
+	protected Image[] coins, batteryImg;
 	protected Image bot;
 	protected boolean showGrid;
 	
@@ -53,6 +53,8 @@ public class Sandbox {
 		hazards = loadImage("/hazards.png");
 		bot = ImageIO.read(getClass().getResource("/robot.png"));
 		coins = loadImage("/gold.png");
+		floor = loadImage("/floor.png");
+		batteryImg = loadImage("/battery.png");
 	}
 	
 	public int getPanX() {
@@ -237,6 +239,14 @@ public class Sandbox {
 		return (int)(HEIGHT/2 + y - panY);
 	}
 	
+	public int screenX(int x) {
+		return (WIDTH/2 + x - panX);
+	}
+	
+	public int screenY(int y) {
+		return (HEIGHT/2 + y - panY);
+	}
+	
 	protected void drawCell(Graphics g, Cell cell) {
 		int left = cell.getX() * World.TILES_PER_CELL;
 		int right = left + World.TILES_PER_CELL;
@@ -271,9 +281,9 @@ public class Sandbox {
 	protected void drawTile(Graphics g, int col, int row, int tile) {
 		int x = WIDTH/2 + col * World.TILE_SIZE - panX;
 		int y = HEIGHT/2 + row * World.TILE_SIZE - panY;
-		int variant = (tile >> 2) & 0b11;
+		int variant = (tile >> 3) & 0b11;
 		
-		switch (tile & 0b11) {
+		switch (tile & 0b111) {
 		case Cell.TILE_GROUND:
 			drawVariant(g, ground, x, y, variant);
 			break;
@@ -286,6 +296,9 @@ public class Sandbox {
 			break;
 		case Cell.TILE_HAZARD:
 			drawVariant(g, hazards, x, y, variant);
+			break;
+		case Cell.TILE_FLOOR:
+			drawVariant(g, floor, x, y, variant);
 			break;
 		}
 	}
@@ -316,13 +329,19 @@ public class Sandbox {
 	}
 	
 	protected void drawItemBattery(Graphics g, Item.Battery battery) {
-		
+		int x = screenX(battery.getX());
+		int y = screenY(battery.getY());
+		drawVariant(g, batteryImg, x - 16, y - 16, battery.getVariant());
+		g.setColor(Color.RED);
+		g.fillRect(x, y, 2, 2);
 	}
 	
 	protected void drawItemGold(Graphics g, Item.Gold gold) {
-		int x = WIDTH/2 + (int)gold.getX() - panX;
-		int y = HEIGHT/2 + (int)gold.getY() - panY;
-		drawVariant(g, coins, x, y, gold.getVariant());
+		int x = screenX(gold.getX());
+		int y = screenY(gold.getY());
+		drawVariant(g, coins, x - 16, y - 16, gold.getVariant());
+		g.setColor(Color.RED);
+		g.fillRect(x, y, 2, 2);
 	}
 	
 	protected void drawVariant(Graphics g, Image[] imgs, int x, int y, int variant) {

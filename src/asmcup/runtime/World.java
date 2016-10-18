@@ -27,10 +27,6 @@ public class World {
 		return seed;
 	}
 	
-	public Random getCellRandom(int cellX, int cellY) {
-		return new Random(seed ^ Cell.key(cellX, cellY));
-	}
-	
 	public void addRobot(Robot robot) {
 		robots.add(robot);
 	}
@@ -72,7 +68,13 @@ public class World {
 			return true;
 		}
 		
-		return (getTileXY(x, y) & 0b11) >= 2;
+		switch (getTileXY(x, y) & 0b11) {
+		case Cell.TILE_OBSTACLE:
+		case Cell.TILE_WALL:
+			return true;
+		}
+		
+		return false;
 	}
 	
 	public boolean isSolid(float x, float y, float r) {
@@ -82,11 +84,11 @@ public class World {
 	public int getHazard(float x, float y) {
 		int tile = getTileXY(x, y);
 		
-		if ((tile & 0b11) != Cell.TILE_HAZARD) {
+		if ((tile & 0b111) != Cell.TILE_HAZARD) {
 			return -1;
 		}
 		
-		return tile >> 2;
+		return tile >> 3;
 	}
 	
 	public float ray(float x, float y, float theta) {
