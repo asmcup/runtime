@@ -1,15 +1,20 @@
 package asmcup.sandbox;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.IOException;
 import java.net.URL;
 
 import javax.imageio.ImageIO;
 
-import asmcup.runtime.*;
+import asmcup.runtime.Cell;
+import asmcup.runtime.Item;
 import asmcup.runtime.Robot;
+import asmcup.runtime.World;
 
 public class Sandbox {
 	protected Mouse mouse;
@@ -55,6 +60,8 @@ public class Sandbox {
 		coins = loadImage("/gold.png");
 		floor = loadImage("/floor.png");
 		batteryImg = loadImage("/battery.png");
+		
+		frame.setIconImage(bot);
 	}
 	
 	public int getPanX() {
