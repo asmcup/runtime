@@ -64,21 +64,14 @@ public class World {
 	}
 	
 	public boolean isSolid(float x, float y) {
-		if (x <= 0 || y <= 0) {
-			return true;
-		}
-		
-		switch (getTileXY(x, y) & 0b11) {
-		case Cell.TILE_OBSTACLE:
-		case Cell.TILE_WALL:
-			return true;
-		}
-		
-		return false;
+		int left = (int)(x / CELL_SIZE) * CELL_SIZE;
+		int top = (int)(y / CELL_SIZE) * CELL_SIZE;
+		return getCellXY(x, y).isSolidXY(x - left, y - top);
 	}
 	
 	public boolean isSolid(float x, float y, float r) {
-		return isSolid(x - r, y - r) || isSolid(x + r, y + r) || isSolid(x - r, y + r) || isSolid(x + r, y - r);
+		return isSolid(x, y) || isSolid(x - r, y - r) || isSolid(x + r, y + r) || isSolid(x - r, y + r)
+				|| isSolid(x + r, y - r);
 	}
 	
 	public int getHazard(float x, float y) {
@@ -168,6 +161,7 @@ public class World {
 	public static final int RAY_STEPS = 64;
 	
 	public static final int TILE_SIZE = 32;
+	public static final int TILE_HALF = TILE_SIZE / 2;
 	public static final int TILES_PER_CELL = 16;
 	public static final int CELL_SIZE = TILES_PER_CELL * TILE_SIZE;
 	public static final int CELL_COUNT = 0xFF;

@@ -8,6 +8,7 @@ public class Generator {
 	protected final Random random;
 	protected int wpad, hpad;
 	protected int width, height;
+	protected int left, right, top, bottom;
 	
 	public Generator(World world, Cell cell) {
 		this.world = world;
@@ -34,6 +35,10 @@ public class Generator {
 	public TileFunc same(int type) {
 		int variant = nextInt(4) << 3;
 		return (col, row) -> { return type | variant; };
+	}
+	
+	public TileFunc same(int type, int variant) {
+		return (col, row) -> { return type | (variant << 3); };
 	}
 	
 	public TileFunc variant(int type) {
@@ -145,10 +150,14 @@ public class Generator {
 	}
 
 	public void room() {
-		wpad = nextInt(5);
-		hpad = nextInt(5);
+		wpad = 1 + nextInt(5);
+		hpad = 1 + nextInt(5);
 		width = World.TILES_PER_CELL - wpad * 2;
 		height = World.TILES_PER_CELL - hpad * 2;
+		left = wpad + 1;
+		top = hpad + 1;
+		right = left + width - 2;
+		bottom = top + height - 2;
 		
 		if (width < 3 || height < 3) {
 			return;
@@ -156,37 +165,118 @@ public class Generator {
 		
 		rect(same(Cell.TILE_FLOOR), wpad, hpad, width, height);
 		outline(same(Cell.TILE_WALL), wpad, hpad, width, height);
+		maze();
 		exits();
 		items();
+	}
+	
+	public int roomCol(int spacing) {
+		return wpad + 1 + spacing + nextInt(width - spacing * 2 - 2);
+	}
+	
+	public int roomRow(int spacing) {
+		return hpad + 1 + spacing + nextInt(height - spacing * 2 - 2);
+	}
+	
+	public void maze() {
+		if (chance(50)) {
+			return;
+		}
+		
+		if (chance(50)) {
+			hmaze();
+		} else {
+			vmaze();
+		}
+	}
+	
+	public void hmaze() {
+		TileFunc wall = same(Cell.TILE_WALL);
+		TileFunc floor = same(Cell.TILE_FLOOR);
+		int row = hpad + 2 + nextInt(3);
+		int bottom = hpad + height - 2;
+
+		while (row < bottom) {
+			hline(wall, wpad, row, width);
+			int t = 1 + nextInt(width - 3);
+			set(floor, wpad + t, row);
+			row += 2 + nextInt(5);
+		}
+	}
+	
+	public void vmaze() {
+		TileFunc wall = same(Cell.TILE_WALL);
+		TileFunc floor = same(Cell.TILE_FLOOR);
+		int col = wpad + 2 + nextInt(3);
+		int right = wpad + width - 2;
+
+		while (col < right) {
+			vline(wall, col, hpad, height);
+			int t = 1 + nextInt(height - 3);
+			set(floor, col, hpad + t);
+			col += 2 + nextInt(5);
+		}
 	}
 	
 	public void exits() {
 		int count = 1 + nextInt(3);
 		
 		for (int i=0; i < count; i++) {
-			int col, row;
-			
-			switch (nextInt(4)) {
-			case 0:
-				col = wpad + 1 + nextInt(width - 2);
-				row = hpad;
-				break;
-			case 1:
-				col = wpad;
-				row = hpad + 1 + nextInt(height - 2);
-				break;
-			case 2:
-				col = wpad + 1 + nextInt(width - 2);
-				row = World.TILES_PER_CELL - 1 - hpad;
-				break;
-			default:
-				col = World.TILES_PER_CELL - 1 - wpad;
-				row = hpad + 1 + nextInt(height - 2);
-				break;
-			}
-			
+			exit();
+		}
+	}
+	
+	public boolean exit() {
+		int col, row;
+		
+		switch (nextInt(4)) {
+		case 0:
+			col = wpad + 1 + nextInt(width - 2);
+			row = hpad;
+			break;
+		case 1:
+			col = wpad;
+			row = hpad + 1 + nextInt(height - 2);
+			break;
+		case 2:
+			col = wpad + 1 + nextInt(width - 2);
+			row = World.TILES_PER_CELL - 1 - hpad;
+			break;
+		default:
+			col = World.TILES_PER_CELL - 1 - wpad;
+			row = hpad + 1 + nextInt(height - 2);
+			break;
+		}
+		
+		if (isBlocked(col, row)) {
+			return false;
+		}
+		
+		if (chance(33)) {
+			set(same(Cell.TILE_OBSTACLE, 2 + nextInt(2)), col, row);
+		} else {
 			set(variant(Cell.TILE_GROUND), col, row);
 		}
+		
+		return true;
+	}
+	
+	public boolean isBlocked(int col, int row) {
+		for (int i=-1; i < 2; i += 2) {
+			if (isSolidRoom(col + i, row) || isSolidRoom(col, row + i)) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean isSolidRoom(int col, int row) {
+		return isInsideRoom(col, row) && cell.isSolid(col, row);
+	}
+	
+	public boolean isInsideRoom(int col, int row) {
+		return col >= left && row >= top && col < right && row < bottom;
 	}
 	
 	public void items() {
@@ -211,11 +301,21 @@ public class Generator {
 	public void spawnItem(Item item) {
 		int left = cell.getX() * World.CELL_SIZE;
 		int top = cell.getY() * World.CELL_SIZE;
-		int w = width - 3;
-		int h = height - 3;
-		float x = left + (2 + wpad + nextFloat() * w) * World.TILE_SIZE;
-		float y = top + (2 + hpad + nextFloat() * h) * World.TILE_SIZE;
-		item.position(x, y);
+		int col = 0, row = 0;
+		
+		for (int i=0; i < 20; i++) {
+			col = roomCol(1);
+			row = roomRow(1);
+			
+			if (!cell.isSolid(col, row)) {
+				break;
+			}
+		}
+		
+		float x = col * World.TILE_SIZE + World.TILE_HALF;
+		float y = row * World.TILE_SIZE + World.TILE_HALF;
+		
+		item.position(left + x, top + y);
 		cell.addItem(item);
 	}
 	

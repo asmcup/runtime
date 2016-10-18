@@ -305,19 +305,18 @@ public class Sandbox {
 	
 	protected void drawRobot(Graphics lg, Robot robot) {
 		Graphics2D g = (Graphics2D)lg;
-		int x = (int)robot.getX();
-		int y = (int)robot.getY();
-		int sx = WIDTH/2 + x - panX;
-		int sy = HEIGHT/2 + y - panY;
-		
+		int sx = screenX(robot.getX());
+		int sy = screenY(robot.getY());
 		AffineTransform t = g.getTransform();
-		g.rotate(robot.getFacing(), sx, sy);
-		g.drawImage(bot, sx - World.TILE_SIZE/2, sy - World.TILE_SIZE/2, null);
 		
+		g.rotate(robot.getFacing(), sx, sy);
+		g.drawImage(bot, sx - World.TILE_HALF, sy - World.TILE_HALF, null);
 		g.setTransform(t);
 		
-		g.setColor(Color.RED);
-		g.fillRect(sx-1, sy-1, 3, 3);
+		if (showGrid) {
+			g.setColor(Color.RED);
+			g.fillRect(sx - 1, sy - 1, 3, 3);
+		}
 	}
 	
 	protected void drawItem(Graphics g, Item item) {
@@ -326,22 +325,23 @@ public class Sandbox {
 		} else if (item instanceof Item.Gold) {
 			drawItemGold(g, (Item.Gold)item);
 		}
+		
+		if (showGrid) {
+			g.setColor(Color.RED);
+			g.fillRect(screenX(item.getX()), screenY(item.getY()), 2, 2);
+		}
 	}
 	
 	protected void drawItemBattery(Graphics g, Item.Battery battery) {
 		int x = screenX(battery.getX());
 		int y = screenY(battery.getY());
 		drawVariant(g, batteryImg, x - 16, y - 16, battery.getVariant());
-		g.setColor(Color.RED);
-		g.fillRect(x, y, 2, 2);
 	}
 	
 	protected void drawItemGold(Graphics g, Item.Gold gold) {
 		int x = screenX(gold.getX());
 		int y = screenY(gold.getY());
 		drawVariant(g, coins, x - 16, y - 16, gold.getVariant());
-		g.setColor(Color.RED);
-		g.fillRect(x, y, 2, 2);
 	}
 	
 	protected void drawVariant(Graphics g, Image[] imgs, int x, int y, int variant) {

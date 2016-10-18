@@ -52,10 +52,6 @@ public class Cell {
 		return items;
 	}
 	
-	public int getTile(int col, int row) {
-		return tiles[clampTile(col) + (clampTile(row) * World.TILES_PER_CELL)];
-	}
-	
 	public Item getItem(Robot robot) {
 		for (Item item : items) {
 			if (item.withinDistance(robot)) {
@@ -70,11 +66,46 @@ public class Cell {
 		items.remove(item);
 	}
 	
+	public int getTile(int col, int row) {
+		return tiles[clampTile(col) + (clampTile(row) * World.TILES_PER_CELL)];
+	}
+	
 	public static int clampTile(int i) {
 		return Math.max(0, Math.min(World.TILES_PER_CELL - 1, i));
 	}
 	
+	public int getTileXY(float x, float y) {
+		return getTile((int)(x / World.TILE_SIZE), (int)(y / World.TILE_SIZE));
+	}
+	
+	public boolean isSolid(int col, int row) {
+		switch (getTile(col, row) & 0b111) {
+		case TILE_WALL:
+		case TILE_OBSTACLE:
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean isSolidXY(float x, float y) {
+		return isSolid((int)(x / World.TILE_SIZE), (int)(y / World.TILE_SIZE));
+	}
+	
+	public boolean isSolidXY(float x, float y, float r) {
+		return isSolidXY(x, y) || isSolidXY(x - r, y - r) || isSolidXY(x + r, y + r) || isSolidXY(x - r, y + r)
+				|| isSolidXY(x + r, y - r);
+	}
+	
 	public void setTile(int col, int row, int value) {
+		if (col < 0 || row < 0) {
+			throw new IllegalArgumentException("Tile coordinates cannot be negative");
+		}
+		
+		if (col >= World.TILES_PER_CELL || row >= World.TILES_PER_CELL) {
+			throw new IllegalArgumentException("Tile coordinates outside of bounds");
+		}
+		
 		tiles[col + (row * World.TILES_PER_CELL)] = value;
 	}
 	
