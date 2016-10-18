@@ -375,6 +375,15 @@ public class VM implements VMConsts {
 			pushFloat(peekFloat());
 			break;
 		
+		case F_JSR:
+			int ret = pc;
+			pc = pop8();
+			push8(ret);
+			break;
+		case F_RET:
+			pc = pop8();
+			break;
+			
 		case F_IO:
 			io = true;
 			break;
@@ -437,12 +446,7 @@ public class VM implements VMConsts {
 			
 			break;
 		case MAGIC_BRANCH_INDIRECT:
-			addr = read8indirect();
-			
-			if (pop8() != 0) {
-				pc = addr;
-			}
-			
+			pc = read8indirect();
 			break;
 		default:
 			if (pop8() != 0) {

@@ -279,8 +279,7 @@ public class Compiler implements VMConsts {
 		String s = expectOne(args);
 		
 		if (isIndirect(s)) {
-			s = s.substring(1, s.length() - 1);
-			reference(OP_BRANCH, MAGIC_BRANCH_INDIRECT, s);
+			throw new IllegalArgumentException("jnz cannot be indirect");
 		} else {
 			reference(OP_BRANCH, MAGIC_BRANCH_IMMEDIATE, s);
 		}
@@ -291,7 +290,14 @@ public class Compiler implements VMConsts {
 	}
 	
 	protected void jmp(String[] args) {
-		reference(OP_BRANCH, MAGIC_BRANCH_ALWAYS, args);
+		String s = expectOne(args);
+		
+		if (isIndirect(s)) {
+			s = s.substring(1, s.length() - 1);
+			reference(OP_BRANCH, MAGIC_BRANCH_INDIRECT, s);
+		} else {
+			reference(OP_BRANCH, MAGIC_BRANCH_ALWAYS, s);
+		}
 	}
 	
 	public static boolean isLiteral(String s) {

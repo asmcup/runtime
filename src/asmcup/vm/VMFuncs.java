@@ -77,6 +77,8 @@ public interface VMFuncs {
 	public static final int F_DUP8 = 55;
 	public static final int F_DUPF = 56;
 	
+	public static final int F_JSR = 57;
+	public static final int F_RET = 58;
 	
 	public static final int F_IO = 63;
 }
