@@ -158,14 +158,30 @@ Value | Command   | In | Out | Notes
 54    | if_nan    | 4  | 1   | Float NaN Check
 55    | dup8      | 1  | 2   | Byte Duplicate
 56    | dupf      | 4  | 8   | Float Duplicate
-57    |           |    |     | Unused 1 
-58    |           |    |     | Unused 2
+57    | jsr       | 1  | 1   | Jump Subroutine
+58    | ret       | 1  | 0   | jmp [$ff]
 59    |           |    |     | Unused 3
 60    |           |    |     | Unused 4
 61    |           |    |     | Unused 5
 62    |           |    |     | Unused 6
 63    | io        | ?  | ?   | Input / Output (IO)
 
+
+### JSR and RET
+
+The `jsr` function jumps to the address at the top of the stack while also
+pushing a return address. `ret` is a shorthand `jmp [$ff]`
+
+```
+push8 [half_speed]
+jsr
+
+half_speed:
+  pushf 0.5
+  push8 #IO_MOTOR
+  io
+  ret
+```
 
 ## PUSH opcode
 
