@@ -12,8 +12,8 @@ public class Debugger extends JFrame {
 	protected final Sandbox sandbox;
 	protected MemoryPane memPane;
 	protected JScrollPane scrollPane;
-	protected JSlider motorSlider, steerSlider;
-	protected JProgressBar batteryIndicator, overclockIndicator;
+	protected JSlider motorSlider, steerSlider, overclockSlider, lazerSlider;
+	protected JProgressBar batteryIndicator;
 	protected JLabel goldLabel;
 	
 	public Debugger(Sandbox sandbox) {
@@ -23,23 +23,26 @@ public class Debugger extends JFrame {
 		scrollPane = new JScrollPane(memPane);
 		motorSlider = new JSlider(-100, 100, 0);
 		steerSlider = new JSlider(-100, 100, 0);
+		lazerSlider = new JSlider(0, 100);
 		batteryIndicator = new JProgressBar(0, Robot.BATTERY_MAX);
 		batteryIndicator.setStringPainted(true);
-		overclockIndicator = new JProgressBar(0, 255);
-		overclockIndicator.setStringPainted(true);
+		overclockSlider = new JSlider(0, 100);
 		goldLabel = new JLabel("0");
 		
 		ChangeListener listener = (e) -> { updateControls(); };
 		motorSlider.addChangeListener(listener);
 		steerSlider.addChangeListener(listener);
+		overclockSlider.addChangeListener(listener);
+		lazerSlider.addChangeListener(listener);
 		
 		JPanel panel = new JPanel(new BorderLayout());
 		JPanel bottomPane = new JPanel();
 		bottomPane.setLayout(new BoxLayout(bottomPane, BoxLayout.Y_AXIS));
 		bottomPane.add(hitem("Motor:", motorSlider));
 		bottomPane.add(hitem("Steer:", steerSlider));
+		bottomPane.add(hitem("Clock:", overclockSlider));
+		bottomPane.add(hitem("Lazer:", lazerSlider));
 		bottomPane.add(hitem("Battery:", batteryIndicator));
-		bottomPane.add(hitem("Clock:", overclockIndicator));
 		bottomPane.add(hitem("Gold:", goldLabel));
 		
 		panel.add(scrollPane, BorderLayout.CENTER);
@@ -55,9 +58,9 @@ public class Debugger extends JFrame {
 		Robot robot = sandbox.getRobot();
 		motorSlider.setValue((int)(robot.getMotor() * 100));
 		steerSlider.setValue((int)(robot.getSteer() * 100));
+		lazerSlider.setValue((int)(robot.getLazer() * 100));
+		overclockSlider.setValue(robot.getOverclock());
 		batteryIndicator.setValue(robot.getBattery());
-		overclockIndicator.setValue(robot.getOverclock());
-		overclockIndicator.setString(String.valueOf(robot.getOverclock()));
 		goldLabel.setText(String.valueOf(robot.getGold()));
 		repaint();
 	}
@@ -67,6 +70,8 @@ public class Debugger extends JFrame {
 			Robot robot = sandbox.getRobot();
 			robot.setMotor(motorSlider.getValue() / 100.0f);
 			robot.setSteer(steerSlider.getValue() / 100.0f);
+			robot.setLazer(lazerSlider.getValue() / 100.0f);
+			robot.setOverclock(overclockSlider.getValue());
 		}
 	}
 	
