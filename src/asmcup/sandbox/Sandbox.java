@@ -34,13 +34,7 @@ public class Sandbox {
 	protected boolean showGrid;
 	
 	public Sandbox() throws IOException {
-		panX = (int)(Math.random() * World.SIZE);
-		panY = (int)(Math.random() * World.SIZE);
-		world = new SandboxWorld();
-		robot = new Robot(1);
-		robot.position(panX, panY);
-		world.addRobot(robot);
-		paused = false;
+		reseed();
 		
 		mouse = new Mouse(this);
 		menu = new Menu(this);
@@ -178,7 +172,18 @@ public class Sandbox {
 	
 	public void reseed() {
 		world = new SandboxWorld();
+		
+		do {
+			panX = (int)(Math.random() * World.SIZE);
+			panY = (int)(Math.random() * World.SIZE);
+		} while (world.isSolid(panX, panY, 32));
+		
+		if (robot == null) {
+			robot = new Robot(1);
+		}
+		
 		world.addRobot(robot);
+		robot.position(panX, panY);
 		redraw();
 	}
 	
