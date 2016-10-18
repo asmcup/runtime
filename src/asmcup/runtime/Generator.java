@@ -28,7 +28,7 @@ public class Generator {
 	}
 	
 	public boolean chance(int p) {
-		return nextInt(100) <= p;
+		return nextInt(100) < p;
 	}
 	
 	public TileFunc same(int type) {
