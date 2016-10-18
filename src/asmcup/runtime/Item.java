@@ -36,7 +36,7 @@ public abstract class Item {
 		}
 		
 		public void collect(Robot robot) {
-			robot.addBattery(value);
+			robot.addBattery(value * 100);
 		}
 		
 		public int getVariant() {
