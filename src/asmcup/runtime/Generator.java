@@ -9,6 +9,7 @@ public class Generator {
 	protected int wpad, hpad;
 	protected int width, height;
 	protected int left, right, top, bottom;
+	protected TileFunc wall;
 	
 	public Generator(World world, Cell cell) {
 		this.world = world;
@@ -158,13 +159,14 @@ public class Generator {
 		top = hpad + 1;
 		right = left + width - 2;
 		bottom = top + height - 2;
+		wall = same(Cell.TILE_WALL);
 		
 		if (width < 3 || height < 3) {
 			return;
 		}
 		
 		rect(same(Cell.TILE_FLOOR), wpad, hpad, width, height);
-		outline(same(Cell.TILE_WALL), wpad, hpad, width, height);
+		outline(wall, wpad, hpad, width, height);
 		maze();
 		exits();
 		items();
@@ -191,7 +193,6 @@ public class Generator {
 	}
 	
 	public void hmaze() {
-		TileFunc wall = same(Cell.TILE_WALL);
 		TileFunc floor = same(Cell.TILE_FLOOR);
 		int row = hpad + 2 + nextInt(3);
 		int bottom = hpad + height - 2;
@@ -205,7 +206,6 @@ public class Generator {
 	}
 	
 	public void vmaze() {
-		TileFunc wall = same(Cell.TILE_WALL);
 		TileFunc floor = same(Cell.TILE_FLOOR);
 		int col = wpad + 2 + nextInt(3);
 		int right = wpad + width - 2;
