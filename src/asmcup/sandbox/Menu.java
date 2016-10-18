@@ -90,7 +90,7 @@ public class Menu extends JMenuBar {
 	
 	protected void addWorldMenu() {
 		JMenu menu = new JMenu("World");
-		menu.add(item("Generate New", e -> reseed()));
+		menu.add(item("Generate New", e -> reseed(), KeyEvent.VK_N));
 		menu.addSeparator();
 		menu.add(item("Show Info", e -> showWorldInfo()));
 		menu.addSeparator();
