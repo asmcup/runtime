@@ -131,12 +131,12 @@ public class Robot {
 	}
 	
 	protected void tickSoftware(World world) {
-		int cycles = 1 + overclock;
+		int cyclesUsed = 0;
 		
-		while (cycles > 0) {
+		while (cyclesUsed <= overclock) {
 			vm.tick();
 			handleIO(world);
-			cycles--;
+			cyclesUsed++;
 			battery--;
 		}
 	}
