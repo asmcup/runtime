@@ -98,6 +98,7 @@ public class CodeEditor extends JFrame {
 			ram = compiler.compile(editor.getText());
 		} catch (Exception e) {
 			e.printStackTrace();
+			JOptionPane.showMessageDialog(this, e.getMessage());
 			return false;
 		}
 		
