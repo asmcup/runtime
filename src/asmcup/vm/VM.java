@@ -153,7 +153,7 @@ public class VM implements VMConsts {
 	}
 	
 	public int peek8(int r) {
-		return ram[0xFF - ((sp + r - 1) & 0xFF)] & 0xFF;
+		return ram[0xFF - ((sp - r - 1) & 0xFF)] & 0xFF;
 	}
 	
 	public int peek16() {
