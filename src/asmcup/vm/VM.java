@@ -157,15 +157,15 @@ public class VM implements VMConsts {
 	}
 	
 	public int peek16() {
-		return peek8() | (peek8(1) << 8); 
+		return peek8(1) | (peek8(0) << 8); 
 	}
 	
 	public int peek16(int r) {
-		return peek8(r) | (peek8(r + 1) << 8);
+		return peek8(r + 1) | (peek8(r) << 8);
 	}
 	
 	public int peek32() {
-		return peek16() | (peek16(2) << 16);
+		return peek16(2) | (peek16(0) << 16);
 	}
 	
 	public float peekFloat() {
