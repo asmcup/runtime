@@ -192,14 +192,14 @@ public class Compiler implements VMConsts {
 		String s = expectOne(args);
 		
 		if (isLiteral(s)) {
-			pushLiteral8(args);
+			pushLiteral8(s);
 		} else {
-			pushMemory8(args);
+			reference(OP_PUSH, MAGIC_PUSH_BYTE_MEMORY, s);
 		}
 	}
 	
-	protected void pushLiteral8(String[] args) {
-		switch (parseLiteral(expectOne(args))) {
+	protected void pushLiteral8(String s) {
+		switch (parseLiteral(s)) {
 		case 0:
 			immediate(OP_FUNC, F_C_0, NO_DATA);
 			break;
@@ -219,13 +219,9 @@ public class Compiler implements VMConsts {
 			immediate(OP_FUNC, F_C_255, NO_DATA);
 			break;
 		default:
-			immediate(OP_PUSH, MAGIC_PUSH_BYTE_IMMEDIATE, args);
+			immediate(OP_PUSH, MAGIC_PUSH_BYTE_IMMEDIATE, s);
 			break;
 		}
-	}
-	
-	protected void pushMemory8(String[] args) {
-		reference(OP_PUSH, MAGIC_PUSH_BYTE_MEMORY, args);
 	}
 	
 	protected void push8r(String[] args) {
