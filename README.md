@@ -159,29 +159,12 @@ Value | Command   | In | Out | Notes
 55    | dup8      | 1  | 2   | Byte Duplicate
 56    | dupf      | 4  | 8   | Float Duplicate
 57    | jsr       | 1  | 1   | Jump Subroutine
-58    | ret       | 1  | 0   | jmp [$ff]
+58    | ret       | 1  | 0   | Return
 59    |           |    |     | Unused 3
 60    |           |    |     | Unused 4
 61    |           |    |     | Unused 5
 62    |           |    |     | Unused 6
 63    | io        | ?  | ?   | Input / Output (IO)
-
-
-### JSR and RET
-
-The `jsr` function jumps to the address at the top of the stack while also
-pushing a return address. `ret` is a shorthand `jmp [$ff]`
-
-```
-push8 [half_speed]
-jsr
-
-half_speed:
-  pushf 0.5
-  push8 #IO_MOTOR
-  io
-  ret
-```
 
 ## PUSH opcode
 
@@ -226,6 +209,22 @@ jnzr $f0      | 1    | Jump Not Zero Relative
 `jnzr` stores the relative location of the target address in its data bytes,
 thereby saving ROM space but being restricted to nearby addresses.
 The `jne` and `jner` commands are equivalent to `jnz` and `jnzr`, respectively.
+
+### JSR and RET
+
+The `ret` function pops and jumps to the address at the top of the stack. `jsr` does
+the same, but also pushes the address of the instruction following it.
+
+```
+push8 [half_speed]
+jsr
+
+half_speed:
+  pushf 0.5
+  push8 #IO_MOTOR
+  io
+  ret
+```
 
 
 ## Further compiler information
