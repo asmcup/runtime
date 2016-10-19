@@ -51,10 +51,7 @@ public class CodeEditor extends JFrame {
 		@SuppressWarnings("unchecked")
 		List<File> droppedFiles = (List<File>) obj;
 
-		for (File file : droppedFiles) {
-			openFile(file);
-			return;
-		}
+		openFile(droppedFiles.get(0));
 	}
 	
 	public void openFile() {
@@ -67,10 +64,7 @@ public class CodeEditor extends JFrame {
 		
 		try {
 			String text = Utils.readAsString(currentFile);
-			
-			if (text != null) {
-				editor.setText(text);
-			}
+			editor.setText(text);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -193,7 +187,7 @@ public class CodeEditor extends JFrame {
 					KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.ALT_MASK | ActionEvent.CTRL_MASK)));
 			menu.add(item("Save ROM", e -> saveROM(), null));
 			menu.addSeparator();
-			menu.add(item("Close Editor", (e) -> { closeEditor(); },
+			menu.add(item("Close Editor", (e) -> closeEditor(),
 					KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK)));
 			add(menu);
 		}

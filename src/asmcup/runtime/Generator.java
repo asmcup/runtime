@@ -35,19 +35,19 @@ public class Generator {
 	
 	public TileFunc same(int type) {
 		int variant = nextInt(4) << 3;
-		return (col, row) -> { return type | variant; };
+		return (col, row) -> type | variant;
 	}
 	
 	public TileFunc same(int type, int variant) {
-		return (col, row) -> { return type | (variant << 3); };
+		return (col, row) -> type | (variant << 3);
 	}
 	
 	public TileFunc variant(int type) {
-		return (col, row) -> { return type | (nextInt(4) << 3); };
+		return (col, row) -> type | (nextInt(4) << 3);
 	}
 	
 	public TileFunc variantRare(int type) {
-		return (col, row) -> { return type | (nextRare() << 3); };
+		return (col, row) -> type | (nextRare() << 3);
 	}
 	
 	public void set(TileFunc f, int col, int row) {
