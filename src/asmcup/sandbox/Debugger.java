@@ -26,7 +26,7 @@ public class Debugger extends JFrame {
 		lazerSlider = new JSlider(0, 100);
 		batteryIndicator = new JProgressBar(0, Robot.BATTERY_MAX);
 		batteryIndicator.setStringPainted(true);
-		overclockSlider = new JSlider(0, 100);
+		overclockSlider = new JSlider(0, 100, 0);
 		goldLabel = new JLabel("0");
 		
 		ChangeListener listener = (e) -> { updateControls(); };
