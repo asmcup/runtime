@@ -9,6 +9,8 @@ public class Compiler implements VMConsts {
 	protected HashMap<String, Integer> labels;
 	protected byte[] ram;
 	protected int pc;
+
+	protected int currentLine = 0;
 		
 	protected void write8(int value) {
 		ram[pc] = (byte)(value & 0xFF);
@@ -48,6 +50,7 @@ public class Compiler implements VMConsts {
 		pc = 0;
 		
 		for (String line : lines) {
+			currentLine++;
 			parseLine(line);
 		}
 		
@@ -482,6 +485,14 @@ public class Compiler implements VMConsts {
 	
 	protected void relative(int op, String[] args) {
 		relative(op, expectOne(args));
+	}
+
+	/**
+	 * Returns the current line number. Useful for display a compiler error
+	 * @return current line number the compiler is looking at
+	 */
+	public int getCurrentLine() {
+		return currentLine;
 	}
 	
 	protected abstract class Statement {

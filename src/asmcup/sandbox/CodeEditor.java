@@ -93,12 +93,13 @@ public class CodeEditor extends JFrame {
 	}
 	
 	public boolean compile() {
+		Compiler compiler = new Compiler();
 		try {
-			Compiler compiler = new Compiler();
 			ram = compiler.compile(editor.getText());
 		} catch (Exception e) {
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(this, e.getMessage());
+			JOptionPane.showMessageDialog(this,
+					String.format("%s on line %d", e.getMessage(), compiler.getCurrentLine()));
 			return false;
 		}
 		
