@@ -104,12 +104,12 @@ Value | Command   | In | Out | Notes
 0     | nop       | 0  | 0   | No Operation
 1     | b2f       | 1  | 4   | Byte to Float
 2     | f2b       | 4  | 1   | Float to Byte
-3     | not8      | 1  | 1   | Byte NOT
-4     | or8       | 2  | 1   | Byte OR
-5     | and8      | 2  | 1   | Byte AND
-6     | xor8      | 2  | 1   | Byte XOR
-7     | shl8      | 1  | 1   | Byte Shift Left
-8     | shr8      | 1  | 1   | Byte Shift Right
+3     | not       | 1  | 1   | Byte NOT
+4     | or        | 2  | 1   | Byte OR
+5     | and       | 2  | 1   | Byte AND
+6     | xor       | 2  | 1   | Byte XOR
+7     | shl       | 1  | 1   | Byte Shift Left
+8     | shr       | 1  | 1   | Byte Shift Right
 9     | add8      | 2  | 1   | Byte Add
 10    | sub8      | 2  | 1   | Byte Subtract
 11    | div8      | 2  | 1   | Byte Divide
