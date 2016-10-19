@@ -194,7 +194,7 @@ public class Compiler implements VMConsts {
 		if (isLiteral(s)) {
 			pushLiteral8(s);
 		} else if (s.startsWith("&")) {
-			reference(OP_PUSH, MAGIC_PUSH_BYTE_IMMEDIATE, s);
+			reference(OP_PUSH, MAGIC_PUSH_BYTE_IMMEDIATE, s.substring(1));
 		} else {
 			reference(OP_PUSH, MAGIC_PUSH_BYTE_MEMORY, s);
 		}
