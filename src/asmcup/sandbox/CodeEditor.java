@@ -51,7 +51,9 @@ public class CodeEditor extends JFrame {
 		@SuppressWarnings("unchecked")
 		List<File> droppedFiles = (List<File>) obj;
 
-		openFile(droppedFiles.get(0));
+		if (droppedFiles.size() != 0) {
+			openFile(droppedFiles.get(0));
+		}
 	}
 	
 	public void openFile() {
