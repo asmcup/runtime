@@ -7,6 +7,7 @@ public class Main {
 		if (args.length != 4) {
 			System.err.printf("USAGE: asmcup-runtime <scenario>\n");
 			System.exit(1);
+			return;
 		}
 	}
 }
