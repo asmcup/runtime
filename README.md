@@ -17,7 +17,7 @@ It is currently in active alpha development.
 The quickest way to get started is to download
 [asmcup.jar](https://github.com/asmcup/runtime/releases)
 and run it. This will launch the Sandbox which allows you to write, compile,
-and debug your robot. **You need to have Java installed to run the Jar file.**
+and debug your robot. **You need to have Java 8 installed to run the Jar file.**
 
 You can find sample bots to try out over [here](https://github.com/asmcup/bots).
 
