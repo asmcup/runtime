@@ -17,7 +17,7 @@ It is currently in active alpha development.
 The quickest way to get started is to download
 [asmcup.jar](https://github.com/asmcup/runtime/releases)
 and run it. This will launch the Sandbox which allows you to write, compile,
-and debug your robot. **You need to have Java installed to run the Jar file.**
+and debug your robot. **You need to have Java 8 installed to run the Jar file.**
 
 You can find sample bots to try out over [here](https://github.com/asmcup/bots).
 
@@ -29,7 +29,8 @@ asmcup.jar also has command line tools:
 
 If you want to improve the Sandbox or make changes to the game code itself
 you can either import the project into Eclipse or build using
-`ant build.xml` 
+`ant build.txt`
+Make sure you have JDK 8 available.
 
 ## Compete
 
@@ -114,7 +115,7 @@ Value | Command   | In | Out | Notes
 10    | sub8      | 2  | 1   | Byte Subtract
 11    | div8      | 2  | 1   | Byte Divide
 12    | mul8      | 2  | 1   | Byte Multiply
-13    | madd8     | 3  | 1   | Byte Multiply with Add 
+13    | madd8     | 3  | 1   | Byte Multiply with Add
 14    | negf      | 4  | 4   | Float Negate
 15    | addf      | 8  | 4   | Float Add
 16    | subf      | 8  | 4   | Float Subtract
@@ -375,7 +376,7 @@ There are currently no functional differences between the 4 types of obstacles. 
 Walls form rectangular rooms with one or more entrances. Gold can (currently) only be found in rooms
 
 ### Items
-	
+
 Item pickup is **WIP**.
 
 **Gold:** Points!
