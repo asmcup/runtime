@@ -1,0 +1,20 @@
+apply plugin: 'java'
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/'
+        }
+        resources {
+            srcDir 'src/'
+            exclude '**/*.java'
+        }
+    }
+}
+
+jar {
+  manifest {
+    attributes 'Implementation-Title': 'ASMCup Runtime',
+               'Main-Class': 'asmcup.sandbox.Main'
+  }
+}
