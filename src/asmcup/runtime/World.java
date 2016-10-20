@@ -84,20 +84,8 @@ public class World {
 		return tile >> 3;
 	}
 	
-	public float ray(float x, float y, float theta) {
-		float cos = (float)Math.cos(theta);
-		float sin = (float)Math.sin(theta);
-		
-		for (int i = 0; i < RAY_STEPS; i++) {
-			float tx = x + (cos * i * RAY_INTERVAL);
-			float ty = y + (sin * i * RAY_INTERVAL);
-			
-			if (isSolid(tx, ty)) {
-				return i * RAY_INTERVAL;
-			}
-		}
-		
-		return RAY_STEPS * RAY_INTERVAL;
+	public boolean isHazard(float x, float y) {
+		return getHazard(x, y) != -1;
 	}
 	
 	public void tick() {
@@ -127,9 +115,13 @@ public class World {
 		}
 	}
 	
+	public Item getItem(float x, float y) {
+		return getCellXY(x, y).getItem(x, y);
+	}
+	
 	protected void tickItems(Robot robot) {
 		Cell cell = getCellXY(robot.getX(), robot.getY());
-		Item item = cell.getItem(robot);
+		Item item = cell.getItem(robot.getX(), robot.getY());
 		
 		if (item == null) {
 			return;
@@ -156,9 +148,6 @@ public class World {
 		// TODO read data on radio
 		return 0;
 	}
-	
-	public static final int RAY_INTERVAL = 4;
-	public static final int RAY_STEPS = 64;
 	
 	public static final int TILE_SIZE = 32;
 	public static final int TILE_HALF = TILE_SIZE / 2;

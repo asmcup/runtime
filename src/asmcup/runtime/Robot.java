@@ -16,6 +16,7 @@ public class Robot {
 	protected float frequency;
 	protected int gold;
 	protected float sensor;
+	protected int sensorIgnore;
 	
 	public Robot(int id) {
 		this.id = id;
@@ -204,8 +205,10 @@ public class Robot {
 			steer = popFloatSafe(-1.0f, 1.0f);
 			break;
 		case IO_SENSOR:
-			sensor = world.ray(x, y, facing);
-			vm.pushFloat(sensor);
+			sensorRay(world);
+			break;
+		case IO_SENSOR_CONFIG:
+			sensorIgnore = vm.pop8();
 			break;
 		case IO_OVERCLOCK:
 			setOverclock(vm.pop8());
@@ -244,6 +247,58 @@ public class Robot {
 		}
 	}
 	
+	protected void sensorRay(World world) {
+		float cos = (float)Math.cos(facing);
+		float sin = (float)Math.sin(facing);
+		
+		for (int i = 0; i < RAY_STEPS; i++) {
+			float sx = x + (cos * i * RAY_INTERVAL);
+			float sy = y + (sin * i * RAY_INTERVAL);
+			int hit = sensorPoint(world, sx, sy);
+			
+			if (hit != 0) {
+				sensor = i * RAY_INTERVAL;
+				vm.pushFloat(sensor);
+				vm.push8(hit);
+				return;
+			}
+		}
+		
+		sensor = RAY_RANGE;
+		vm.pushFloat(sensor);
+		vm.push8(0);
+	}
+	
+	protected int sensorPoint(World world, float sx, float sy) {
+		if ((sensorIgnore & SENSOR_HAZARD) == 0) {
+			if (world.isHazard(sx, sy)) {
+				return SENSOR_HAZARD;
+			}
+		}
+		
+		if ((sensorIgnore & SENSOR_SOLID) == 0) {
+			if (world.isSolid(sx, sy)) {
+				return SENSOR_SOLID;
+			}
+		}
+		
+		Item item = world.getItem(sx, sy);
+		
+		if ((sensorIgnore & SENSOR_GOLD) == 0) {
+			if (item instanceof Item.Gold) {
+				return SENSOR_GOLD;
+			}
+		}
+		
+		if ((sensorIgnore & SENSOR_BATTERY) == 0) {
+			if (item instanceof Item.Battery) {
+				return SENSOR_BATTERY;
+			}
+		}
+		
+		return 0;
+	}
+	
 	protected float popFloatSafe(float min, float max) {
 		return clampSafe(vm.popFloat(), min, max);
 	}
@@ -272,6 +327,7 @@ public class Robot {
 	public static final int IO_RADIO = 9;
 	public static final int IO_SEND = 10;
 	public static final int IO_RECV = 11;
+	public static final int IO_SENSOR_CONFIG = 12;
 	
 	public static final float SPEED_MAX = 8;
 	public static final float STEER_RATE = (float)(Math.PI * 0.1);
@@ -279,4 +335,13 @@ public class Robot {
 	public static final int OVERCLOCK_MAX = 100;
 	public static final float FREQUENCY_MAX = 1000 * 10;
 	public static final int LAZER_RANGE = 100;
+	
+	public static final int SENSOR_SOLID = 1;
+	public static final int SENSOR_HAZARD = 2;
+	public static final int SENSOR_GOLD = 4;
+	public static final int SENSOR_BATTERY = 8;
+	
+	public static final int RAY_INTERVAL = 4;
+	public static final int RAY_STEPS = 64;
+	public static final int RAY_RANGE = RAY_INTERVAL * RAY_STEPS;
 }
