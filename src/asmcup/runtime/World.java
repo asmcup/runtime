@@ -27,6 +27,10 @@ public class World {
 		return seed;
 	}
 	
+	public int getFrame() {
+		return frame;
+	}
+	
 	public void addRobot(Robot robot) {
 		robots.add(robot);
 	}

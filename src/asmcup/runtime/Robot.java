@@ -17,6 +17,7 @@ public class Robot {
 	protected int gold;
 	protected float sensor;
 	protected int sensorIgnore;
+	protected int sensorFrame;
 	
 	public Robot(int id) {
 		this.id = id;
@@ -58,6 +59,10 @@ public class Robot {
 	
 	public float getSensor() {
 		return sensor;
+	}
+	
+	public int getSensorFrame() {
+		return sensorFrame;
 	}
 	
 	public float getLazer() {
@@ -250,6 +255,7 @@ public class Robot {
 	protected void sensorRay(World world) {
 		float cos = (float)Math.cos(facing);
 		float sin = (float)Math.sin(facing);
+		sensorFrame = world.getFrame();
 		
 		for (int i = 0; i < RAY_STEPS; i++) {
 			float sx = x + (cos * i * RAY_INTERVAL);

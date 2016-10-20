@@ -316,7 +316,7 @@ public class Sandbox {
 			g.drawLine(sx, sy, sx + w, sy);
 		}
 		
-		if (robot.getSensor() > 0) {
+		if (world.getFrame() - robot.getSensorFrame() < 3) {
 			int w = (int)(robot.getSensor());
 			g.setColor(Color.BLUE);
 			g.drawLine(sx, sy, sx + w, sy);
