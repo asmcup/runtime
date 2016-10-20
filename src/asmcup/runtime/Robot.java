@@ -276,9 +276,11 @@ public class Robot {
 			}
 		}
 		
-		if ((sensorIgnore & SENSOR_SOLID) == 0) {
-			if (world.isSolid(sx, sy)) {
+		if (world.isSolid(sx, sy)) {
+			if ((sensorIgnore & SENSOR_SOLID) == 0) {
 				return SENSOR_SOLID;
+			} else {
+				return 0;
 			}
 		}
 		
