@@ -28,8 +28,7 @@ asmcup.jar also has command line tools:
  * `asmcup.runtime.Main` simulates a game world via the command line
 
 If you want to improve the Sandbox or make changes to the game code itself
-you can either import the project into Eclipse or build using
-`ant` or `gradle jar`
+you can either import the project into Eclipse or build using `gradle jar`
 
 ## Compete
 
