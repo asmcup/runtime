@@ -133,6 +133,10 @@ public class Robot {
 	}
 	
 	public void flash(byte[] ram) {
+		if (ram.length != 256) {
+			throw new IllegalArgumentException("Program size must be 256");
+		}
+		
 		this.vm = new VM(ram);
 	}
 	

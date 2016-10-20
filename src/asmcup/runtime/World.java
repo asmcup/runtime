@@ -5,7 +5,7 @@ import java.util.*;
 public class World {
 	protected final ArrayList<Robot> robots;
 	protected final HashMap<Integer, Cell> cells;
-	protected int seed;
+	protected final int seed;
 	protected int frame;
 	
 	public World() {

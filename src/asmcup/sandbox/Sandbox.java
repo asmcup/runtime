@@ -33,6 +33,7 @@ public class Sandbox {
 	protected Image bot;
 	protected boolean showGrid;
 	protected boolean lockCenter;
+	protected Genetics genetics;
 	
 	public Sandbox() throws IOException {
 		reseed();
@@ -43,6 +44,7 @@ public class Sandbox {
 		frame = new Frame(this);
 		codeEditor = new CodeEditor(this);
 		debugger = new Debugger(this);
+		genetics = new Genetics(this);
 		
 		canvas.addMouseListener(mouse);
 		canvas.addMouseMotionListener(mouse);
@@ -89,6 +91,10 @@ public class Sandbox {
 	
 	public Debugger getDebugger() {
 		return debugger;
+	}
+	
+	public Genetics getGenetics() {
+		return genetics;
 	}
 	
 	public World getWorld() {
