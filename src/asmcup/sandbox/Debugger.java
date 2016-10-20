@@ -18,6 +18,7 @@ public class Debugger extends JFrame {
 	protected JProgressBar batteryBar, sensorBar;
 	protected JLabel goldLabel;
 	protected JPanel panel, bottomPane;
+	volatile protected boolean updating;
 	
 	public Debugger(Sandbox sandbox) throws IOException {
 		this.sandbox = sandbox;
@@ -42,6 +43,7 @@ public class Debugger extends JFrame {
 		hitem("Battery:", batteryBar);
 		hitem("Sensor:", sensorBar);
 		hitem("Gold:", goldLabel);
+		updating = false;
 		
 		panel.add(scrollPane, BorderLayout.CENTER);
 		panel.add(bottomPane, BorderLayout.SOUTH);
@@ -67,6 +69,7 @@ public class Debugger extends JFrame {
 	
 	public void updateDebugger() {
 		Robot robot = sandbox.getRobot();
+		updating = true;
 		motorSlider.setValue((int)(robot.getMotor() * 100));
 		steerSlider.setValue((int)(robot.getSteer() * 100));
 		lazerSlider.setValue((int)(robot.getLazer() * 100));
@@ -74,10 +77,14 @@ public class Debugger extends JFrame {
 		sensorBar.setValue((int)robot.getSensor());
 		batteryBar.setValue(robot.getBattery());
 		goldLabel.setText(String.valueOf(robot.getGold()));
+		updating = false;
 		repaint();
 	}
 	
 	public void updateControls() {
+		if (updating) {
+			return;
+		}
 		synchronized (sandbox.getWorld()) {
 			Robot robot = sandbox.getRobot();
 			robot.setMotor(motorSlider.getValue() / 100.0f);
