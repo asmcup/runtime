@@ -216,7 +216,7 @@ The `ret` function pops and jumps to the address at the top of the stack. `jsr` 
 the same, but also pushes the address of the instruction following it.
 
 ```
-push8 [half_speed]
+push8 &half_speed
 jsr
 
 half_speed:
