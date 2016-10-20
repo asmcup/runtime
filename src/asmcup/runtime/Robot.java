@@ -12,6 +12,7 @@ public class Robot {
 	protected float motor;
 	protected float steer;
 	protected float lazer;
+	protected float lazerEnd;
 	protected float lastX, lastY;
 	protected float frequency;
 	protected int gold;
@@ -67,6 +68,10 @@ public class Robot {
 	
 	public float getLazer() {
 		return lazer;
+	}
+	
+	public float getLazerEnd() {
+		return lazerEnd;
 	}
 	
 	public void setMotor(float f) {
@@ -190,7 +195,44 @@ public class Robot {
 	}
 	
 	protected void tickLazer(World world) {
+		if (lazer <= 0) {
+			lazerEnd = 0;
+			return;
+		}
 		
+		float cos = (float)Math.cos(facing);
+		float sin = (float)Math.sin(facing);
+		
+		for (int i=0; i < RAY_STEPS; i++) {
+			if ((i * RAY_INTERVAL) >= (lazer * LAZER_RANGE)) {
+				lazerEnd = lazer * LAZER_RANGE;
+				return;
+			}
+			
+			battery -= LAZER_BATTERY_COST;
+			
+			float tx = x + cos * (i * RAY_INTERVAL);
+			float ty = y + sin * (i * RAY_INTERVAL);
+			int tile = world.getTileXY(tx, ty);
+			int type = tile & 0b111;
+			int variant = (tile >> 3) & 0b11;
+			
+			if (type == Cell.TILE_WALL) {
+				lazerEnd = i * RAY_INTERVAL;
+				return;
+			}
+			
+			if (type == Cell.TILE_OBSTACLE) {
+				if (variant >= 2) {
+					world.setTileXY(tx, ty, Cell.TILE_GROUND);
+				}
+				
+				lazerEnd = i * RAY_INTERVAL;
+				return;
+			}
+		}
+		
+		lazerEnd = RAY_INTERVAL * RAY_STEPS;
 	}
 	
 	protected void handleIO(World world) {
@@ -343,6 +385,7 @@ public class Robot {
 	public static final int OVERCLOCK_MAX = 100;
 	public static final float FREQUENCY_MAX = 1000 * 10;
 	public static final int LAZER_RANGE = 100;
+	public static final int LAZER_BATTERY_COST = 4;
 	
 	public static final int SENSOR_SOLID = 1;
 	public static final int SENSOR_HAZARD = 2;

@@ -89,7 +89,22 @@ public class World {
 	}
 	
 	public boolean isHazard(float x, float y) {
-		return getHazard(x, y) != -1;
+		return isTile(x, y, Cell.TILE_HAZARD);
+	}
+	
+	public boolean isObstacle(float x, float y) {
+		return isTile(x, y, Cell.TILE_OBSTACLE);
+	}
+	
+	public boolean isTile(float x, float y, int type) {
+		return (getTileXY(x, y) & 0b111) == type;
+	}
+	
+	public void setTileXY(float x, float y, int value) {
+		Cell cell = getCellXY(x, y);
+		int col = (int)(x / TILE_SIZE - cell.getX() * TILES_PER_CELL);
+		int row = (int)(y / TILE_SIZE - cell.getY() * TILES_PER_CELL);
+		cell.setTile(col, row, value);
 	}
 	
 	public void tick() {
