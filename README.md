@@ -275,14 +275,41 @@ Casts a beam at the current looking direction.
 ```
 push8 #IO_SENSOR
 io
+pop8 type
 popf distance
 ```
 
-After `io` the stack will contain a float of how far the beam
-traveled until it hit an obstacle. If no obstacle was hit the value on the
-stack will be `256.0`.
-A planned change to the beam sensor will allow it to return whether an and
-which item was hit.
+After `io` the stack will contain a byte on the top with a float below it.
+The float is the distance the beam travelled, which maximum range is `256.0`.
+The byte specifies which type of thing was hit by the beam:
+
+Value | Meaning
+------|---------
+ 0    | Nothing
+ 1    | Solid
+ 2    | Hazard
+ 4    | Gold
+ 8    | Battery
+
+By default the beam will hit anything listed above and return what was hit.
+This can be changed by using the `IO_SENSOR_CONFIG` command:
+
+```
+push8 what_to_ignore
+push8 #IO_SENSOR_CONFIG
+io
+```
+
+In the example above *what_to_ignore* is a bitmask of things to have the
+beam ignore. For example, to have the beam hit everything but gold:
+
+```
+push8 #4
+push8 #IO_SENSOR_CONFIG
+io
+```
+
+
 
 ### Motor Control
 
