@@ -2,7 +2,9 @@ package asmcup.sandbox;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import asmcup.runtime.Robot;
@@ -17,7 +19,7 @@ public class Debugger extends JFrame {
 	protected JLabel goldLabel;
 	protected JPanel panel, bottomPane;
 	
-	public Debugger(Sandbox sandbox) {
+	public Debugger(Sandbox sandbox) throws IOException {
 		this.sandbox = sandbox;
 		
 		memPane = new MemoryPane();
@@ -45,6 +47,7 @@ public class Debugger extends JFrame {
 		panel.add(bottomPane, BorderLayout.SOUTH);
 		
 		setTitle("Debugger");
+		setIconImage(ImageIO.read(getClass().getResource("/debugger.png")));
 		setResizable(false);
 		setContentPane(panel);
 		pack();

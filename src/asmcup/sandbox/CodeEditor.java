@@ -7,6 +7,7 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.text.PlainDocument;
 
@@ -19,7 +20,7 @@ public class CodeEditor extends JFrame {
 	protected byte[] ram = new byte[256];
 	protected File currentFile;
 	
-	public CodeEditor(Sandbox sandbox) {
+	public CodeEditor(Sandbox sandbox) throws IOException {
 		this.sandbox = sandbox;
 		this.editor = new JEditorPane();
 		this.menu = new Menu();
@@ -28,6 +29,7 @@ public class CodeEditor extends JFrame {
 		setSize(400, 400);
 		setContentPane(new JScrollPane(editor));
 		setJMenuBar(menu);
+		setIconImage(ImageIO.read(getClass().getResource("/notepad.png")));
 		
 		editor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 		editor.getDocument().putProperty(PlainDocument.tabSizeAttribute, 2);
