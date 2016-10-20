@@ -270,17 +270,17 @@ public class Robot {
 	}
 	
 	protected int sensorPoint(World world, float sx, float sy) {
-		if ((sensorIgnore & SENSOR_HAZARD) == 0) {
-			if (world.isHazard(sx, sy)) {
-				return SENSOR_HAZARD;
-			}
-		}
-		
 		if (world.isSolid(sx, sy)) {
 			if ((sensorIgnore & SENSOR_SOLID) == 0) {
 				return SENSOR_SOLID;
 			} else {
 				return 0;
+			}
+		}
+		
+		if ((sensorIgnore & SENSOR_HAZARD) == 0) {
+			if (world.isHazard(sx, sy)) {
+				return SENSOR_HAZARD;
 			}
 		}
 		
