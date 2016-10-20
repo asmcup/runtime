@@ -81,8 +81,6 @@ public class Menu extends JMenuBar {
 		menu.add(item("Pause/Resume", e -> pauseResume(), KeyEvent.VK_P));
 		menu.add(item("Single tick", e -> singleTick(), KeyEvent.VK_S));
 		menu.addSeparator();
-		menu.add(item("Center View", e -> centerView(), KeyEvent.VK_SPACE));
-		menu.addSeparator();
 		menu.add(item("Show Code Editor", e -> showCodeEditor(), KeyEvent.VK_E));
 		menu.add(item("Show Debugger", e -> showDebugger(), KeyEvent.VK_D));
 		add(menu);
@@ -101,6 +99,8 @@ public class Menu extends JMenuBar {
 	protected void addViewMenu() {
 		JMenu menu = new JMenu("View");
 		menu.add(item("Toggle Grid", e-> toggleGrid(), KeyEvent.VK_G));
+		menu.addSeparator();
+		menu.add(item("Center View", e -> centerView(), KeyEvent.VK_SPACE));
 		add(menu);
 	}
 }
