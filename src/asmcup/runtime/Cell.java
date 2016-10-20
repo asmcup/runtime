@@ -52,9 +52,9 @@ public class Cell {
 		return items;
 	}
 	
-	public Item getItem(Robot robot) {
+	public Item getItem(float x, float y) {
 		for (Item item : items) {
-			if (item.withinDistance(robot)) {
+			if (item.withinDistance(x, y)) {
 				return item;
 			}
 		}

@@ -24,7 +24,7 @@ public class Sandbox {
 	protected CodeEditor codeEditor;
 	protected Debugger debugger;
 	protected Image backBuffer;
-	protected SandboxWorld world;
+	protected World world;
 	protected Robot robot;
 	protected int panX, panY;
 	protected boolean paused;
@@ -171,7 +171,7 @@ public class Sandbox {
 	}
 	
 	public void reseed() {
-		world = new SandboxWorld();
+		world = new World();
 		
 		do {
 			panX = (int)(Math.random() * World.SIZE);
@@ -223,24 +223,10 @@ public class Sandbox {
 			drawRobot(g, robot);
 		}
 		
-		g.setColor(Color.BLUE);
-		
-		for (SandboxWorld.Ray ray : world.getRays()) {
-			drawRay(g, ray);
-		}
-		
 		if (paused) {
 			g.setColor(Color.WHITE);
 			g.drawString("PAUSED", 25, 50);
 		}
-	}
-	
-	protected void drawRay(Graphics g, SandboxWorld.Ray ray) {
-		int x1 = screenX(ray.x);
-		int y1 = screenY(ray.y);
-		int x2 = screenX(ray.x + (float)Math.cos(ray.theta) * ray.d);
-		int y2 = screenY(ray.y + (float)Math.sin(ray.theta) * ray.d);
-		g.drawLine(x1, y1, x2, y2);
 	}
 	
 	public int screenX(float x) {
@@ -327,6 +313,12 @@ public class Sandbox {
 		if (robot.getLazer() > 0) {
 			int w = (int)(robot.getLazer() * Robot.LAZER_RANGE);
 			g.setColor(Color.RED);
+			g.drawLine(sx, sy, sx + w, sy);
+		}
+		
+		if (world.getFrame() - robot.getSensorFrame() < 3) {
+			int w = (int)(robot.getSensor());
+			g.setColor(Color.BLUE);
 			g.drawLine(sx, sy, sx + w, sy);
 		}
 		

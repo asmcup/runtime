@@ -16,10 +16,6 @@ public abstract class Item {
 		this.y = y;
 	}
 	
-	public boolean withinDistance(Robot robot) {
-		return withinDistance(robot.getX(), robot.getY());
-	}
-	
 	public boolean withinDistance(float tx, float ty) {
 		float dx = tx - x;
 		float dy = ty - y;
