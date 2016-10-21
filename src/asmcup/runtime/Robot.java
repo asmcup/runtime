@@ -90,6 +90,10 @@ public class Robot {
 		overclock = Math.min(100, Math.max(0, v));
 	}
 	
+	public void setFacing(float facing) {
+		this.facing = facing;
+	}
+	
 	public void position(float x, float y) {
 		this.x = x;
 		this.y = y;
@@ -138,6 +142,15 @@ public class Robot {
 		}
 		
 		this.vm = new VM(ram);
+		motor = 0;
+		steer = 0;
+		lazer = 0;
+		lazerEnd = 0;
+		sensorIgnore = 0;
+		sensorFrame = 0;
+		lastX = 0;
+		lastY = 0;
+		overclock = 0;
 	}
 	
 	public void tick(World world) {

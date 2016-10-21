@@ -12,14 +12,14 @@ import asmcup.runtime.*;
 public class Genetics extends JFrame {
 	protected final Sandbox sandbox;
 	protected int programSize = 32;
-	protected int fitnessFrames = 10 * 15;
+	protected int fitnessFrames = 10 * 60;
 	protected JLabel bestLabel = new JLabel("0");
 	protected JLabel worstLabel = new JLabel("0");
 	protected JLabel genLabel = new JLabel("0");
 	protected JButton flashButton = new JButton("Flash");
 	protected JButton startButton = new JButton("Start");
 	protected JButton stopButton = new JButton("Stop");
-	protected Gene[] population = new Gene[100];
+	protected Gene[] population = new Gene[500];
 	protected Random random = new Random();
 	protected Thread thread;
 	protected boolean running = false;
@@ -116,6 +116,9 @@ public class Genetics extends JFrame {
 	public void flash() {
 		synchronized (sandbox.getWorld()) {
 			sandbox.getRobot().flash(population[0].ram.clone());
+			sandbox.reset();
+			sandbox.getRobot().setFacing(0);
+			sandbox.getRobot().position(startX, startY);
 		}
 	}
 	
@@ -181,7 +184,7 @@ public class Genetics extends JFrame {
 	}
 	
 	public Gene getWorst() {
-		return population[population.length - 1];
+		return population[population.length / 2 - 1];
 	}
 	
 	public Gene getBest() {

@@ -197,6 +197,15 @@ public class Sandbox {
 		redraw();
 	}
 	
+	public void reset() {
+		synchronized (world) {
+			world = new World(world.getSeed());
+			world.addRobot(robot);
+		}
+		
+		redraw();
+	}
+	
 	public void centerView() {
 		panX = (int)robot.getX();
 		panY = (int)robot.getY();

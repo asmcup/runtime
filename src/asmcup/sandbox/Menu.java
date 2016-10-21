@@ -63,6 +63,10 @@ public class Menu extends JMenuBar {
 		sandbox.reseed();
 	}
 	
+	public void reset() {
+		sandbox.reset();
+	}
+	
 	public void showWorldInfo() {
 		
 	}
@@ -107,6 +111,7 @@ public class Menu extends JMenuBar {
 	protected void addWorldMenu() {
 		JMenu menu = new JMenu("World");
 		menu.add(item("Generate New", e -> reseed(), KeyEvent.VK_N));
+		menu.add(item("Reset", e -> reset(), KeyEvent.VK_R));
 		menu.addSeparator();
 		menu.add(item("Pause/Resume", e -> pauseResume(), KeyEvent.VK_P));
 		menu.add(item("Single tick", e -> singleTick(), KeyEvent.VK_S));
