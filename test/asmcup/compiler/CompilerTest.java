@@ -69,5 +69,4 @@ public class CompilerTest {
 
         return builder.toString();
     }
-
 }
