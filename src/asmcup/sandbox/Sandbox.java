@@ -32,6 +32,7 @@ public class Sandbox {
 	protected Image[] coins, batteryImg;
 	protected Image bot;
 	protected boolean showGrid;
+	protected boolean lockCenter;
 	
 	public Sandbox() throws IOException {
 		reseed();
@@ -143,6 +144,9 @@ public class Sandbox {
 	
 	protected void tick() {
 		synchronized (world) {
+			if (lockCenter) {
+				centerView();
+			}
 			world.tick();
 			debugger.updateDebugger();
 			redraw();
@@ -409,6 +413,10 @@ public class Sandbox {
 	
 	public void toggleGrid() {
 		showGrid = !showGrid;
+	}
+
+	public void toggleLockCenter() {
+		lockCenter = !lockCenter;
 	}
 
 	public static final int WIDTH = 800;

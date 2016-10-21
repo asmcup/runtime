@@ -74,6 +74,10 @@ public class Menu extends JMenuBar {
 	public void toggleGrid() {
 		sandbox.toggleGrid();
 	}
+
+	public void toggleLockCenter() {
+		sandbox.toggleLockCenter();
+	}
 	
 	protected void addRobotMenu() {
 		JMenu menu = new JMenu("Robot");
@@ -101,6 +105,7 @@ public class Menu extends JMenuBar {
 		menu.add(item("Toggle Grid", e-> toggleGrid(), KeyEvent.VK_G));
 		menu.addSeparator();
 		menu.add(item("Center View", e -> centerView(), KeyEvent.VK_SPACE));
+		menu.add(item("Lock view to center", e -> toggleLockCenter(), KeyEvent.VK_C));
 		add(menu);
 	}
 }
