@@ -351,6 +351,7 @@ public class Compiler implements VMConsts {
 			}
 			
 			String name = line.substring(0, pos);
+
 			statements.add(new Label(name));
 			line = line.substring(pos + 1).trim();
 		}
@@ -516,6 +517,9 @@ public class Compiler implements VMConsts {
 		}
 		
 		public int measure() {
+			if (labels.containsKey(name)) {
+				throw new IllegalArgumentException(String.format("Redefined label '%s'", name));
+			}
 			labels.put(name, pc);
 			return 0;
 		}

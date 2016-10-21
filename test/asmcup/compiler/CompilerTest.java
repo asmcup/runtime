@@ -36,6 +36,16 @@ public class CompilerTest {
     }
 
     @Test
+    public void testRedefinedLabel() {
+        try {
+            compiler.compile("label:\nlabel:");
+            fail("Compiler did not fail on redefined label.");
+        } catch (IllegalArgumentException e) {
+            assertEquals("Redefined label 'label'", e.getMessage());
+        }
+    }
+
+    @Test
     public void testCurrentLine() {
         try {
             compiler.compile("valid:\n\nundefinedfunction #0");
