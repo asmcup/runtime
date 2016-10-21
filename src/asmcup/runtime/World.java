@@ -5,7 +5,7 @@ import java.util.*;
 public class World {
 	protected final ArrayList<Robot> robots;
 	protected final HashMap<Integer, Cell> cells;
-	protected int seed;
+	protected final int seed;
 	protected int frame;
 	
 	public World() {
@@ -89,7 +89,28 @@ public class World {
 	}
 	
 	public boolean isHazard(float x, float y) {
-		return getHazard(x, y) != -1;
+		return isTile(x, y, Cell.TILE_HAZARD);
+	}
+	
+	public boolean isObstacle(float x, float y) {
+		return isTile(x, y, Cell.TILE_OBSTACLE);
+	}
+	
+	public boolean isTile(float x, float y, int type) {
+		return (getTileXY(x, y) & 0b111) == type;
+	}
+	
+	public void setTileXY(float x, float y, int value) {
+		Cell cell = getCellXY(x, y);
+		int col = (int)(x / TILE_SIZE - cell.getX() * TILES_PER_CELL);
+		int row = (int)(y / TILE_SIZE - cell.getY() * TILES_PER_CELL);
+		
+		col = Math.max(col, 0);
+		row = Math.max(row, 0);
+		col = Math.min(col, TILES_PER_CELL * CELL_COUNT);
+		row = Math.min(row, TILES_PER_CELL * CELL_COUNT);
+		
+		cell.setTile(col, row, value);
 	}
 	
 	public void tick() {

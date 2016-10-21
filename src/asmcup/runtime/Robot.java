@@ -12,12 +12,14 @@ public class Robot {
 	protected float motor;
 	protected float steer;
 	protected float lazer;
+	protected float lazerEnd;
 	protected float lastX, lastY;
 	protected float frequency;
 	protected int gold;
 	protected float sensor;
 	protected int sensorIgnore;
 	protected int sensorFrame;
+	protected boolean ramming;
 	
 	public Robot(int id) {
 		this.id = id;
@@ -69,6 +71,10 @@ public class Robot {
 		return lazer;
 	}
 	
+	public float getLazerEnd() {
+		return lazerEnd;
+	}
+	
 	public void setMotor(float f) {
 		motor = clampSafe(f, -1, 1);
 	}
@@ -85,9 +91,17 @@ public class Robot {
 		overclock = Math.min(100, Math.max(0, v));
 	}
 	
+	public void setFacing(float facing) {
+		this.facing = facing;
+	}
+	
 	public void position(float x, float y) {
 		this.x = x;
 		this.y = y;
+	}
+	
+	public boolean isRamming() {
+		return ramming;
 	}
 	
 	public void kill() {
@@ -128,7 +142,21 @@ public class Robot {
 	}
 	
 	public void flash(byte[] ram) {
+		if (ram.length != 256) {
+			throw new IllegalArgumentException("Program size must be 256");
+		}
+		
 		this.vm = new VM(ram);
+		motor = 0;
+		steer = 0;
+		lazer = 0;
+		lazerEnd = 0;
+		sensorIgnore = 0;
+		sensorFrame = 0;
+		lastX = 0;
+		lastY = 0;
+		overclock = 0;
+		ramming = false;
 	}
 	
 	public void tick(World world) {
@@ -177,20 +205,62 @@ public class Robot {
 		
 		float tx = x + (float)Math.cos(facing) * s;
 		float ty = y + (float)Math.sin(facing) * s;
-		
 		int radius = World.TILE_SIZE/2 - 1;
+		
 		if (!world.isSolid(tx, ty, radius)) {
 			x = tx;
 			y = ty;
+			ramming = true;
 		} else if (!world.isSolid(tx, y, radius)) {
 			x = tx;
+			ramming = true;
 		} else if (!world.isSolid(x, ty, radius)) {
 			y = ty;
+			ramming = true;
+		} else {
+			ramming = false;
 		}
 	}
 	
 	protected void tickLazer(World world) {
+		if (lazer <= 0) {
+			lazerEnd = 0;
+			return;
+		}
 		
+		float cos = (float)Math.cos(facing);
+		float sin = (float)Math.sin(facing);
+		
+		for (int i=0; i < RAY_STEPS; i++) {
+			if ((i * RAY_INTERVAL) >= (lazer * LAZER_RANGE)) {
+				lazerEnd = lazer * LAZER_RANGE;
+				return;
+			}
+			
+			battery -= LAZER_BATTERY_COST;
+			
+			float tx = x + cos * (i * RAY_INTERVAL);
+			float ty = y + sin * (i * RAY_INTERVAL);
+			int tile = world.getTileXY(tx, ty);
+			int type = tile & 0b111;
+			int variant = (tile >> 3) & 0b11;
+			
+			if (type == Cell.TILE_WALL) {
+				lazerEnd = i * RAY_INTERVAL;
+				return;
+			}
+			
+			if (type == Cell.TILE_OBSTACLE) {
+				if (variant >= 2) {
+					world.setTileXY(tx, ty, Cell.TILE_GROUND);
+				}
+				
+				lazerEnd = i * RAY_INTERVAL;
+				return;
+			}
+		}
+		
+		lazerEnd = RAY_INTERVAL * RAY_STEPS;
 	}
 	
 	protected void handleIO(World world) {
@@ -343,6 +413,7 @@ public class Robot {
 	public static final int OVERCLOCK_MAX = 100;
 	public static final float FREQUENCY_MAX = 1000 * 10;
 	public static final int LAZER_RANGE = 100;
+	public static final int LAZER_BATTERY_COST = 4;
 	
 	public static final int SENSOR_SOLID = 1;
 	public static final int SENSOR_HAZARD = 2;

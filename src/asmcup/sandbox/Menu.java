@@ -63,6 +63,10 @@ public class Menu extends JMenuBar {
 		sandbox.reseed();
 	}
 	
+	public void reset() {
+		sandbox.reset();
+	}
+	
 	public void showWorldInfo() {
 		
 	}
@@ -79,22 +83,38 @@ public class Menu extends JMenuBar {
 		sandbox.toggleLockCenter();
 	}
 	
+	public void showGenetics() {
+		sandbox.getGenetics().setVisible(true);
+	}
+	
+	public void loadROM() {
+		try {
+			byte[] rom = Utils.readAsBytes(sandbox.getFrame(), "bin", "Program Binary");
+			sandbox.loadROM(rom);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	protected void addRobotMenu() {
 		JMenu menu = new JMenu("Robot");
+		menu.add(item("Load ROM...", e-> loadROM()));
+		menu.addSeparator();
 		menu.add(item("Teleport", e -> teleport(), KeyEvent.VK_T));
-		menu.add(item("Pause/Resume", e -> pauseResume(), KeyEvent.VK_P));
-		menu.add(item("Single tick", e -> singleTick(), KeyEvent.VK_S));
 		menu.addSeparator();
 		menu.add(item("Show Code Editor", e -> showCodeEditor(), KeyEvent.VK_E));
 		menu.add(item("Show Debugger", e -> showDebugger(), KeyEvent.VK_D));
+		menu.add(item("Show Genetics", e-> showGenetics()));
 		add(menu);
 	}
 	
 	protected void addWorldMenu() {
 		JMenu menu = new JMenu("World");
 		menu.add(item("Generate New", e -> reseed(), KeyEvent.VK_N));
+		menu.add(item("Reset", e -> reset(), KeyEvent.VK_R));
 		menu.addSeparator();
-		menu.add(item("Show Info", e -> showWorldInfo()));
+		menu.add(item("Pause/Resume", e -> pauseResume(), KeyEvent.VK_P));
+		menu.add(item("Single tick", e -> singleTick(), KeyEvent.VK_S));
 		menu.addSeparator();
 		menu.add(item("Quit", e -> sandbox.quit(), KeyEvent.VK_ESCAPE));
 		add(menu);

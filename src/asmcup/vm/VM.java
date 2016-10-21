@@ -239,7 +239,9 @@ public class VM implements VMConsts {
 			push8(pop8() * pop8());
 			break;
 		case F_DIV8:
-			push8(pop8() / pop8());
+			int a = pop8();
+			int b = pop8();
+			push8(b == 0 ? 0 : a / b);
 			break;
 		case F_MADD8:
 			push8(pop8() * pop8() + pop8());

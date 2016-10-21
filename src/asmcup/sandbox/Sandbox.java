@@ -33,6 +33,8 @@ public class Sandbox {
 	protected Image bot;
 	protected boolean showGrid;
 	protected boolean lockCenter;
+	protected Genetics genetics;
+	protected byte[] rom = new byte[256];
 	
 	public Sandbox() throws IOException {
 		reseed();
@@ -43,6 +45,7 @@ public class Sandbox {
 		frame = new Frame(this);
 		codeEditor = new CodeEditor(this);
 		debugger = new Debugger(this);
+		genetics = new Genetics(this);
 		
 		canvas.addMouseListener(mouse);
 		canvas.addMouseMotionListener(mouse);
@@ -91,12 +94,27 @@ public class Sandbox {
 		return debugger;
 	}
 	
+	public Genetics getGenetics() {
+		return genetics;
+	}
+	
 	public World getWorld() {
 		return world;
 	}
 	
 	public Robot getRobot() {
 		return robot;
+	}
+	
+	public byte[] getROM() {
+		return rom;
+	}
+	
+	public void loadROM(byte[] data) {
+		synchronized (world) {
+			rom = data;
+			robot.flash(rom);
+		}
 	}
 	
 	public void pan(int dx, int dy) {
@@ -188,6 +206,15 @@ public class Sandbox {
 		
 		world.addRobot(robot);
 		robot.position(panX, panY);
+		redraw();
+	}
+	
+	public void reset() {
+		synchronized (world) {
+			world = new World(world.getSeed());
+			world.addRobot(robot);
+		}
+		
 		redraw();
 	}
 	
@@ -314,8 +341,8 @@ public class Sandbox {
 		g.rotate(robot.getFacing(), sx, sy);
 		g.drawImage(bot, sx - World.TILE_HALF, sy - World.TILE_HALF, null);
 		
-		if (robot.getLazer() > 0) {
-			int w = (int)(robot.getLazer() * Robot.LAZER_RANGE);
+		if (robot.getLazerEnd() > 0) {
+			int w = (int)(robot.getLazerEnd());
 			g.setColor(Color.RED);
 			g.drawLine(sx, sy, sx + w, sy);
 		}

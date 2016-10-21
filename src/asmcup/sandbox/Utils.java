@@ -29,6 +29,16 @@ public class Utils {
 		return readAsString(file);
 	}
 	
+	public static byte[] readAsBytes(JFrame frame, String ext, String desc) throws IOException {
+		File file = findFileOpen(frame, ext, desc);
+		
+		if (file == null) {
+			return null;
+		}
+		
+		return Files.readAllBytes(file.toPath());
+	}
+	
 	public static void write(Path path, String text) throws IOException {
 		Files.write(path, text.getBytes("ASCII"));
 	}
@@ -45,6 +55,16 @@ public class Utils {
 		}
 		
 		write(file, text);
+	}
+	
+	public static void write(JFrame frame, String ext, String desc, byte[] data) throws IOException {
+		File file = findFileSave(frame, ext, desc);
+		
+		if (file == null) {
+			return;
+		}
+		
+		Files.write(file.toPath(), data);
 	}
 	
 	public static File findFileOpen(JFrame frame, String ext, String desc) {
