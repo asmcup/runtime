@@ -11,11 +11,12 @@ import asmcup.runtime.*;
 
 public class Genetics extends JFrame {
 	protected final Sandbox sandbox;
-	protected int programSize = 32;
+	protected int programSize = 256;
 	protected int fitnessFrames = 10 * 60;
 	protected JLabel bestLabel = new JLabel("0");
 	protected JLabel worstLabel = new JLabel("0");
 	protected JLabel genLabel = new JLabel("0");
+	protected JLabel mutationLabel = new JLabel("0");
 	protected JButton flashButton = new JButton("Flash");
 	protected JButton startButton = new JButton("Start");
 	protected JButton stopButton = new JButton("Stop");
@@ -27,17 +28,24 @@ public class Genetics extends JFrame {
 	protected int generation = 0;
 	protected float startX, startY;
 	protected int seed;
-	protected int mutationChance = 10;
+	protected int mutationRate = 1;
+	protected int minMutationRate = 1;
+	protected int maxMutationRate = 25;
+	protected int controlCount = 10;
+	protected int userRatio = 3;
+	protected int targetScoreDelta = 66;
 	
 	public static class Gene implements Comparable<Gene> {
 		byte[] ram;
 		float score;
+		int gen;
 		
 		public int compareTo(Gene other) {
 			float d = score - other.score;
 			
 			if (d == 0) {
 				return 0;
+				//return other.gen - gen;
 			} else if (d < 0) {
 				return 1;
 			}
@@ -58,13 +66,16 @@ public class Genetics extends JFrame {
 		stopButton.addActionListener(e -> stop());
 		saveButton.addActionListener(e -> save());
 		
-		JPanel panel = new JPanel(new GridLayout(5, 2));
+		JPanel panel = new JPanel(new GridLayout(6, 2));
 		
 		panel.add(new JLabel("Best:"));
 		panel.add(bestLabel);
 		
 		panel.add(new JLabel("Worst:"));
 		panel.add(worstLabel);
+		
+		panel.add(new JLabel("Mutation:"));
+		panel.add(mutationLabel);
 		
 		panel.add(new JLabel("Generation:"));
 		panel.add(genLabel);
@@ -145,6 +156,12 @@ public class Genetics extends JFrame {
 		}
 		
 		Arrays.sort(population);
+		float span = getBest().score - getWorst().score;
+		float expectedSpan = targetScoreDelta;
+		float p = 1.0f - span / expectedSpan;
+		mutationRate = (int)(p * 100);
+		mutationRate = Math.max(minMutationRate, mutationRate);
+		mutationRate = Math.min(maxMutationRate, mutationRate);
 		generation++;
 		updateStats();
 	}
@@ -160,53 +177,103 @@ public class Genetics extends JFrame {
 		return cross(population[a], population[b]);
 	}
 	
-	public Gene cross(Gene a, Gene b) {
+	public Gene cross(Gene mom, Gene dad) {
 		Gene gene = new Gene();
-		gene.ram = new byte[256];
+		gene.ram = mom.ram.clone();
+		gene.gen = generation;
 		
-		for (int i=0; i < programSize; i++) {
-			gene.ram[i] = crossByte(a.ram[i], b.ram[i]);
+		int src, dest, size;
+		
+		if (random.nextInt(100) <= mutationRate) {
+			dest = random.nextInt(programSize);
+			size = 1 + random.nextInt(programSize);
+			
+			for (int i=0; i < size; i++) {
+				gene.ram[(dest + i) % programSize] = (byte)random.nextInt(256);
+			}
+		}
+		
+		src = random.nextInt(programSize);
+		dest = random.nextInt(programSize);
+		size = 1 + random.nextInt(programSize);
+		
+		for (int i=0; i < size; i++) {
+			gene.ram[(dest + i) % programSize] = dad.ram[(src + i) % programSize];
 		}
 		
 		gene.score = score(gene.ram);
 		return gene;
 	}
 	
-	public byte crossByte(byte a, byte b) {
-		if (random.nextInt(mutationChance) == 0) {
-			return (byte)random.nextInt(256);
+	public float score(byte[] ram) {
+		float user = score(ram, seed, startX, startY) * userRatio;
+		
+		for (int i=1; i <= controlCount; i++) {
+			user += score(ram, seed + i, startX, startY);
 		}
 		
-		if (random.nextBoolean()) {
-			return a;
-		} else {
-			return b;
-		}
+		return user;
 	}
 	
-	public float score(byte[] ram) {
+	public float score(byte[] ram, int seed, float x, float y) {
 		Robot robot = new Robot(1);
 		World world = new World(seed);
 		world.addRobot(robot);
-		robot.position(startX, startY);
+		Random random = null;
+		
+		while (world.isSolid(x, y, 25)) {
+			if (random == null) {
+				random = new Random(world.getSeed());
+			}
+			
+			x = random.nextFloat() * World.SIZE;
+			y = random.nextFloat() * World.SIZE;
+		}
+		
+		robot.position(x, y);
 		robot.flash(ram.clone());
 		
 		float score = 0.0f;
 		int lastGold = 0;
+		int lastBattery = robot.getBattery();
+		HashSet<Integer> explored = new HashSet<Integer>();
 		
 		for (int frame=0; frame < fitnessFrames; frame++) {
 			world.tick();
-			int collected = robot.getGold() - lastGold;
 			
-			if (collected > 0) {
-				float t = (float)frame / (float)fitnessFrames;
-				score += collected * (1.0f - t);
+			
+			
+			if (robot.isDead()) {
+				break;
 			}
 			
+			if (robot.isRamming()) {
+				score -= 0.1f;
+			}
+			
+			int collected = robot.getGold() - lastGold;
+			float t = 1.0f - (float)frame / (float)fitnessFrames;
+			
+			if (collected > 0) {
+				score += t * 25;
+			}
+			
+			int recharged = robot.getBattery() - lastBattery;
+			
+			if (recharged > 0) {
+				score += t * 50;
+			}
+			
+			int col = (int)(robot.getX() * 4.0f / World.TILE_SIZE);
+			int row = (int)(robot.getY() * 4.0f / World.TILE_SIZE);
+			int key = col | (row << 16);
+			explored.add(key);
+			
 			lastGold = robot.getGold();
+			lastBattery = robot.getBattery();
 		}
 		
-		return score;
+		return score + explored.size() * 0.1f;
 	}
 	
 	public Gene getWorst() {
@@ -221,5 +288,6 @@ public class Genetics extends JFrame {
 		worstLabel.setText(String.valueOf(getWorst().score));
 		bestLabel.setText(String.valueOf(getBest().score));
 		genLabel.setText(String.valueOf(generation));
+		mutationLabel.setText(String.valueOf(mutationRate) + "%");
 	}
 }
