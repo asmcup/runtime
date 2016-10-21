@@ -10,11 +10,13 @@ public class Compiler implements VMConsts {
 	protected byte[] ram;
 	protected int pc;
 
+	protected int bytesUsed = 0;
 	protected int currentLine = 0;
 		
 	protected void write8(int value) {
 		ram[pc] = (byte)(value & 0xFF);
 		pc = (pc + 1) & 0xFF;
+		++bytesUsed;
 	}
 	
 	protected void writeOp(int op, int data) {
@@ -48,6 +50,7 @@ public class Compiler implements VMConsts {
 		labels = new HashMap<>();
 		statements = new ArrayList<>();
 		pc = 0;
+		bytesUsed = 0;
 		
 		for (String line : lines) {
 			currentLine++;
@@ -491,6 +494,13 @@ public class Compiler implements VMConsts {
 	 */
 	public int getCurrentLine() {
 		return currentLine;
+	}
+
+	/**
+	 * @return the number of bytes used
+	 */
+	public int getBytesUsed() {
+		return bytesUsed;
 	}
 	
 	protected abstract class Statement {

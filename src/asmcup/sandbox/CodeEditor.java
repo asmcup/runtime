@@ -1,6 +1,6 @@
 package asmcup.sandbox;
 
-import java.awt.Font;
+import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.dnd.*;
 import java.awt.event.*;
@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
 import javax.swing.text.PlainDocument;
 
 import asmcup.compiler.Compiler;
@@ -16,6 +17,7 @@ import asmcup.compiler.Compiler;
 public class CodeEditor extends JFrame {
 	protected final Sandbox sandbox;
 	protected JEditorPane editor;
+	protected JLabel statusLabel;
 	protected Menu menu;
 	protected byte[] ram = new byte[256];
 	protected File currentFile;
@@ -23,11 +25,21 @@ public class CodeEditor extends JFrame {
 	public CodeEditor(Sandbox sandbox) throws IOException {
 		this.sandbox = sandbox;
 		this.editor = new JEditorPane();
+		this.statusLabel = new JLabel();
 		this.menu = new Menu();
+
+		JPanel statusBar = new JPanel();
+		statusBar.add(statusLabel);
+		statusBar.setBorder(new BevelBorder(BevelBorder.LOWERED));
+
+		JPanel contentPanel = new JPanel();
+		contentPanel.setLayout(new BorderLayout());
+		contentPanel.add(new JScrollPane(editor), BorderLayout.CENTER);
+		contentPanel.add(statusBar, BorderLayout.PAGE_END);
 		
 		setTitle("Code Editor");
 		setSize(400, 400);
-		setContentPane(new JScrollPane(editor));
+		setContentPane(contentPanel);
 		setJMenuBar(menu);
 		setIconImage(ImageIO.read(getClass().getResource("/notepad.png")));
 		
@@ -94,6 +106,7 @@ public class CodeEditor extends JFrame {
 		Compiler compiler = new Compiler();
 		try {
 			ram = compiler.compile(editor.getText());
+			statusLabel.setText(String.format("Bytes used: %d", compiler.getBytesUsed()));
 		} catch (Exception e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this,
