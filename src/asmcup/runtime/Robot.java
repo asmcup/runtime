@@ -19,6 +19,7 @@ public class Robot {
 	protected float sensor;
 	protected int sensorIgnore;
 	protected int sensorFrame;
+	protected boolean ramming;
 	
 	public Robot(int id) {
 		this.id = id;
@@ -99,6 +100,10 @@ public class Robot {
 		this.y = y;
 	}
 	
+	public boolean isRamming() {
+		return ramming;
+	}
+	
 	public void kill() {
 		battery = 0;
 	}
@@ -151,6 +156,7 @@ public class Robot {
 		lastX = 0;
 		lastY = 0;
 		overclock = 0;
+		ramming = false;
 	}
 	
 	public void tick(World world) {
@@ -199,15 +205,20 @@ public class Robot {
 		
 		float tx = x + (float)Math.cos(facing) * s;
 		float ty = y + (float)Math.sin(facing) * s;
-		
 		int radius = World.TILE_SIZE/2 - 1;
+		
 		if (!world.isSolid(tx, ty, radius)) {
 			x = tx;
 			y = ty;
+			ramming = true;
 		} else if (!world.isSolid(tx, y, radius)) {
 			x = tx;
+			ramming = true;
 		} else if (!world.isSolid(x, ty, radius)) {
 			y = ty;
+			ramming = true;
+		} else {
+			ramming = false;
 		}
 	}
 	
