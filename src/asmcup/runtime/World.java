@@ -104,6 +104,12 @@ public class World {
 		Cell cell = getCellXY(x, y);
 		int col = (int)(x / TILE_SIZE - cell.getX() * TILES_PER_CELL);
 		int row = (int)(y / TILE_SIZE - cell.getY() * TILES_PER_CELL);
+		
+		col = Math.max(col, 0);
+		row = Math.max(row, 0);
+		col = Math.min(col, TILES_PER_CELL * CELL_COUNT);
+		row = Math.min(row, TILES_PER_CELL * CELL_COUNT);
+		
 		cell.setTile(col, row, value);
 	}
 	
