@@ -1,13 +1,23 @@
 apply plugin: 'java'
 
+repositories {
+  jcenter()
+}
+
 sourceSets {
     main {
         java {
-            srcDir 'src/'
+            srcDirs = ["src/"]
         }
         resources {
-            srcDir 'src/'
+            srcDirs = ["src/"]
             exclude '**/*.java'
+        }
+    }
+
+    test {
+        java {
+            srcDirs = ['test/']
         }
     }
 }
@@ -17,4 +27,8 @@ jar {
     attributes 'Implementation-Title': 'ASMCup Runtime',
                'Main-Class': 'asmcup.sandbox.Main'
   }
+}
+
+dependencies {
+    testCompile "junit:junit:4.12"
 }
