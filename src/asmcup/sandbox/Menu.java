@@ -90,7 +90,7 @@ public class Menu extends JMenuBar {
 	public void loadROM() {
 		try {
 			byte[] rom = Utils.readAsBytes(sandbox.getFrame(), "bin", "Program Binary");
-			sandbox.getRobot().flash(rom);
+			sandbox.loadROM(rom);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -57,6 +57,16 @@ public class Utils {
 		write(file, text);
 	}
 	
+	public static void write(JFrame frame, String ext, String desc, byte[] data) throws IOException {
+		File file = findFileSave(frame, ext, desc);
+		
+		if (file == null) {
+			return;
+		}
+		
+		Files.write(file.toPath(), data);
+	}
+	
 	public static File findFileOpen(JFrame frame, String ext, String desc) {
 		JFileChooser chooser = new JFileChooser();
 		chooser.setFileFilter(new FileNameExtensionFilter(desc, ext));

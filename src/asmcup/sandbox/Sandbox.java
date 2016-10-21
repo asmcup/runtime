@@ -34,6 +34,7 @@ public class Sandbox {
 	protected boolean showGrid;
 	protected boolean lockCenter;
 	protected Genetics genetics;
+	protected byte[] rom = new byte[256];
 	
 	public Sandbox() throws IOException {
 		reseed();
@@ -103,6 +104,17 @@ public class Sandbox {
 	
 	public Robot getRobot() {
 		return robot;
+	}
+	
+	public byte[] getROM() {
+		return rom;
+	}
+	
+	public void loadROM(byte[] data) {
+		synchronized (world) {
+			rom = data;
+			robot.flash(rom);
+		}
 	}
 	
 	public void pan(int dx, int dy) {

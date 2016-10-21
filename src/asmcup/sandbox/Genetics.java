@@ -19,6 +19,7 @@ public class Genetics extends JFrame {
 	protected JButton flashButton = new JButton("Flash");
 	protected JButton startButton = new JButton("Start");
 	protected JButton stopButton = new JButton("Stop");
+	protected JButton saveButton = new JButton("Save");
 	protected Gene[] population = new Gene[500];
 	protected Random random = new Random();
 	protected Thread thread;
@@ -30,10 +31,18 @@ public class Genetics extends JFrame {
 	
 	public static class Gene implements Comparable<Gene> {
 		byte[] ram;
-		int score;
+		float score;
 		
 		public int compareTo(Gene other) {
-			return other.score - score;
+			float d = score - other.score;
+			
+			if (d == 0) {
+				return 0;
+			} else if (d < 0) {
+				return 1;
+			}
+			
+			return -1;
 		}
 	}
 	
@@ -47,6 +56,7 @@ public class Genetics extends JFrame {
 		flashButton.addActionListener(e -> flash());
 		startButton.addActionListener(e -> start());
 		stopButton.addActionListener(e -> stop());
+		saveButton.addActionListener(e -> save());
 		
 		JPanel panel = new JPanel(new GridLayout(5, 2));
 		
@@ -59,7 +69,7 @@ public class Genetics extends JFrame {
 		panel.add(new JLabel("Generation:"));
 		panel.add(genLabel);
 		
-		panel.add(new JLabel(""));
+		panel.add(saveButton);
 		panel.add(flashButton);
 		
 		panel.add(stopButton);
@@ -103,22 +113,27 @@ public class Genetics extends JFrame {
 	
 	public Gene random() {
 		Gene gene = new Gene();
-		gene.ram = new byte[256];
-		
-		for (int i=0; i < programSize; i++) {
-			gene.ram[i] = (byte)random.nextInt(256);
-		}
-		
+		gene.ram = sandbox.getROM().clone();
 		gene.score = score(gene.ram);
 		return gene;
 	}
 	
 	public void flash() {
 		synchronized (sandbox.getWorld()) {
-			sandbox.getRobot().flash(population[0].ram.clone());
+			sandbox.loadROM(getBest().ram.clone());
 			sandbox.reset();
 			sandbox.getRobot().setFacing(0);
 			sandbox.getRobot().position(startX, startY);
+		}
+	}
+	
+	public void save() {
+		Gene best = getBest();
+		
+		try {
+			Utils.write(sandbox.getFrame(), "bin", "Program Binary", best.ram);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -169,18 +184,29 @@ public class Genetics extends JFrame {
 		}
 	}
 	
-	public int score(byte[] ram) {
+	public float score(byte[] ram) {
 		Robot robot = new Robot(1);
 		World world = new World(seed);
 		world.addRobot(robot);
 		robot.position(startX, startY);
 		robot.flash(ram.clone());
 		
+		float score = 0.0f;
+		int lastGold = 0;
+		
 		for (int frame=0; frame < fitnessFrames; frame++) {
 			world.tick();
+			int collected = robot.getGold() - lastGold;
+			
+			if (collected > 0) {
+				float t = (float)frame / (float)fitnessFrames;
+				score += collected * (1.0f - t);
+			}
+			
+			lastGold = robot.getGold();
 		}
 		
-		return robot.getGold();
+		return score;
 	}
 	
 	public Gene getWorst() {
