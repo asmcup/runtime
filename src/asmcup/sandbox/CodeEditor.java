@@ -129,10 +129,6 @@ public class CodeEditor extends JFrame {
 		}
 	}
 	
-	public void checkSyntax() {
-		
-	}
-	
 	public File findFileSave() {
 		return Utils.findFileSave(sandbox.getFrame(), "asm", "Source File (.asm)");
 	}
@@ -163,10 +159,6 @@ public class CodeEditor extends JFrame {
 	
 	public void saveFileAs() {
 		save(findFileSave());
-	}
-	
-	public void saveROM() {
-		
 	}
 	
 	protected class Menu extends JMenuBar {
@@ -202,7 +194,6 @@ public class CodeEditor extends JFrame {
 					KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK)));
 			menu.add(item("Save Code As...", e -> saveFileAs(),
 					KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.ALT_MASK | ActionEvent.CTRL_MASK)));
-			menu.add(item("Save ROM", e -> saveROM(), null));
 			menu.addSeparator();
 			menu.add(item("Close Editor", (e) -> closeEditor(),
 					KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK)));
@@ -215,8 +206,6 @@ public class CodeEditor extends JFrame {
 					KeyStroke.getKeyStroke(KeyEvent.VK_E, ActionEvent.CTRL_MASK)));
 			menu.add(item("Compile", e -> compile(), null));
 			menu.add(item("Flash", e -> flash(), null));
-			menu.addSeparator();
-			menu.add(item("Check Syntax", e -> checkSyntax(), null));
 			add(menu);
 		}
 	}
