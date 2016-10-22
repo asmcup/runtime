@@ -21,7 +21,11 @@ public class Genetics extends JFrame {
 	protected JButton startButton = new JButton("Start");
 	protected JButton stopButton = new JButton("Stop");
 	protected JButton saveButton = new JButton("Save");
-	protected Gene[] population = new Gene[500];
+	protected JSpinner popSpinner = createSpinner(100, 1, 1000 * 1000);
+	protected JSpinner controlSpinner = createSpinner(5, 0, 100);
+	protected JSpinner mutationSpinner = createSpinner(25, 0, 100);
+	protected JSpinner sizeSpinner = createSpinner(256, 1, 256);
+	protected Gene[] population = new Gene[100];
 	protected Random random = new Random();
 	protected Thread thread;
 	protected boolean running = false;
@@ -30,10 +34,9 @@ public class Genetics extends JFrame {
 	protected int seed;
 	protected int mutationRate = 1;
 	protected int minMutationRate = 1;
-	protected int maxMutationRate = 25;
+	protected int maxMutationRate = 50;
 	protected int controlCount = 10;
 	protected int userRatio = 3;
-	protected int targetScoreDelta = 66;
 	
 	public static class Gene implements Comparable<Gene> {
 		byte[] ram;
@@ -66,7 +69,19 @@ public class Genetics extends JFrame {
 		stopButton.addActionListener(e -> stop());
 		saveButton.addActionListener(e -> save());
 		
-		JPanel panel = new JPanel(new GridLayout(6, 2));
+		JPanel panel = new JPanel(new GridLayout(10, 2));
+		
+		panel.add(new JLabel("Population:"));
+		panel.add(popSpinner);
+		
+		panel.add(new JLabel("Control:"));
+		panel.add(controlSpinner);
+		
+		panel.add(new JLabel("Max Mutate:"));
+		panel.add(mutationSpinner);
+		
+		panel.add(new JLabel("Size:"));
+		panel.add(sizeSpinner);
 		
 		panel.add(new JLabel("Best:"));
 		panel.add(bestLabel);
@@ -93,10 +108,29 @@ public class Genetics extends JFrame {
 		pack();
 	}
 	
+	public JSpinner createSpinner(int value, int min, int max) {
+		SpinnerModel model = new SpinnerNumberModel(value, min, max, 1);
+		JSpinner spinner = new JSpinner(model);
+		return spinner;
+	}
+	
+	public int getInt(JSpinner spinner) {
+		return (Integer)spinner.getValue();
+	}
+	
 	public void start() {
 		if (thread != null && thread.isAlive()) {
 			return;
 		}
+		
+		popSpinner.setEnabled(false);
+		controlSpinner.setEnabled(false);
+		mutationSpinner.setEnabled(false);
+		sizeSpinner.setEnabled(false);
+		controlCount = getInt(controlSpinner);
+		maxMutationRate = getInt(mutationSpinner);
+		programSize = getInt(sizeSpinner);
+		resizePopulation();
 		
 		startX = sandbox.getRobot().getX();
 		startY = sandbox.getRobot().getY();
@@ -118,8 +152,31 @@ public class Genetics extends JFrame {
 		thread.start();
 	}
 	
+	public void resizePopulation() {
+		int newSize = getInt(popSpinner);
+		
+		if (population.length != newSize) {
+			Gene[] newPop = new Gene[newSize];
+			
+			for (int i=0; i < newSize; i++) {
+				if (i < population.length) {
+					newPop[i] = population[i];
+				} else {
+					newPop[i] = random();
+				}
+			}
+			
+			population = newPop;
+		}
+	}
+	
 	public void stop() {
 		running = false;
+		
+		popSpinner.setEnabled(true);
+		controlSpinner.setEnabled(true);
+		mutationSpinner.setEnabled(true);
+		sizeSpinner.setEnabled(true);
 	}
 	
 	public Gene random() {
@@ -156,9 +213,7 @@ public class Genetics extends JFrame {
 		}
 		
 		Arrays.sort(population);
-		float span = getBest().score - getWorst().score;
-		float expectedSpan = targetScoreDelta;
-		float p = 1.0f - span / expectedSpan;
+		float p = getWorst().score / getBest().score;
 		mutationRate = (int)(p * 100);
 		mutationRate = Math.max(minMutationRate, mutationRate);
 		mutationRate = Math.min(maxMutationRate, mutationRate);
