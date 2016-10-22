@@ -516,7 +516,13 @@ public class Compiler implements VMConsts {
 		}
 		
 		public int measure() {
-			labels.put(name, pc);
+			if(labels.containsKey(name)) {
+				throw new IllegalArgumentException("label " + name + " has been defined more than once");
+			}
+			
+			else {
+				labels.put(name, pc);	
+			}
 			return 0;
 		}
 		
