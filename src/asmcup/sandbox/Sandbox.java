@@ -259,6 +259,15 @@ public class Sandbox {
 			drawRobot(g, robot);
 		}
 		
+		g.setColor(Color.PINK);
+		
+		for (Genetics.Control control : genetics.getControls()) {
+			int x = screenX(control.x);
+			int y = screenY(control.y);
+			g.drawLine(x - 4, y, x + 4, y);
+			g.drawLine(x, y - 4, x, y + 4);
+		}
+		
 		if (paused) {
 			g.setColor(Color.WHITE);
 			g.drawString("PAUSED", 25, 50);

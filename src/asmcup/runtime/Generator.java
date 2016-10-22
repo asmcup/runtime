@@ -159,7 +159,12 @@ public class Generator {
 		top = hpad + 1;
 		right = left + width - 2;
 		bottom = top + height - 2;
-		wall = same(Cell.TILE_WALL);
+		
+		if (chance(80)) {
+			wall = same(Cell.TILE_WALL);
+		} else {
+			wall = same(Cell.TILE_HAZARD);
+		}
 		
 		if (width < 3 || height < 3) {
 			return;
