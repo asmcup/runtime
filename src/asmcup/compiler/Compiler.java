@@ -159,6 +159,9 @@ public class Compiler implements VMConsts {
 		if (!VMFuncTable.exists(cmd)) {
 			throw new IllegalArgumentException("Unknown function " + cmd);
 		}
+		if (args.length > 0) {
+			throw new IllegalArgumentException("Too many arguments (0 expected)");
+		}
 		
 		immediate(OP_FUNC, VMFuncTable.parse(cmd), NO_DATA);
 	}
@@ -321,14 +324,16 @@ public class Compiler implements VMConsts {
 			if (!s.endsWith(end)) {
 				throw new IllegalArgumentException(String.format("Expected '%s'", s));
 			}
-			
 			return true;
 		}
-		
 		return false;
 	}
 	
 	public static String expectOne(String[] args) {
+		if (args.length != 1) {
+			throw new IllegalArgumentException("Wrong number of arguments (1 expected, "
+					+ args.length + " received)");
+		}
 		return args[0];
 	}
 	
@@ -376,7 +381,7 @@ public class Compiler implements VMConsts {
 	}
 	
 	protected static int parseLiteral(String s) {
-		if (!s.startsWith("#")) {
+		if (!isLiteral(s)) {
 			throw new IllegalArgumentException("Expected #");
 		}
 		
@@ -387,12 +392,17 @@ public class Compiler implements VMConsts {
 		if (RobotConstsTable.contains(s)) {
 			return RobotConstsTable.get(s);
 		}
-		
-		if (s.startsWith("$")) {
-			return Integer.parseInt(s.substring(1), 16);
+
+		try {
+			if (s.startsWith("$")) {
+				return Integer.parseInt(s.substring(1), 16);
+			}
+			
+			return Integer.parseInt(s, 10);
 		}
-		
-		return Integer.parseInt(s, 10);
+		catch (NumberFormatException e) {
+			throw new IllegalArgumentException("Invalid value: " + s);
+		}
 	}
 	
 	protected void reference(int op, int data, String s) {
@@ -403,7 +413,10 @@ public class Compiler implements VMConsts {
 			
 			public void compile() {
 				int addr;
-				
+
+				if (isLiteral(s)) {
+					throw new IllegalArgumentException("Cannot address a literal as jump target");
+				}
 				if (isSymbol(s)) {
 					if (!labels.containsKey(s)) {
 						throw new IllegalArgumentException(String.format("Cannot find label '%s'", s));
