@@ -20,6 +20,7 @@ public class Robot {
 	protected int sensorIgnore;
 	protected int sensorFrame;
 	protected boolean ramming;
+	protected int lastValidIO, lastInvalidIO;
 	
 	public Robot(int id) {
 		this.id = id;
@@ -102,6 +103,14 @@ public class Robot {
 	
 	public boolean isRamming() {
 		return ramming;
+	}
+	
+	public int getLastIO() {
+		return lastValidIO;
+	}
+	
+	public int getLastInvalidIO() {
+		return lastInvalidIO;
 	}
 	
 	public void kill() {
@@ -319,7 +328,12 @@ public class Robot {
 		case IO_RECV:
 			vm.push8(world.recv(this, frequency));
 			break;
+		default:
+			lastInvalidIO = world.getFrame();
+			return;
 		}
+		
+		lastValidIO = world.getFrame();
 	}
 	
 	protected void sensorRay(World world) {
