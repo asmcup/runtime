@@ -37,6 +37,7 @@ public class CompilerTest {
 
     @Test
     public void testCurrentLine() {
+        fail("TEST");
         try {
             compiler.compile("valid:\n\nundefinedfunction #0");
             fail("Compiler did not fail on undefined function.");
