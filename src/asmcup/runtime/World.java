@@ -107,8 +107,8 @@ public class World {
 		
 		col = Math.max(col, 0);
 		row = Math.max(row, 0);
-		col = Math.min(col, TILES_PER_CELL * CELL_COUNT);
-		row = Math.min(row, TILES_PER_CELL * CELL_COUNT);
+		col = Math.min(col, TILES_PER_CELL * CELL_COUNT - 1);
+		row = Math.min(row, TILES_PER_CELL * CELL_COUNT - 1);
 		
 		cell.setTile(col, row, value);
 	}
