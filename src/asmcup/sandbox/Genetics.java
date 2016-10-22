@@ -8,6 +8,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import asmcup.runtime.*;
+import asmcup.vm.VM;
 
 public class Genetics extends JFrame {
 	protected final Sandbox sandbox;
@@ -24,13 +25,14 @@ public class Genetics extends JFrame {
 	protected int minMutationRate = 1;
 	protected int maxMutationRate = 100;
 	protected int controlCount = 0;
-	protected int chunkSize = programSize;
+	protected int chunkSize = 4;
 	protected int idleMax = 0;
 	protected int exploreReward = 4;
 	protected int ramPenalty = 2;
 	protected int goldReward = 50;
 	protected int batteryReward = 100;
 	protected boolean temporal = true;
+	protected boolean forceStack = false;
 	protected ArrayList<Gene> pinned = new ArrayList<>();
 	protected JLabel bestLabel = new JLabel("0");
 	protected JLabel worstLabel = new JLabel("0");
@@ -43,7 +45,7 @@ public class Genetics extends JFrame {
 	protected JButton pinButton = new JButton("Pin");
 	protected JButton unpinButton = new JButton("Unpin");
 	protected ArrayList<JSpinner> spinners = new ArrayList<>();
-	protected JSpinner popSpinner = createSpinner(100, 1, 1000 * 1000);
+	protected JSpinner popSpinner = createSpinner(population.length, 1, 1000 * 1000);
 	protected JSpinner controlSpinner = createSpinner(0, 0, 100);
 	protected JSpinner mutationSpinner = createSpinner(100, 0, 100);
 	protected JSpinner sizeSpinner = createSpinner(256, 1, 256);
@@ -55,7 +57,8 @@ public class Genetics extends JFrame {
 	protected JSpinner goldSpinner = createSpinner(goldReward, -1000, 1000);
 	protected JSpinner batterySpinner = createSpinner(batteryReward, -1000, 1000);
 	protected JSpinner temporalSpinner = createSpinner(temporal ? 1 : 0, 0, 1);
-	protected JPanel panel = new JPanel(new GridLayout(19, 2));
+	protected JSpinner stackSpinner = createSpinner(forceStack ? 1 : 0, 0, 1);
+	protected JPanel panel = new JPanel(new GridLayout(20, 2));
 	
 	public static class Gene implements Comparable<Gene> {
 		byte[] ram;
@@ -100,12 +103,13 @@ public class Genetics extends JFrame {
 		hitem("Mutate Chance:", mutationSpinner);
 		hitem("Mutate Size:", chunkSpinner);
 		hitem("Size:", sizeSpinner);
-		hitem("Idle", idleSpinner);
-		hitem("Gold Reward", goldSpinner);
-		hitem("Battery Reward", batterySpinner);
-		hitem("Explore Reward", exploreSpinner);
-		hitem("Collide Reward", rammingSpinner);
+		hitem("Idle:", idleSpinner);
+		hitem("Gold Reward:", goldSpinner);
+		hitem("Battery Reward:", batterySpinner);
+		hitem("Explore Reward:", exploreSpinner);
+		hitem("Collide Penalty:", rammingSpinner);
 		hitem("Temporal:", temporalSpinner);
+		hitem("Force Stack:", stackSpinner);
 		hitem("Best:", bestLabel);
 		hitem("Worst:", worstLabel);
 		hitem("Mutation:", mutationLabel);
@@ -160,6 +164,7 @@ public class Genetics extends JFrame {
 		exploreReward = getInt(exploreSpinner);
 		ramPenalty = getInt(rammingSpinner);
 		temporal = getInt(temporalSpinner) > 0;
+		forceStack = getInt(stackSpinner) > 0;
 		
 		resizePopulation();
 		
@@ -342,9 +347,21 @@ public class Genetics extends JFrame {
 		HashSet<Integer> explored = new HashSet<>();
 		HashSet<Integer> rammed = new HashSet<>();
 		int lastCol = 0, lastRow = 0, idle = 0;
+		VM vm = robot.getVM();
+		int spBefore, spAfter;
 		
 		for (int frame=0; frame < fitnessFrames; frame++) {
-			world.tick();
+			if (forceStack) {
+				spBefore = vm.getStackPointer();
+				world.tick();
+				spAfter = vm.getStackPointer();
+				
+				if (spBefore > 192 && spAfter < 64) {
+					break;
+				}
+			} else {
+				world.tick();
+			}
 			
 			if (robot.isDead()) {
 				break;
