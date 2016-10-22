@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 
 import asmcup.runtime.Cell;
 import asmcup.runtime.Item;
@@ -115,6 +116,10 @@ public class Sandbox {
 			rom = data;
 			robot.flash(rom);
 		}
+	}
+	
+	public void showError(String msg) {
+		JOptionPane.showMessageDialog(frame, msg);
 	}
 	
 	public void pan(int dx, int dy) {
