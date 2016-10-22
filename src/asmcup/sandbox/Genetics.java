@@ -25,6 +25,7 @@ public class Genetics extends JFrame {
 	protected JSpinner controlSpinner = createSpinner(5, 0, 100);
 	protected JSpinner mutationSpinner = createSpinner(25, 0, 100);
 	protected JSpinner sizeSpinner = createSpinner(256, 1, 256);
+	protected JSpinner frameSpinner = createSpinner(10 * 60, 1, 10 * 60 * 60 * 24);
 	protected Gene[] population = new Gene[100];
 	protected Random random = new Random();
 	protected Thread thread;
@@ -69,10 +70,13 @@ public class Genetics extends JFrame {
 		stopButton.addActionListener(e -> stop());
 		saveButton.addActionListener(e -> save());
 		
-		JPanel panel = new JPanel(new GridLayout(10, 2));
+		JPanel panel = new JPanel(new GridLayout(11, 2));
 		
 		panel.add(new JLabel("Population:"));
 		panel.add(popSpinner);
+		
+		panel.add(new JLabel("Frames:"));
+		panel.add(frameSpinner);
 		
 		panel.add(new JLabel("Control:"));
 		panel.add(controlSpinner);
@@ -127,9 +131,13 @@ public class Genetics extends JFrame {
 		controlSpinner.setEnabled(false);
 		mutationSpinner.setEnabled(false);
 		sizeSpinner.setEnabled(false);
+		frameSpinner.setEnabled(false);
+		
 		controlCount = getInt(controlSpinner);
 		maxMutationRate = getInt(mutationSpinner);
 		programSize = getInt(sizeSpinner);
+		fitnessFrames = getInt(frameSpinner);
+		
 		resizePopulation();
 		
 		startX = sandbox.getRobot().getX();
@@ -177,6 +185,7 @@ public class Genetics extends JFrame {
 		controlSpinner.setEnabled(true);
 		mutationSpinner.setEnabled(true);
 		sizeSpinner.setEnabled(true);
+		frameSpinner.setEnabled(true);
 	}
 	
 	public Gene random() {
