@@ -1,6 +1,9 @@
 package asmcup.sandbox;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.*;
 import java.awt.event.*;
+import java.util.Base64;
 
 import javax.swing.*;
 
@@ -96,9 +99,45 @@ public class Menu extends JMenuBar {
 		}
 	}
 	
+	public void copyROM() {
+		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		String encoded = Base64.getEncoder().encodeToString(sandbox.getROM());
+		
+		try {
+			clipboard.setContents(new StringSelection(encoded), null);
+		} catch (Exception e) {
+			e.printStackTrace();
+			sandbox.showError("Unable to copy ROM: " + e.getMessage());
+		}
+	}
+	
+	public void pasteROM() {
+		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		String text = "";
+		byte[] rom;
+		
+		try {
+			text = (String)clipboard.getData(DataFlavor.stringFlavor);
+			rom = Base64.getDecoder().decode(text);
+			
+			if (rom == null || rom.length != 256) {
+				sandbox.showError("Program must be 256 bytes");
+				return;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			sandbox.showError("Unable to paste: " + e.getMessage());
+			return;
+		}
+		
+		sandbox.loadROM(rom);
+	}
+	
 	protected void addRobotMenu() {
 		JMenu menu = new JMenu("Robot");
 		menu.add(item("Load ROM...", e-> loadROM()));
+		menu.add(item("Paste ROM", e-> pasteROM()));
+		menu.add(item("Copy ROM", e -> copyROM()));
 		menu.addSeparator();
 		menu.add(item("Teleport", e -> teleport(), KeyEvent.VK_T));
 		menu.addSeparator();
