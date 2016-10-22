@@ -22,8 +22,8 @@ public class Genetics extends JFrame {
 	protected JButton stopButton = new JButton("Stop");
 	protected JButton saveButton = new JButton("Save");
 	protected JSpinner popSpinner = createSpinner(100, 1, 1000 * 1000);
-	protected JSpinner controlSpinner = createSpinner(5, 0, 100);
-	protected JSpinner mutationSpinner = createSpinner(25, 0, 100);
+	protected JSpinner controlSpinner = createSpinner(0, 0, 100);
+	protected JSpinner mutationSpinner = createSpinner(100, 0, 100);
 	protected JSpinner sizeSpinner = createSpinner(256, 1, 256);
 	protected JSpinner frameSpinner = createSpinner(10 * 60, 1, 10 * 60 * 60 * 24);
 	protected Gene[] population = new Gene[100];
@@ -35,9 +35,8 @@ public class Genetics extends JFrame {
 	protected int seed;
 	protected int mutationRate = 1;
 	protected int minMutationRate = 1;
-	protected int maxMutationRate = 50;
-	protected int controlCount = 10;
-	protected int userRatio = 3;
+	protected int maxMutationRate = 100;
+	protected int controlCount = 0;
 	
 	public static class Gene implements Comparable<Gene> {
 		byte[] ram;
@@ -223,7 +222,7 @@ public class Genetics extends JFrame {
 		
 		Arrays.sort(population);
 		float p = getWorst().score / getBest().score;
-		mutationRate = (int)(p * 100);
+		mutationRate = minMutationRate + (int)(p * maxMutationRate);
 		mutationRate = Math.max(minMutationRate, mutationRate);
 		mutationRate = Math.min(maxMutationRate, mutationRate);
 		generation++;
@@ -270,7 +269,7 @@ public class Genetics extends JFrame {
 	}
 	
 	public float score(byte[] ram) {
-		float user = score(ram, seed, startX, startY) * userRatio;
+		float user = score(ram, seed, startX, startY);
 		
 		for (int i=1; i <= controlCount; i++) {
 			user += score(ram, seed + i, startX, startY);
@@ -305,8 +304,6 @@ public class Genetics extends JFrame {
 		for (int frame=0; frame < fitnessFrames; frame++) {
 			world.tick();
 			
-			
-			
 			if (robot.isDead()) {
 				break;
 			}
@@ -319,25 +316,28 @@ public class Genetics extends JFrame {
 			float t = 1.0f - (float)frame / (float)fitnessFrames;
 			
 			if (collected > 0) {
-				score += t * 25;
+				score += t * 50;
 			}
 			
 			int recharged = robot.getBattery() - lastBattery;
 			
 			if (recharged > 0) {
-				score += t * 50;
+				score += t * 100;
 			}
 			
 			int col = (int)(robot.getX() * 4.0f / World.TILE_SIZE);
 			int row = (int)(robot.getY() * 4.0f / World.TILE_SIZE);
 			int key = col | (row << 16);
-			explored.add(key);
+			
+			if (explored.add(key)) {
+				score += t * 5;
+			}
 			
 			lastGold = robot.getGold();
 			lastBattery = robot.getBattery();
 		}
 		
-		return score + explored.size() * 0.1f;
+		return score;
 	}
 	
 	public Gene getWorst() {
