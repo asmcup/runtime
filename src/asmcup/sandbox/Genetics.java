@@ -23,7 +23,7 @@ public class Genetics extends JFrame {
 	protected int mutationRate = 1;
 	protected int minMutationRate = 1;
 	protected int maxMutationRate = 100;
-	protected int controlCount = 0;
+	protected int extraWorldCount = 0;
 	protected int chunkSize = 4;
 	protected int idleMax = 0;
 	protected int idleIoMax = 0;
@@ -50,7 +50,7 @@ public class Genetics extends JFrame {
 	protected JButton unspawnButton = new JButton("Unspawn");
 	protected ArrayList<JSpinner> spinners = new ArrayList<>();
 	protected JSpinner popSpinner = createSpinner(population.length, 1, 1000 * 1000);
-	protected JSpinner controlSpinner = createSpinner(0, 0, 100);
+	protected JSpinner extraWorldSpinner = createSpinner(0, 0, 100);
 	protected JSpinner mutationSpinner = createSpinner(100, 0, 100);
 	protected JSpinner sizeSpinner = createSpinner(256, 1, 256);
 	protected JSpinner frameSpinner = createSpinner(10 * 60, 1, 10 * 60 * 60 * 24);
@@ -109,25 +109,25 @@ public class Genetics extends JFrame {
 		spawnButton.addActionListener(e -> spawn());
 		unspawnButton.addActionListener(e -> unspawn());
 		
-		hitem("Population:", popSpinner);
-		hitem("Frames:", frameSpinner);
-		hitem("Control:", controlSpinner);
-		hitem("Mutate Chance:", mutationSpinner);
-		hitem("Mutate Size:", chunkSpinner);
-		hitem("Size:", sizeSpinner);
-		hitem("Idle:", idleSpinner);
-		hitem("Idle IO:", idleIoSpinner);
-		hitem("Gold Reward:", goldSpinner);
-		hitem("Battery Reward:", batterySpinner);
-		hitem("Explore Reward:", exploreSpinner);
-		hitem("Collide Penalty:", rammingSpinner);
-		hitem("Temporal:", temporalSpinner);
-		hitem("Force Stack:", stackSpinner);
-		hitem("Force IO:", ioSpinner);
-		hitem("Best:", bestLabel);
-		hitem("Worst:", worstLabel);
-		hitem("Mutation:", mutationLabel);
-		hitem("Generation:", genLabel);
+		hitem("Population:", popSpinner, "Number of robots that are kept in the gene pool");
+		hitem("Frames:", frameSpinner, "Maximum number of frames for the simulation (10 frames = 1 second)");
+		hitem("Random Tests:", extraWorldSpinner, "Bots are placed into a set of random worlds");
+		hitem("Mutation Chance:", mutationSpinner, "Maximum chance that mutation will occur during mating");
+		hitem("Mutation Size:", chunkSpinner, "Maximum number of bytes that will be changed per mutation");
+		hitem("Program Size:", sizeSpinner, "Number of bytes in the ROM that will be used");
+		hitem("Idle Timeout:", idleSpinner, "Number of frames a bot has to move before being killed (0 is disabled)");
+		hitem("IO Idle Timeout:", idleIoSpinner, "Number of frames a bot has to use IO before being killed (0 is disabled)");
+		hitem("Gold Reward:", goldSpinner, "Number of points earned by collecting some gold");
+		hitem("Battery Reward:", batterySpinner, "Number of points earned by collecting some battery");
+		hitem("Explore Reward:", exploreSpinner, "Number of points earned by touching a new tile");
+		hitem("Collide Penalty:", rammingSpinner, "Number of points lost by ramming a tile for the first time");
+		hitem("Early Reward:", temporalSpinner, "Scale mpoints so earlier activity is worth more");
+		hitem("Force Stack:", stackSpinner, "Kill a bot if the stack pointer ever goes outside this much (0 is disabled)");
+		hitem("Force IO:", ioSpinner, "Kill a bot if it ever generates an invalid IO command");
+		hitem("Best:", bestLabel, "Highest score in the gene pool");
+		hitem("Worst:", worstLabel, "Lowest score in the gene pool");
+		hitem("Mutation:", mutationLabel, "Current chance of mutation");
+		hitem("Generation:", genLabel, "Current generation of gene pool");
 		hitem(pinButton, unpinButton);
 		hitem(spawnButton, unspawnButton);
 		hitem(saveButton, flashButton);
@@ -137,8 +137,15 @@ public class Genetics extends JFrame {
 		pack();
 	}
 	
+	public void hitem(String labelText, JComponent component, String hint) {
+		JLabel label = new JLabel(labelText);
+		component.setToolTipText(hint);
+		label.setToolTipText(hint);
+		hitem(label, component);
+	}
+	
 	public void hitem(String label, JComponent component) {
-		hitem(new JLabel(label), component);
+		hitem(label, component, "");
 	}
 	
 	public void hitem(JComponent a, JComponent b) {
@@ -194,7 +201,7 @@ public class Genetics extends JFrame {
 		
 		setSpinnersEnabled(false);
 		
-		controlCount = getInt(controlSpinner);
+		extraWorldCount = getInt(extraWorldSpinner);
 		maxMutationRate = getInt(mutationSpinner);
 		programSize = getInt(sizeSpinner);
 		fitnessFrames = getInt(frameSpinner);
@@ -361,7 +368,7 @@ public class Genetics extends JFrame {
 			score += score(ram, s);
 		}
 		
-		for (int i=1; i <= controlCount; i++) {
+		for (int i=1; i <= extraWorldCount; i++) {
 			score += score(ram, randomSpawn(i));
 		}
 		
@@ -393,6 +400,7 @@ public class Genetics extends JFrame {
 		world.addRobot(robot);
 		robot.position(spawn.x, spawn.y);
 		robot.setFacing(spawn.facing);
+		
 		robot.flash(ram.clone());
 		
 		float score = 0.0f;

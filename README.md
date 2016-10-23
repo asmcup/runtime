@@ -1,4 +1,5 @@
-[![Join the chat at https://gitter.im/asmcup/Lobby](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/asmcup/Lobby)
+[![Build Status](https://travis-ci.org/asmcup/runtime.svg)](https://travis-ci.org/asmcup/runtime)
+[![Join the chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/asmcup/Lobby)
 
 # asmcup
 
