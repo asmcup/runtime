@@ -54,6 +54,10 @@ public class Menu extends JMenuBar {
 		sandbox.singleTick();
 	}
 	
+	public void setSpeed(float speed) {
+		sandbox.setFramerate(Sandbox.DEFAULT_FRAMERATE * speed);
+	}
+	
 	public void showCodeEditor() {
 		sandbox.getCodeEditor().setVisible(true);
 	}
@@ -143,7 +147,7 @@ public class Menu extends JMenuBar {
 		menu.addSeparator();
 		menu.add(item("Show Code Editor", e -> showCodeEditor(), KeyEvent.VK_E));
 		menu.add(item("Show Debugger", e -> showDebugger(), KeyEvent.VK_D));
-		menu.add(item("Show Genetics", e-> showGenetics()));
+		menu.add(item("Show Genetics", e-> showGenetics(), KeyEvent.VK_G));
 		add(menu);
 	}
 	
@@ -154,14 +158,26 @@ public class Menu extends JMenuBar {
 		menu.addSeparator();
 		menu.add(item("Pause/Resume", e -> pauseResume(), KeyEvent.VK_P));
 		menu.add(item("Single tick", e -> singleTick(), KeyEvent.VK_S));
+		addSimspeedMenu(menu);
 		menu.addSeparator();
 		menu.add(item("Quit", e -> sandbox.quit(), KeyEvent.VK_ESCAPE));
 		add(menu);
 	}
 	
+	private void addSimspeedMenu(JMenu menu) {
+		JMenu speedMenu = new JMenu("Simulation speed");
+		speedMenu.add(item("0.5x", e -> setSpeed(0.5f)));
+		speedMenu.add(item("1x", e -> setSpeed(1f)));
+		speedMenu.add(item("2x", e -> setSpeed(2f)));
+		speedMenu.add(item("4x", e -> setSpeed(4f)));
+		speedMenu.add(item("10x", e -> setSpeed(10f)));
+		menu.add(speedMenu);
+	}
+
 	protected void addViewMenu() {
 		JMenu menu = new JMenu("View");
-		menu.add(item("Toggle Grid", e-> toggleGrid(), KeyEvent.VK_G));
+		menu.add(item("Toggle Grid", e -> toggleGrid(),
+				KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.CTRL_MASK)));
 		menu.addSeparator();
 		menu.add(item("Center View", e -> centerView(), KeyEvent.VK_SPACE));
 		menu.add(item("Lock view to center", e -> toggleLockCenter(), KeyEvent.VK_C));

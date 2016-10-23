@@ -28,7 +28,8 @@ public class Sandbox {
 	protected World world;
 	protected Robot robot;
 	protected int panX, panY;
-	protected boolean paused;
+	protected boolean paused = false;
+	protected float frameRate = DEFAULT_FRAMERATE;
 	protected Image[] ground, wall, obstacles, hazards, floor;
 	protected Image[] coins, batteryImg;
 	protected Image bot;
@@ -179,7 +180,7 @@ public class Sandbox {
 	protected void tickWait(long lastTick) {
 		long now = System.currentTimeMillis();
 		long span = now - lastTick;
-		int msPerFrame = 1000 / FRAMERATE;
+		int msPerFrame = Math.round(1000 / frameRate);
 		int wait = (int)(msPerFrame - span);
 		sleep(wait);
 	}
@@ -195,6 +196,10 @@ public class Sandbox {
 		if (paused) {
 			tick();
 		}
+	}
+
+	public void setFramerate(float f) {
+		frameRate = f;
 	}
 	
 	public void reseed() {
@@ -462,5 +467,5 @@ public class Sandbox {
 
 	public static final int WIDTH = 800;
 	public static final int HEIGHT = 600;
-	public static final int FRAMERATE = 10;
+	public static final int DEFAULT_FRAMERATE = 10;
 }
