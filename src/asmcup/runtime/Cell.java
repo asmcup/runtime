@@ -88,6 +88,17 @@ public class Cell {
 		return false;
 	}
 	
+	public boolean isSpawnable(int col, int row) {
+		switch (getTile(col, row) & 0b111) {
+		case TILE_HAZARD:
+		case TILE_WALL:
+		case TILE_OBSTACLE:
+			return false;
+		}
+		
+		return true;
+	}
+	
 	public boolean isSolidXY(float x, float y) {
 		return isSolid((int)(x / World.TILE_SIZE), (int)(y / World.TILE_SIZE));
 	}
