@@ -119,7 +119,7 @@ public class CodeEditor extends JFrame {
 
 	public void flash() {
 		synchronized (sandbox.getWorld()) {
-			sandbox.getRobot().flash(ram);
+			sandbox.loadROM(ram.clone());
 		}
 	}
 	
