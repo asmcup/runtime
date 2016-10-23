@@ -214,7 +214,7 @@ public class Robot {
 		
 		float tx = x + (float)Math.cos(facing) * s;
 		float ty = y + (float)Math.sin(facing) * s;
-		int radius = World.TILE_SIZE/2 - 1;
+		int radius = COLLIDE_RADIUS;
 		
 		if (!world.isSolid(tx, ty, radius)) {
 			x = tx;
@@ -437,4 +437,6 @@ public class Robot {
 	public static final int RAY_INTERVAL = 4;
 	public static final int RAY_STEPS = 64;
 	public static final int RAY_RANGE = RAY_INTERVAL * RAY_STEPS;
+	
+	public static final int COLLIDE_RADIUS = 10;
 }
