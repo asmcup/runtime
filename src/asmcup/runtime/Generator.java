@@ -10,6 +10,8 @@ public class Generator {
 	protected int width, height;
 	protected int left, right, top, bottom;
 	protected TileFunc wall;
+	protected boolean room;
+	protected int itemBonus;
 	
 	public Generator(World world, Cell cell) {
 		this.world = world;
@@ -86,6 +88,16 @@ public class Generator {
 	}
 	
 	public void openArea() {
+		room = false;
+		hpad = 0;
+		wpad = 0;
+		width = World.TILES_PER_CELL;
+		height = World.TILES_PER_CELL;
+		left = 0;
+		top = 0;
+		right = width;
+		bottom = height;
+		
 		int count = nextInt(15);
 		
 		for (int i = 0; i < count; i++) {
@@ -101,10 +113,12 @@ public class Generator {
 				set(variant(Cell.TILE_OBSTACLE), col, row);
 			}
 		}
+		
+		items();
 	}
 	
 	public void rubble(int col, int row) {
-		int count = 1 + nextInt(10);
+		int count = 1 + nextInt(20);
 		
 		for (int i=0; i < count; i++) {
 			set(variant(Cell.TILE_WALL), col, row);
@@ -118,7 +132,7 @@ public class Generator {
 	}
 	
 	public void hazards(int col, int row) {
-		int count = 3 + nextInt(10);
+		int count = 3 + nextInt(15);
 		int variant = nextInt(4);
 		
 		switch (variant) {
@@ -151,23 +165,24 @@ public class Generator {
 	}
 
 	public void room() {
-		wpad = 1 + nextInt(5);
-		hpad = 1 + nextInt(5);
+		wpad = 1 + nextInt(3);
+		hpad = 1 + nextInt(3);
 		width = World.TILES_PER_CELL - wpad * 2;
+		width = Math.max(5, width);
 		height = World.TILES_PER_CELL - hpad * 2;
+		height = Math.max(5, height);
 		left = wpad + 1;
 		top = hpad + 1;
 		right = left + width - 2;
 		bottom = top + height - 2;
+		room = true;
+		itemBonus = 10;
 		
 		if (chance(80)) {
 			wall = same(Cell.TILE_WALL);
 		} else {
 			wall = same(Cell.TILE_HAZARD);
-		}
-		
-		if (width < 3 || height < 3) {
-			return;
+			itemBonus += 3 * ((wall.tile(0, 0) >> 3) & 0b11);
 		}
 		
 		rect(same(Cell.TILE_FLOOR), wpad, hpad, width, height);
@@ -224,7 +239,7 @@ public class Generator {
 	}
 	
 	public void exits() {
-		int count = 1 + nextInt(3);
+		int count = 1 + nextInt(4);
 		
 		for (int i=0; i < count; i++) {
 			exit();
@@ -259,6 +274,7 @@ public class Generator {
 		
 		if (chance(33)) {
 			set(same(Cell.TILE_OBSTACLE, 2 + nextInt(2)), col, row);
+			itemBonus += 5;
 		} else {
 			set(variant(Cell.TILE_GROUND), col, row);
 		}
@@ -285,7 +301,7 @@ public class Generator {
 	}
 	
 	public void items() {
-		int count = nextInt(10);
+		int count = 1 + nextInt(3 + itemBonus) + itemBonus / 2;
 		
 		for (int i = 0; i < count; i++) {
 			Item item;
@@ -312,7 +328,7 @@ public class Generator {
 			col = roomCol(1);
 			row = roomRow(1);
 			
-			if (!cell.isSolid(col, row)) {
+			if (cell.isSpawnable(col, row)) {
 				break;
 			}
 		}
