@@ -97,7 +97,7 @@ public class CompilerTest {
     public void testAcceptWhitespace() {
     	byte[] ram1 = compiler.compile("\t  push8 \t #0  \t");
     	byte[] ram2 = compiler.compile("push8 #0");
-    	assertEquals(ram1[0], ram2[0]);
+    	assert(ramEquals(ram1, ram2));
     }
 
 
