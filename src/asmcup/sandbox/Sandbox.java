@@ -266,9 +266,10 @@ public class Sandbox {
 		
 		g.setColor(Color.PINK);
 		
-		for (Genetics.Control control : genetics.getControls()) {
-			int x = screenX(control.x);
-			int y = screenY(control.y);
+		for (Genetics.Spawn spawn : genetics.getSpawns()) {
+			int x = screenX(spawn.x);
+			int y = screenY(spawn.y);
+			
 			g.drawLine(x - 4, y, x + 4, y);
 			g.drawLine(x, y - 4, x, y + 4);
 		}
