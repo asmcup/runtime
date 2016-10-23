@@ -23,7 +23,7 @@ public class Genetics extends JFrame {
 	protected int mutationRate = 1;
 	protected int minMutationRate = 1;
 	protected int maxMutationRate = 100;
-	protected int controlCount = 0;
+	protected int extraWorldCount = 0;
 	protected int chunkSize = 4;
 	protected int idleMax = 0;
 	protected int idleIoMax = 0;
@@ -50,7 +50,7 @@ public class Genetics extends JFrame {
 	protected JButton unspawnButton = new JButton("Unspawn");
 	protected ArrayList<JSpinner> spinners = new ArrayList<>();
 	protected JSpinner popSpinner = createSpinner(population.length, 1, 1000 * 1000);
-	protected JSpinner controlSpinner = createSpinner(0, 0, 100);
+	protected JSpinner extraWorldSpinner = createSpinner(0, 0, 100);
 	protected JSpinner mutationSpinner = createSpinner(100, 0, 100);
 	protected JSpinner sizeSpinner = createSpinner(256, 1, 256);
 	protected JSpinner frameSpinner = createSpinner(10 * 60, 1, 10 * 60 * 60 * 24);
@@ -111,20 +111,20 @@ public class Genetics extends JFrame {
 		unspawnButton.addActionListener(e -> unspawn());
 		
 		hitem("Population:", popSpinner);
-		hitem("Frames:", frameSpinner);
-		hitem("Control:", controlSpinner);
-		hitem("Mutate Chance:", mutationSpinner);
-		hitem("Mutate Size:", chunkSpinner);
-		hitem("Size:", sizeSpinner);
-		hitem("Idle:", idleSpinner);
-		hitem("Idle IO:", idleIoSpinner);
+		hitem("Simulated frames:", frameSpinner);
+		hitem("Additional worlds:", extraWorldSpinner);
+		hitem("Max mut. chance:", mutationSpinner);
+		hitem("Mutation size:", chunkSpinner);
+		hitem("Program size:", sizeSpinner);
+		hitem("Max idle frames:", idleSpinner);
+		hitem("Max IO idle frames:", idleIoSpinner);
 		hitem("Gold Reward:", goldSpinner);
 		hitem("Battery Reward:", batterySpinner);
 		hitem("Explore Reward:", exploreSpinner);
 		hitem("Collide Penalty:", rammingSpinner);
-		hitem("Temporal:", temporalSpinner);
-		hitem("Force Stack:", stackSpinner);
-		hitem("Force IO:", ioSpinner);
+		hitem("Reward early points:", temporalSpinner);
+		hitem("Enforce ok stack:", stackSpinner);
+		hitem("Enforce IO:", ioSpinner);
 		hitem("Best:", bestLabel);
 		hitem("Worst:", worstLabel);
 		hitem("Mutation:", mutationLabel);
@@ -194,7 +194,7 @@ public class Genetics extends JFrame {
 		
 		setSpinnersEnabled(false);
 		
-		controlCount = getInt(controlSpinner);
+		extraWorldCount = getInt(extraWorldSpinner);
 		maxMutationRate = getInt(mutationSpinner);
 		programSize = getInt(sizeSpinner);
 		fitnessFrames = getInt(frameSpinner);
@@ -361,7 +361,7 @@ public class Genetics extends JFrame {
 			score += score(ram, control);
 		}
 		
-		for (int i=1; i <= controlCount; i++) {
+		for (int i=1; i <= extraWorldCount; i++) {
 			score += score(ram, randomControl(i));
 		}
 		
