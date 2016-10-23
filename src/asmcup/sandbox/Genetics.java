@@ -19,7 +19,7 @@ public class Genetics extends JFrame {
 	protected Thread thread;
 	protected boolean running = false;
 	protected int generation = 0;
-	protected Control user = new Control();
+	protected Spawn user = new Spawn();
 	protected int mutationRate = 1;
 	protected int minMutationRate = 1;
 	protected int maxMutationRate = 100;
@@ -31,11 +31,11 @@ public class Genetics extends JFrame {
 	protected int ramPenalty = 2;
 	protected int goldReward = 50;
 	protected int batteryReward = 100;
+	protected int forceStack;
 	protected boolean temporal = true;
-	protected boolean forceStack = false;
 	protected boolean forceIO = false;
 	protected ArrayList<Gene> pinned = new ArrayList<>();
-	protected ArrayList<Control> controls = new ArrayList<>();
+	protected ArrayList<Spawn> spawns = new ArrayList<>();
 	protected JLabel bestLabel = new JLabel("0");
 	protected JLabel worstLabel = new JLabel("0");
 	protected JLabel genLabel = new JLabel("0");
@@ -62,11 +62,11 @@ public class Genetics extends JFrame {
 	protected JSpinner goldSpinner = createSpinner(goldReward, -1000, 1000);
 	protected JSpinner batterySpinner = createSpinner(batteryReward, -1000, 1000);
 	protected JSpinner temporalSpinner = createSpinner(temporal ? 1 : 0, 0, 1);
-	protected JSpinner stackSpinner = createSpinner(forceStack ? 1 : 0, 0, 1);
+	protected JSpinner stackSpinner = createSpinner(forceStack, 0, 256);
 	protected JSpinner ioSpinner = createSpinner(forceIO ? 1 : 0, 0, 1);
 	protected JPanel panel = new JPanel(new GridLayout(23, 2));
 	
-	public static class Control {
+	public static class Spawn {
 		public float x, y, facing;
 		public int seed;
 	}
@@ -80,8 +80,7 @@ public class Genetics extends JFrame {
 			float d = score - other.score;
 			
 			if (d == 0) {
-				return 0;
-				//return other.gen - gen;
+				return other.gen - gen;
 			} else if (d < 0) {
 				return 1;
 			}
@@ -164,26 +163,27 @@ public class Genetics extends JFrame {
 		return (Integer)spinner.getValue();
 	}
 	
-	public Iterable<Control> getControls() {
-		return controls;
+	public Iterable<Spawn> getSpawns() {
+		return spawns;
 	}
 	
-	public void clearControls() {
-		controls.clear();
+	public void clearSpawns() {
+		spawns.clear();
 	}
 	
 	public void spawn() {
-		Control control = new Control();
+		Spawn s = new Spawn();
 		Robot robot = sandbox.getRobot();
-		control.x = robot.getX();
-		control.y = robot.getY();
-		control.facing = robot.getFacing();
-		controls.add(control);
+		s.x = robot.getX();
+		s.y = robot.getY();
+		s.facing = robot.getFacing();
+		s.seed = sandbox.getWorld().getSeed();
+		spawns.add(s);
 	}
 	
 	public void unspawn() {
-		if (!controls.isEmpty()) {
-			controls.remove(controls.size() - 1);
+		if (!spawns.isEmpty()) {
+			spawns.remove(spawns.size() - 1);
 		}
 	}
 	
@@ -204,7 +204,7 @@ public class Genetics extends JFrame {
 		exploreReward = getInt(exploreSpinner);
 		ramPenalty = getInt(rammingSpinner);
 		temporal = getInt(temporalSpinner) > 0;
-		forceStack = getInt(stackSpinner) > 0;
+		forceStack = getInt(stackSpinner);
 		forceIO = getInt(ioSpinner) > 0;
 		
 		resizePopulation();
@@ -357,42 +357,42 @@ public class Genetics extends JFrame {
 	public float score(byte[] ram) {
 		float score = score(ram, user);
 		
-		for (Control control : controls) {
-			score += score(ram, control);
+		for (Spawn s : spawns) {
+			score += score(ram, s);
 		}
 		
 		for (int i=1; i <= controlCount; i++) {
-			score += score(ram, randomControl(i));
+			score += score(ram, randomSpawn(i));
 		}
 		
 		return score;
 	}
 	
-	public Control randomControl(int i) {
-		Control control = new Control();
-		control.seed = (int)(Math.random() * 0xFFFFFF);
-		control.x = user.y;
-		control.y = user.y;
-		control.facing = user.facing + (float)(i * Math.PI * 0.25);
+	public Spawn randomSpawn(int i) {
+		Spawn spawn = new Spawn();
+		spawn.seed = (int)(Math.random() * 0xFFFFFF);
+		spawn.x = user.y;
+		spawn.y = user.y;
+		spawn.facing = user.facing + (float)(i * Math.PI * 0.25);
 		
 		World world = new World(user.seed + i);
 		Random random = new Random(user.seed + i);
 		
-		while (world.isSolid(control.x, control.y, 25)) {
-			control.x += (random.nextFloat() - 0.5f) * World.CELL_SIZE * 0.1f;
-			control.y += (random.nextFloat() - 0.5f) * World.CELL_SIZE * 0.1f;
+		while (world.isSolid(spawn.x, spawn.y, 25)) {
+			spawn.x += (random.nextFloat() - 0.5f) * World.CELL_SIZE * 0.1f;
+			spawn.y += (random.nextFloat() - 0.5f) * World.CELL_SIZE * 0.1f;
 		}
 		
-		return control;
+		return spawn;
 	}
 	
-	public float score(byte[] ram, Control control) {
+	public float score(byte[] ram, Spawn spawn) {
 		Robot robot = new Robot(1);
-		World world = new World(control.seed);
+		World world = new World(spawn.seed);
 		
 		world.addRobot(robot);
-		robot.position(control.x, control.y);
-		robot.setFacing(control.facing);
+		robot.position(spawn.x, spawn.y);
+		robot.setFacing(spawn.facing);
 		robot.flash(ram.clone());
 		
 		float score = 0.0f;
@@ -400,14 +400,16 @@ public class Genetics extends JFrame {
 		int lastBattery = robot.getBattery();
 		HashSet<Integer> explored = new HashSet<>();
 		HashSet<Integer> rammed = new HashSet<>();
-		int lastCol = 0, lastRow = 0, idle = 0;
+		int lastExplored = 0;
 		VM vm = robot.getVM();
 		
 		for (int frame=0; frame < fitnessFrames; frame++) {
 			world.tick();
 			
-			if (forceStack && vm.getProgramCounter() > vm.getStackPointer()) {
-				break;
+			if (forceStack > 0) {
+				if (vm.getStackPointer() < (0xFF - forceStack)) {
+					break;
+				}
 			}
 			
 			if (forceIO && robot.getLastInvalidIO() > 0) {
@@ -418,7 +420,6 @@ public class Genetics extends JFrame {
 				break;
 			}
 			
-			int collected = robot.getGold() - lastGold;
 			float t;
 			
 			if (temporal) {
@@ -426,6 +427,8 @@ public class Genetics extends JFrame {
 			} else {
 				t = 1.0f;
 			}
+			
+			int collected = robot.getGold() - lastGold;
 			
 			if (collected > 0) {
 				score += t * goldReward;
@@ -443,33 +446,29 @@ public class Genetics extends JFrame {
 			
 			if (explored.add(key)) {
 				score += t * exploreReward;
+				lastExplored = frame;
 			}
 			
-			if (robot.isRamming() && rammed.add(key)) {
-				score -= t * ramPenalty;
+			if (ramPenalty != 0) {
+				if (robot.isRamming() && rammed.add(key)) {
+					score -= t * ramPenalty;
+				}
 			}
 			
 			lastGold = robot.getGold();
 			lastBattery = robot.getBattery();
 			
-			if (frame > 0 && lastCol == col && lastRow == row) {
-				idle++;
-				
-				if (idleMax > 0 && idle > idleMax) {
+			if (idleMax > 0 && frame > idleMax) {
+				if ((frame - lastExplored) > idleMax) {
 					break;
 				}
-			} else {
-				idle = 0;
 			}
 			
 			if (idleIoMax > 0 && frame > idleIoMax) {
-				if (robot.getLastIO() < (frame - idleIoMax)) {
+				if ((frame - robot.getLastIO()) > idleIoMax) {
 					break;
 				}
 			}
-			
-			lastCol = col;
-			lastRow = row;
 		}
 		
 		return score;
