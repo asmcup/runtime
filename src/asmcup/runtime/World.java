@@ -5,6 +5,7 @@ import java.util.*;
 public class World {
 	protected final ArrayList<Robot> robots;
 	protected final HashMap<Integer, Cell> cells;
+	protected final HashMap<Integer, byte[]> tileData;
 	protected final int seed;
 	protected int frame;
 	
@@ -15,6 +16,7 @@ public class World {
 	public World(int seed) {
 		this.robots = new ArrayList<>();
 		this.cells = new HashMap<>();
+		this.tileData = new HashMap<>();
 		this.seed = seed;
 		this.frame = 0;
 	}
@@ -157,12 +159,21 @@ public class World {
 	}
 
 	public void mark(Robot robot, int offset, int value) {
-		// TODO read data from tile
+		int key = robot.getColumn() | (robot.getRow() << 16);
+		byte[] data = tileData.get(key);
+		
+		if (data == null) {
+			data = new byte[8];
+			tileData.put(key, data);
+		}
+		
+		data[offset & 0b11] = (byte)(value & 0xFF);
 	}
 
 	public int markRead(Robot robot, int offset) {
-		// TODO write data to tile
-		return 0;
+		int key = robot.getColumn() | (robot.getRow() << 16);
+		byte[] data = tileData.get(key);
+		return (data == null) ? 0 : data[offset & 0b11];
 	}
 	
 	public void send(Robot robot, float frequency, int data) {
@@ -180,4 +191,5 @@ public class World {
 	public static final int CELL_SIZE = TILES_PER_CELL * TILE_SIZE;
 	public static final int CELL_COUNT = 0xFF;
 	public static final int SIZE = TILE_SIZE * TILES_PER_CELL * CELL_COUNT;
+	public static final int CENTER = SIZE / 2;
 }

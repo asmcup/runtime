@@ -40,6 +40,26 @@ public class Robot {
 		return y;
 	}
 	
+	public int getColumn() {
+		return (int)(x / World.TILE_SIZE);
+	}
+	
+	public int getRow() {
+		return (int)(y / World.TILE_SIZE);
+	}
+	
+	public int getCellX() {
+		return getColumn() / World.TILES_PER_CELL;
+	}
+	
+	public int getCellY() {
+		return getRow() / World.TILES_PER_CELL;
+	}
+	
+	public int getCellKey() {
+		return getCellX() | (getCellY() << 16);
+	}
+	
 	public float getFacing() {
 		return facing;
 	}
@@ -303,11 +323,11 @@ public class Robot {
 			lazer = popFloatSafe(0.0f, 1.0f);
 			break;
 		case IO_BATTERY:
-			vm.pushFloat(battery);
+			vm.pushFloat((float)battery / BATTERY_MAX);
 			break;
 		case IO_MARK:
-			offset = vm.pop8();
 			value = vm.pop8();
+			offset = vm.pop8();
 			world.mark(this, offset, value);
 			break;
 		case IO_MARK_READ:
@@ -329,6 +349,9 @@ public class Robot {
 			break;
 		case IO_RECV:
 			vm.push8(world.recv(this, frequency));
+			break;
+		case IO_COMPASS:
+			vm.pushFloat(facing);
 			break;
 		default:
 			lastInvalidIO = world.getFrame();
@@ -414,6 +437,7 @@ public class Robot {
 	public static final int IO_STEER = 2;
 	public static final int IO_OVERCLOCK = 3;
 	public static final int IO_LAZER = 4;
+	public static final int IO_LASER = 4;
 	public static final int IO_BATTERY = 5;
 	public static final int IO_MARK = 6;
 	public static final int IO_MARK_READ = 7;
@@ -421,7 +445,9 @@ public class Robot {
 	public static final int IO_RADIO = 9;
 	public static final int IO_SEND = 10;
 	public static final int IO_RECV = 11;
+	public static final int IO_RECEIVE = 11;
 	public static final int IO_SENSOR_CONFIG = 12;
+	public static final int IO_COMPASS = 13;
 	
 	public static final float SPEED_MAX = 8;
 	public static final float STEER_RATE = (float)(Math.PI * 0.1);
