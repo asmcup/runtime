@@ -364,14 +364,14 @@ popf relY
 popf relX
 ```
 
-### Compass Tracking
+### Compass
 
-The compass allows a robot to determine a general location in the game world.
+The compass allows a robot to determine which direction they are facing.
 
 ```
 push8 #IO_COMPASS
 io
-popf compass
+popf facing
 ```
 
 ### World Marking
