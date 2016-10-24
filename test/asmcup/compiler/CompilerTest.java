@@ -3,6 +3,9 @@ package asmcup.compiler;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -98,6 +101,80 @@ public class CompilerTest {
     	byte[] ram1 = compiler.compile("\t  push8 \t #0  \t");
     	byte[] ram2 = compiler.compile("push8 #0");
     	assert(ramEquals(ram1, ram2));
+    }
+
+    @Test
+    public void testWrite8() {
+        compiler.init();
+        compiler.write8(0xff);
+        assertEquals((byte) 0xff, compiler.ram[0]);
+        assertEquals(0x00, compiler.ram[1]); // We're not overflowing
+
+        compiler.init();
+        compiler.write8(0xcace);
+        assertEquals((byte) 0xce, compiler.ram[0]); // we're only writing one byte
+        assertEquals(0x00, compiler.ram[1]);
+
+        // check pc
+        compiler.write8(0xb00c);
+        assertEquals(0x0c, compiler.ram[1]);
+    }
+
+    @Test
+    public void testWrite16() {
+        compiler.init();
+        ByteBuffer bb = getByteBuffer(compiler.ram);
+        compiler.write16(0xffff);
+        assertEquals((short) 0xffff, bb.getShort(0));
+        assertEquals(0x00, bb.getShort(2)); // We're not overflowing
+
+        compiler.init();
+        bb = getByteBuffer(compiler.ram);
+        compiler.write16(0xfaceb00c);
+        assertEquals((short) 0xb00c, bb.getShort(0)); // we're only writing two bytes
+        assertEquals(0x00, bb.getShort(2));
+
+        // check pc
+        compiler.write16(0xb00c);
+        assertEquals((short) 0xb00c, bb.getShort(2));
+    }
+
+    @Test
+    public void testWrite32() {
+        compiler.init();
+        ByteBuffer bb = getByteBuffer(compiler.ram);
+        compiler.write32(0xffffffff);
+        assertEquals(0xffffffff, bb.getInt(0));
+        assertEquals(0x00, bb.getInt(4)); // We're not overflowing
+
+        // check pc
+        compiler.write32(0xfaceb00c);
+        assertEquals(0xfaceb00c, bb.getInt(4));
+    }
+
+    @Test
+    public void testWriteFloat() {
+        compiler.init();
+        ByteBuffer bb = getByteBuffer(compiler.ram);
+        compiler.writeFloat(3.14159f);
+        assertEquals(3.14159f, bb.getFloat(0), 0.1);
+        assertEquals(0x00, bb.getInt(4)); // We're not overflowing
+
+        // check pc
+        compiler.writeFloat(2.7182f);
+        assertEquals(2.7182f, bb.getFloat(4), 0.1);
+    }
+
+    /**
+     * Returns a little endian byte buffer for given ram
+     * @param ram ram to wrap byte buffer around
+     * @return little endian byte buffer
+     */
+    private ByteBuffer getByteBuffer(byte[] ram) {
+        ByteBuffer bb = ByteBuffer.wrap(ram);
+        bb.order(ByteOrder.LITTLE_ENDIAN);
+
+        return bb;
     }
 
 
