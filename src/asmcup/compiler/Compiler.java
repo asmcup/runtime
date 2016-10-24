@@ -12,6 +12,14 @@ public class Compiler implements VMConsts {
 
 	protected int bytesUsed = 0;
 	protected int currentLine = 0;
+
+	protected void init() {
+		ram = new byte[256];
+		labels = new HashMap<>();
+		statements = new ArrayList<>();
+		pc = 0;
+		bytesUsed = 0;
+	}
 		
 	protected void write8(int value) {
 		ram[pc] = (byte)(value & 0xFF);
@@ -46,11 +54,7 @@ public class Compiler implements VMConsts {
 	}
 	
 	public byte[] compile(String[] lines) {
-		ram = new byte[256];
-		labels = new HashMap<>();
-		statements = new ArrayList<>();
-		pc = 0;
-		bytesUsed = 0;
+		init();
 		
 		for (String line : lines) {
 			currentLine++;
