@@ -32,3 +32,21 @@ jar {
 dependencies {
     testCompile "junit:junit:4.12"
 }
+
+// ------------------ code coverage ------------------------------ //
+
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = "0.7.6.201602180812"
+    reportsDir = file("$buildDir/codecoverage")
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination "${buildDir}/codecoverage"
+    }
+}
+
