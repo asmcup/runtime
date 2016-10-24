@@ -21,6 +21,7 @@ public class Robot {
 	protected int sensorFrame;
 	protected boolean ramming;
 	protected int lastValidIO, lastInvalidIO;
+	protected boolean accelerometerQueried = false;
 	
 	public Robot(int id) {
 		this.id = id;
@@ -314,8 +315,9 @@ public class Robot {
 			vm.push8(value);
 			break;
 		case IO_ACCELEROMETER:
-			vm.pushFloat(x - lastX);
-			vm.pushFloat(y - lastY);
+			vm.pushFloat(accelerometerQueried ? x - lastX : 0);
+			vm.pushFloat(accelerometerQueried ? y - lastY : 0);
+			accelerometerQueried = true;
 			lastX = x;
 			lastY = y;
 			break;
