@@ -319,13 +319,43 @@ The maximum CPU speed is 100, setting any number higher is the same as setting
 to 100. The game operates at 10 frames per second meaning a fully overclocked
 CPU will execute 1000 instructions per second, 100 per frame.
 
+### Battery Check
+
+A robot can know how much battery it has:
+
+```
+push8 #IO_BATTERY
+io
+popf batteryLevel
+```
+
+The float on the stack will be between `0.0` and `1.0` describing how much
+battery is remaining.
+
 ### Laser
 
-*Not yet implemented*
+Robots get a laser beam which can damage some obstacles and other robots in
+combat. Currently a laser can break rocks which may be blocking doors. Having
+the laser on costs up to `256` battery per game frame, less if the laser is
+not fully powered or hits something early.
 
-Will deal battery damage to other bots.
+```
+; Full power laser
+pushf 1.0
+push8 #IO_LASER
+io
+
+; Laser off
+pushf 0.0
+push8 #IO_LASER
+io
+```
 
 ### Accelerometer
+
+The accelerometer allows a robot to detect relative changes in it's position.
+Each time you use the IO_ACCELEROMETER command the last position is saved and
+the difference is pushed on the stack as two floats.
 
 ```
 push8 #IO_ACCELEROMETER
@@ -333,3 +363,48 @@ io
 popf relY
 popf relX
 ```
+
+### Compass Tracking
+
+The compass allows a robot to determine a general location in the game world.
+
+```
+push8 #IO_COMPASS
+io
+popf compass
+```
+
+### World Marking
+
+Robots can "mark" the world which is kind of like how animals can pee and sniff
+the pee. A robot uses `IO_MARK` to write bytes to the current tile and can
+use `IO_MARK_READ` to read data of the current tile. Each tile has 8 bytes
+of storage.
+
+```
+push8 #00  ; Offset
+push8 #42  ; Value to save
+push8 #IO_MARK
+io
+```
+
+You can read the same data back using:
+
+```
+push8 #00 ; Offset
+push8 #IO_MARK_READ
+io
+pop8 tileData
+```
+
+Note that other robots (if in a shared world) also may read or write data to
+the same tile.
+
+### Radio
+
+*Note the radio isn't implemented entirely yet*
+
+The radio allows robots to send and receive messages with one another. Robots
+"tune" their radio using the `IO_RADIO` command setting a frequency and
+transmit power. The `IO_SEND` and `IO_RECV` to send and receive messages.
+
