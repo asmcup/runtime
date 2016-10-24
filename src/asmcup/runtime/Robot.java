@@ -21,7 +21,6 @@ public class Robot {
 	protected int sensorFrame;
 	protected boolean ramming;
 	protected int lastValidIO, lastInvalidIO;
-	protected boolean accelerometerQueried = false;
 	
 	public Robot(int id) {
 		this.id = id;
@@ -100,6 +99,8 @@ public class Robot {
 	public void position(float x, float y) {
 		this.x = x;
 		this.y = y;
+		lastX = x;
+		lastY = y;
 	}
 	
 	public boolean isRamming() {
@@ -163,8 +164,8 @@ public class Robot {
 		lazerEnd = 0;
 		sensorIgnore = 0;
 		sensorFrame = 0;
-		lastX = 0;
-		lastY = 0;
+		lastX = x;
+		lastY = y;
 		overclock = 0;
 		ramming = false;
 	}
@@ -315,9 +316,8 @@ public class Robot {
 			vm.push8(value);
 			break;
 		case IO_ACCELEROMETER:
-			vm.pushFloat(accelerometerQueried ? x - lastX : 0);
-			vm.pushFloat(accelerometerQueried ? y - lastY : 0);
-			accelerometerQueried = true;
+			vm.pushFloat(x - lastX);
+			vm.pushFloat(y - lastY);
 			lastX = x;
 			lastY = y;
 			break;
