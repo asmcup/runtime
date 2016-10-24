@@ -349,7 +349,7 @@ public class Robot {
 			vm.push8(world.recv(this, frequency));
 			break;
 		case IO_COMPASS:
-			vm.pushFloat(world.compass(this));
+			vm.pushFloat(facing);
 			break;
 		default:
 			lastInvalidIO = world.getFrame();

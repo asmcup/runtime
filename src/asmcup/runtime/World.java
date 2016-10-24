@@ -185,10 +185,6 @@ public class World {
 		return 0;
 	}
 	
-	public double compass(Robot robot) {
-		return Math.atan2(robot.getY() - CENTER, robot.getX() - CENTER);
-	}
-	
 	public static final int TILE_SIZE = 32;
 	public static final int TILE_HALF = TILE_SIZE / 2;
 	public static final int TILES_PER_CELL = 20;
