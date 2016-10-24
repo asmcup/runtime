@@ -2,6 +2,7 @@ package asmcup.sandbox;
 
 import java.io.*;
 import java.nio.file.*;
+import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -27,6 +28,19 @@ public class Utils {
 		}
 		
 		return readAsString(file);
+	}
+	
+	public static String readAsString(InputStream input) throws IOException {
+		String line;
+		StringBuilder builder = new StringBuilder();
+		InputStreamReader streamReader = new InputStreamReader(input);
+		BufferedReader reader = new BufferedReader(streamReader);
+		
+		while ((line = reader.readLine()) != null) {
+			builder.append(line + "\n");
+		}
+		
+		return builder.toString();
 	}
 	
 	public static byte[] readAsBytes(JFrame frame, String ext, String desc) throws IOException {

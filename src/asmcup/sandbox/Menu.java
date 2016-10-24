@@ -1,14 +1,16 @@
 package asmcup.sandbox;
 
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.event.*;
+import java.net.URI;
 import java.util.Base64;
 
 import javax.swing.*;
 
 public class Menu extends JMenuBar {
 	protected final Sandbox sandbox;
+	protected JDialog about;
 	
 	public Menu(Sandbox sandbox) {
 		this.sandbox = sandbox;
@@ -16,6 +18,8 @@ public class Menu extends JMenuBar {
 		addWorldMenu();
 		addRobotMenu();
 		addViewMenu();
+		addToolsMenu();
+		addHelpMenu();
 	}
 	
 	protected JMenuItem item(String label, ActionListener f,
@@ -94,6 +98,52 @@ public class Menu extends JMenuBar {
 		sandbox.getGenetics().setVisible(true);
 	}
 	
+	public void showAbout() {
+		if (about == null) {
+			createAbout();
+		}
+		
+		about.setVisible(true);
+	}
+	
+	protected void createAbout() {
+		String text;
+		
+		try {
+			text = Utils.readAsString(getClass().getResourceAsStream("/about.txt"));
+		} catch (Exception e) {
+			e.printStackTrace();
+			sandbox.showError("Unable to load about.txt");
+			return;
+		}
+		
+		JTextArea textArea = new JTextArea();
+		textArea.setEditable(false);
+		textArea.setText(text);
+		
+		about = new JDialog(sandbox.getFrame(), "About");
+		about.setSize(500, 350);
+		about.setLocationRelativeTo(sandbox.getFrame());
+		about.setContentPane(new JScrollPane(textArea));
+	}
+	
+	public void showGithub() {
+		browse("https://github.com/asmcup/runtime");
+	}
+	
+	public void showHomepage() {
+		browse("https://asmcup.github.io");
+	}
+	
+	public void browse(String url) {
+		try {
+			Desktop.getDesktop().browse(new URI(url));
+		} catch (Exception e) {
+			e.printStackTrace();
+			sandbox.showError("Unable to open browser");
+		}
+	}
+	
 	public void loadROM() {
 		try {
 			byte[] rom = Utils.readAsBytes(sandbox.getFrame(), "bin", "Program Binary");
@@ -144,10 +194,6 @@ public class Menu extends JMenuBar {
 		menu.add(item("Copy ROM", e -> copyROM()));
 		menu.addSeparator();
 		menu.add(item("Teleport", e -> teleport(), KeyEvent.VK_T));
-		menu.addSeparator();
-		menu.add(item("Show Code Editor", e -> showCodeEditor(), KeyEvent.VK_E));
-		menu.add(item("Show Debugger", e -> showDebugger(), KeyEvent.VK_D));
-		menu.add(item("Show Genetics", e-> showGenetics(), KeyEvent.VK_G));
 		add(menu);
 	}
 	
@@ -181,6 +227,22 @@ public class Menu extends JMenuBar {
 		menu.addSeparator();
 		menu.add(item("Center View", e -> centerView(), KeyEvent.VK_SPACE));
 		menu.add(item("Lock view to center", e -> toggleLockCenter(), KeyEvent.VK_C));
+		add(menu);
+	}
+	
+	protected void addToolsMenu() {
+		JMenu menu = new JMenu("Tools");
+		menu.add(item("Code Editor", e -> showCodeEditor(), KeyEvent.VK_E));
+		menu.add(item("Debugger", e -> showDebugger(), KeyEvent.VK_D));
+		menu.add(item("Genetics", e-> showGenetics(), KeyEvent.VK_G));
+		add(menu);
+	}
+	
+	protected void addHelpMenu() {
+		JMenu menu = new JMenu("Help");
+		menu.add(item("Homepage", e -> showHomepage()));
+		menu.add(item("Github Project", e -> showGithub()));
+		menu.add(item("About", e -> showAbout()));
 		add(menu);
 	}
 }
