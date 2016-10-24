@@ -99,6 +99,8 @@ public class Robot {
 	public void position(float x, float y) {
 		this.x = x;
 		this.y = y;
+		lastX = x;
+		lastY = y;
 	}
 	
 	public boolean isRamming() {
@@ -162,8 +164,8 @@ public class Robot {
 		lazerEnd = 0;
 		sensorIgnore = 0;
 		sensorFrame = 0;
-		lastX = 0;
-		lastY = 0;
+		lastX = x;
+		lastY = y;
 		overclock = 0;
 		ramming = false;
 	}
