@@ -23,7 +23,7 @@ public class RobotConstsTable {
 	}
 	
 	private static boolean isConst(String name) {
-		return name.startsWith("IO_");
+		return name.startsWith("IO_") || name.startsWith("SENSOR_");
 	}
 	
 	private static void add(Field field) throws Exception {
