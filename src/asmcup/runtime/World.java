@@ -70,6 +70,10 @@ public class World {
 	}
 	
 	public boolean isSolid(float x, float y) {
+		if (x < 0 || y < 0 || x > SIZE || y > SIZE) {
+			return true;
+		}
+		
 		int left = (int)(x / CELL_SIZE) * CELL_SIZE;
 		int top = (int)(y / CELL_SIZE) * CELL_SIZE;
 		return getCellXY(x, y).isSolidXY(x - left, y - top);
