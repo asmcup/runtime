@@ -326,7 +326,7 @@ public class Compiler implements VMConsts {
 	public static boolean isEnclosed(String s, String start, String end) {
 		if (s.startsWith(start)) {
 			if (!s.endsWith(end)) {
-				throw new IllegalArgumentException(String.format("Expected '%s'", s));
+				throw new IllegalArgumentException(String.format("Expected '%s'", end));
 			}
 			return true;
 		}
