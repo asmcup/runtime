@@ -5,7 +5,9 @@ import org.junit.Test;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -16,6 +18,7 @@ public class CompilerTest {
     @Before
     public void setUp() {
         compiler = new Compiler();
+        compiler.statements = new ArrayList<>();
     }
 
     @Test
@@ -163,6 +166,51 @@ public class CompilerTest {
         // check pc
         compiler.writeFloat(2.7182f);
         assertEquals(2.7182f, bb.getFloat(4), 0.1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseLiteralError() {
+        Compiler.parseLiteral("notaliteral");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseLiteralNAN() {
+        Compiler.parseLiteral("#nan");
+    }
+
+    @Test
+    public void testParseLiteral() {
+        assertEquals(42, Compiler.parseLiteral("#42"));
+    }
+
+    @Test
+    public void testParseLiteralHex() {
+        assertEquals(0xff, Compiler.parseLiteral("#$ff"));
+    }
+
+    @Test
+    public void testParseComments() {
+        assertEquals("not a comment", Compiler.parseComments(" not a comment"));
+        assertEquals("text before", Compiler.parseComments("text before ; this comment"));
+        assertEquals("multiple", Compiler.parseComments("multiple ; comment ; another"));
+    }
+
+    @Test
+    public void testParseLabels() {
+        assertEquals("", compiler.parseLabels("start:"));
+        assertEquals(1, compiler.statements.size());
+        assertEquals("", compiler.parseLabels("  two:more:"));
+        assertEquals(3, compiler.statements.size());
+        assertEquals("kein label", compiler.parseLabels("kein label"));
+    }
+
+    @Test
+    public void testParseArgs() {
+        // Parse args assumes that parseLabels and parseComments already ran.
+        assertArrayEquals(new String[]{}, Compiler.parseArgs(""));
+        assertArrayEquals(new String[]{"argument1"}, Compiler.parseArgs("argument1"));
+        assertArrayEquals(new String[]{"one argument"}, Compiler.parseArgs("one argument"));
+        assertArrayEquals(new String[]{"two", "arguments"}, Compiler.parseArgs("two, arguments"));
     }
 
     /**
