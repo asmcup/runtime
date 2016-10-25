@@ -2,7 +2,6 @@ package asmcup.sandbox;
 
 import java.io.*;
 import java.nio.file.*;
-import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
