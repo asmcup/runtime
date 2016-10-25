@@ -23,6 +23,10 @@ public class Robot {
 	protected int lastValidIO, lastInvalidIO;
 	
 	public Robot(int id) {
+		this(id, new VM());
+	}
+	
+	public Robot(int id, VM vm) {
 		this.id = id;
 		this.vm = new VM();
 		this.battery = BATTERY_MAX;
