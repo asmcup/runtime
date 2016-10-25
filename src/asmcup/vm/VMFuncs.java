@@ -70,7 +70,7 @@ public interface VMFuncs {
 	public static final int F_C_1F = 49;
 	public static final int F_C_2F = 50;
 	public static final int F_C_3F = 51;
-	public static final int F_C_4F = 52;
+	public static final int F_C_M1F = 52;
 	public static final int F_C_INF = 53;
 	public static final int F_ISNAN = 54;
 	

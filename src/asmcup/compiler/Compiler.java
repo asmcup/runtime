@@ -265,7 +265,9 @@ public class Compiler implements VMConsts {
 	protected void pushLiteralFloat(String s) {
 		float f = Float.parseFloat(s);
 		
-		if (f == 0.0f) {
+		if (f == -1.0f) {
+			immediate(OP_FUNC, F_C_M1F, NO_DATA);
+		} else if (f == 0.0f) {
 			immediate(OP_FUNC, F_C_0F, NO_DATA);
 		} else if (f == 1.0f) {
 			immediate(OP_FUNC, F_C_1F, NO_DATA);
@@ -273,8 +275,6 @@ public class Compiler implements VMConsts {
 			immediate(OP_FUNC, F_C_2F, NO_DATA);
 		} else if (f == 3.0f) {
 			immediate(OP_FUNC, F_C_3F, NO_DATA);
-		} else if (f == 4.0f) {
-			immediate(OP_FUNC, F_C_4F, NO_DATA);
 		} else if (Float.isInfinite(f)) {
 			immediate(OP_FUNC, F_C_INF, NO_DATA);
 		} else {
