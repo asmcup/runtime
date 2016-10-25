@@ -348,6 +348,9 @@ public class VM implements VMConsts {
 			push8(0xFF);
 			break;
 			
+		case F_C_M1F:
+			pushFloat(-1.0f);
+			break;
 		case F_C_0F:
 			pushFloat(0.0f);
 			break;
@@ -359,9 +362,6 @@ public class VM implements VMConsts {
 			break;
 		case F_C_3F:
 			pushFloat(3.0f);
-			break;
-		case F_C_4F:
-			pushFloat(4.0f);
 			break;
 		case F_C_INF:
 			pushFloat(Float.POSITIVE_INFINITY);
