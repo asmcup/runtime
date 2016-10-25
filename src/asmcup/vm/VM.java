@@ -177,6 +177,10 @@ public class VM implements VMConsts {
 		io = false;
 		return x;
 	}
+	
+	public void setIO(boolean io) {
+		this.io = io;
+	}
 
 	public void tick() {
 		int bits = read8();
