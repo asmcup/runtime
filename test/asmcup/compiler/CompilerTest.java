@@ -5,11 +5,8 @@ import org.junit.Test;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.ArrayList;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class CompilerTest {
 
@@ -18,7 +15,7 @@ public class CompilerTest {
     @Before
     public void setUp() {
         compiler = new Compiler();
-        compiler.statements = new ArrayList<>();
+        compiler.init();
     }
 
     @Test
@@ -60,6 +57,28 @@ public class CompilerTest {
             assertEquals(3, compiler.getCurrentLine());
         }
     }
+
+    @Test
+	public void testBytesUsed() {
+		compiler.compile("push8 #1");
+		assertEquals(1, compiler.getBytesUsed()); // turned into c_1
+
+		compiler.init();
+		compiler.compile("push8 #42");
+		assertEquals(2, compiler.getBytesUsed()); // one byte opcode, one byte literal 42
+
+		compiler.init();
+		compiler.compile("push8 #1\npush8 #0");
+		assertEquals(2, compiler.getBytesUsed()); // 1 byte c_1, 1 byte c_0
+
+		compiler.init();
+		compiler.compile("start:end:");
+		assertEquals(0, compiler.getBytesUsed());
+
+		compiler.init();
+		compiler.compile("start: \n jmp start");
+		assertEquals(2, compiler.getBytesUsed()); // 1 byte opcode, 1 byte label addr
+	}
 
     @Test
     public void testOutputSize() {
@@ -108,7 +127,6 @@ public class CompilerTest {
 
     @Test
     public void testWrite8() {
-        compiler.init();
         compiler.write8(0xff);
         assertEquals((byte) 0xff, compiler.ram[0]);
         assertEquals(0x00, compiler.ram[1]); // We're not overflowing
@@ -125,7 +143,6 @@ public class CompilerTest {
 
     @Test
     public void testWrite16() {
-        compiler.init();
         ByteBuffer bb = getByteBuffer(compiler.ram);
         compiler.write16(0xffff);
         assertEquals((short) 0xffff, bb.getShort(0));
@@ -144,7 +161,6 @@ public class CompilerTest {
 
     @Test
     public void testWrite32() {
-        compiler.init();
         ByteBuffer bb = getByteBuffer(compiler.ram);
         compiler.write32(0xffffffff);
         assertEquals(0xffffffff, bb.getInt(0));
@@ -157,7 +173,6 @@ public class CompilerTest {
 
     @Test
     public void testWriteFloat() {
-        compiler.init();
         ByteBuffer bb = getByteBuffer(compiler.ram);
         compiler.writeFloat(3.14159f);
         assertEquals(3.14159f, bb.getFloat(0), 0.1);
@@ -166,6 +181,31 @@ public class CompilerTest {
         // check pc
         compiler.writeFloat(2.7182f);
         assertEquals(2.7182f, bb.getFloat(4), 0.1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testWriteOpcodeTooLarge() {
+        compiler.writeOp(0b100, 0);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testWriteOpcodeDataTooLarge() {
+        compiler.writeOp(0, 0b1000000);
+    }
+
+    @Test
+    public void testWriteOpcode() {
+        compiler.writeOp(0b11, 0b111111);
+        assertEquals((byte) 0xff, compiler.ram[0]);
+
+        compiler.writeOp(0, 0);
+        assertEquals((byte) 0, compiler.ram[1]);
+
+        compiler.writeOp(0b11, 0b000000);
+        assertEquals((byte) 0b00000011, compiler.ram[2]);
+
+        compiler.writeOp(0b00, 0b111111);
+        assertEquals((byte) 0b11111100, compiler.ram[3]);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -212,6 +252,16 @@ public class CompilerTest {
         assertArrayEquals(new String[]{"one argument"}, Compiler.parseArgs("one argument"));
         assertArrayEquals(new String[]{"two", "arguments"}, Compiler.parseArgs("two, arguments"));
     }
+
+    @Test
+	public void testOverflowCode() {
+		for (int i = 0; i < 256; ++i) {
+			compiler.write8(0xff); // Fill ram to 100%
+		}
+		compiler.write8(42); // should overflow to addr 0
+
+		assertEquals(42, compiler.ram[0]);
+	}
 
     /**
      * Returns a little endian byte buffer for given ram
