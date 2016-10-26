@@ -6,6 +6,8 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 public class RobotTest {
@@ -29,9 +31,9 @@ public class RobotTest {
 		// We did not drive, so we should expect 0 values.
 		float x = vm.popFloat();
 		float y = vm.popFloat();
-		assertTrue("X is 0", Math.abs(0.0f - x) < 0.001f);
-		assertTrue("Y is 0", Math.abs(0.0f - y) < 0.001f);
-		assertTrue("X == Y", Math.abs(x - y) < 0.001f);
+		assertEquals(0, x, 0.001f);
+		assertEquals(0, y, 0.001f);
+		assertEquals(x, y, 0.001f);
 
 		// Drive a little bit
 		robot.setMotor(1.0f);
@@ -46,9 +48,9 @@ public class RobotTest {
 		// We drove, so we should not expect 0 values.
 		x = vm.popFloat();
 		y = vm.popFloat();
-		assertTrue("X is 0", Math.abs(0.0f - x) > 0.001f);
-		assertTrue("Y is 0", Math.abs(0.0f - y) > 0.001f);
-		assertTrue("X == Y", Math.abs(x - y) > 0.001f);
+		assertNotEquals(0f, x, 0.001f);
+		assertNotEquals(0f, y, 0.001f);
+		assertNotEquals(x, y, 0.001f);
 	}
 
 	public World generateEmptyWorld(int x, int y, int radius) {
