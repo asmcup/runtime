@@ -103,7 +103,7 @@ public class Decompiler implements VMConsts {
 			return 2;
 		case MAGIC_BRANCH_INDIRECT:
 			addr = read8(ram, pc + 1);
-			dump(pc, String.format("jnz [$%02x]", addr));
+			dump(pc, String.format("jmp [$%02x]", addr));
 			return 2;
 		}
 		
