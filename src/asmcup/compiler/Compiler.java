@@ -109,7 +109,7 @@ public class Compiler implements VMConsts {
 		}
 		
 		String cmd = parts[0].toLowerCase().trim();
-		String[] args = parseArgs(parts);
+		String[] args = parseArgs(parts.length > 1 ? parts[1] : "");
 		parseStatement(cmd, args);
 	}
 	
@@ -341,7 +341,7 @@ public class Compiler implements VMConsts {
 		return args[0];
 	}
 	
-	protected String parseComments(String line) {
+	protected static String parseComments(String line) {
 		int pos = line.indexOf(';');
 		
 		if (pos < 0) {
@@ -370,12 +370,12 @@ public class Compiler implements VMConsts {
 	
 	protected static final String[] EMPTY_ARGS = {};
 	
-	protected String[] parseArgs(String[] parts) {
-		if (parts.length <= 1) {
+	protected static String[] parseArgs(String arguments) {
+		if (arguments.trim().isEmpty()) {
 			return EMPTY_ARGS;
 		}
-		
-		String[] args = parts[1].split(",");
+
+		String[] args = arguments.split(",");
 		
 		for (int i=0; i < args.length; i++) {
 			args[i] = args[i].trim();
