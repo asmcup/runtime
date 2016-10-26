@@ -16,6 +16,7 @@ import asmcup.runtime.Cell;
 import asmcup.runtime.Item;
 import asmcup.runtime.Robot;
 import asmcup.runtime.World;
+import asmcup.sandbox.Evaluator;
 
 public class Sandbox {
 	protected Mouse mouse;
@@ -205,17 +206,14 @@ public class Sandbox {
 	public void reseed() {
 		world = new World();
 		
-		do {
-			panX = (int)(Math.random() * World.SIZE);
-			panY = (int)(Math.random() * World.SIZE);
-		} while (world.isSolid(panX, panY, 32));
-		
 		if (robot == null) {
 			robot = new Robot(1);
 		}
 		
+		world.randomizePosition(robot);
+		centerView();
+		// TODO: This looks wrong... Same bot may get added multiple times.
 		world.addRobot(robot);
-		robot.position(panX, panY);
 		redraw();
 	}
 	
@@ -266,7 +264,7 @@ public class Sandbox {
 		
 		g.setColor(Color.PINK);
 		
-		for (Genetics.Spawn spawn : genetics.getSpawns()) {
+		for (Spawn spawn : genetics.evaluator.getSpawns()) {
 			int x = screenX(spawn.x);
 			int y = screenY(spawn.y);
 			

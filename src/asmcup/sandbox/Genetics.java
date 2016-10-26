@@ -8,34 +8,17 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import asmcup.runtime.*;
+import asmcup.sandbox.GeneticAlgorithm.Gene;
+import asmcup.sandbox.Evaluator;
 import asmcup.vm.VM;
 
 public class Genetics extends JFrame {
 	protected final Sandbox sandbox;
 	protected int programSize = 256;
-	protected int fitnessFrames = 10 * 60;
-	protected Gene[] population = new Gene[100];
-	protected Random random = new Random();
 	protected Thread thread;
 	protected boolean running = false;
-	protected int generation = 0;
-	protected Spawn user = new Spawn();
-	protected int mutationRate = 1;
-	protected int minMutationRate = 1;
-	protected int maxMutationRate = 100;
-	protected int extraWorldCount = 0;
-	protected int chunkSize = 4;
-	protected int idleMax = 0;
-	protected int idleIoMax = 0;
-	protected int exploreReward = 4;
-	protected int ramPenalty = 2;
-	protected int goldReward = 50;
-	protected int batteryReward = 100;
-	protected int forceStack;
-	protected boolean temporal = true;
-	protected boolean forceIO = false;
-	protected ArrayList<Gene> pinned = new ArrayList<>();
-	protected ArrayList<Spawn> spawns = new ArrayList<>();
+	protected Evaluator evaluator;
+	protected GeneticAlgorithm ga;
 	protected JLabel bestLabel = new JLabel("0");
 	protected JLabel worstLabel = new JLabel("0");
 	protected JLabel genLabel = new JLabel("0");
@@ -49,45 +32,22 @@ public class Genetics extends JFrame {
 	protected JButton spawnButton = new JButton("Spawn");
 	protected JButton unspawnButton = new JButton("Unspawn");
 	protected ArrayList<JSpinner> spinners = new ArrayList<>();
-	protected JSpinner popSpinner = createSpinner(population.length, 1, 1000 * 1000);
+	protected JSpinner popSpinner = createSpinner(100, 1, 1000 * 1000);
 	protected JSpinner extraWorldSpinner = createSpinner(0, 0, 100);
 	protected JSpinner mutationSpinner = createSpinner(100, 0, 100);
 	protected JSpinner sizeSpinner = createSpinner(256, 1, 256);
 	protected JSpinner frameSpinner = createSpinner(10 * 60, 1, 10 * 60 * 60 * 24);
 	protected JSpinner idleSpinner = createSpinner(0, 0, 1000 * 1000);
 	protected JSpinner idleIoSpinner = createSpinner(0, 0, 1000 * 1000);
-	protected JSpinner chunkSpinner = createSpinner(chunkSize, 0, 256);
-	protected JSpinner exploreSpinner = createSpinner(exploreReward, -1000, 1000);
-	protected JSpinner rammingSpinner = createSpinner(ramPenalty, -1000, 1000);
-	protected JSpinner goldSpinner = createSpinner(goldReward, -1000, 1000);
-	protected JSpinner batterySpinner = createSpinner(batteryReward, -1000, 1000);
-	protected JSpinner temporalSpinner = createSpinner(temporal ? 1 : 0, 0, 1);
-	protected JSpinner stackSpinner = createSpinner(forceStack, 0, 256);
-	protected JSpinner ioSpinner = createSpinner(forceIO ? 1 : 0, 0, 1);
+	protected JSpinner chunkSpinner = createSpinner(4, 0, 256);
+	protected JSpinner exploreSpinner = createSpinner(4, -1000, 1000);
+	protected JSpinner rammingSpinner = createSpinner(2, -1000, 1000);
+	protected JSpinner goldSpinner = createSpinner(50, -1000, 1000);
+	protected JSpinner batterySpinner = createSpinner(100, -1000, 1000);
+	protected JSpinner temporalSpinner = createSpinner(0, 0, 1);
+	protected JSpinner stackSpinner = createSpinner(0, 0, 256);
+	protected JSpinner ioSpinner = createSpinner(0, 0, 1);
 	protected JPanel panel = new JPanel(new GridLayout(23, 2));
-	
-	public static class Spawn {
-		public float x, y, facing;
-		public int seed;
-	}
-	
-	public static class Gene implements Comparable<Gene> {
-		byte[] ram;
-		float score;
-		int gen;
-		
-		public int compareTo(Gene other) {
-			float d = score - other.score;
-			
-			if (d == 0) {
-				return other.gen - gen;
-			} else if (d < 0) {
-				return 1;
-			}
-			
-			return -1;
-		}
-	}
 	
 	public Genetics(Sandbox sandbox) throws IOException {
 		this.sandbox = sandbox;
@@ -95,19 +55,18 @@ public class Genetics extends JFrame {
 		setTitle("Genetics");
 		setResizable(false);
 		setIconImage(ImageIO.read(getClass().getResource("/dna.png")));
-		
-		for (int i=0; i < population.length; i++) {
-			population[i] = random();
-		}
+
+		evaluator = new Evaluator(10 * 60, 0, 0, 0, 4, 2, 50, 100, true, false);
+		ga = new GeneticAlgorithm(evaluator);
 		
 		flashButton.addActionListener(e -> flash());
 		startButton.addActionListener(e -> start());
 		stopButton.addActionListener(e -> stop());
 		saveButton.addActionListener(e -> save());
-		pinButton.addActionListener(e -> pin());
-		unpinButton.addActionListener(e -> unpin());
+		pinButton.addActionListener(e -> ga.pin());
+		unpinButton.addActionListener(e -> ga.unpin());
 		spawnButton.addActionListener(e -> spawn());
-		unspawnButton.addActionListener(e -> unspawn());
+		unspawnButton.addActionListener(e -> evaluator.unspawn());
 		
 		hitem("Population:", popSpinner, "Number of robots that are kept in the gene pool");
 		hitem("Frames:", frameSpinner, "Maximum number of frames for the simulation (10 frames = 1 second)");
@@ -170,28 +129,15 @@ public class Genetics extends JFrame {
 		return (Integer)spinner.getValue();
 	}
 	
-	public Iterable<Spawn> getSpawns() {
-		return spawns;
-	}
-	
-	public void clearSpawns() {
-		spawns.clear();
+	public Spawn getSandboxSpawn()
+	{
+		Robot robot = sandbox.getRobot();
+		return new Spawn(robot.getX(), robot.getY(),
+				robot.getFacing(), sandbox.getWorld().getSeed());
 	}
 	
 	public void spawn() {
-		Spawn s = new Spawn();
-		Robot robot = sandbox.getRobot();
-		s.x = robot.getX();
-		s.y = robot.getY();
-		s.facing = robot.getFacing();
-		s.seed = sandbox.getWorld().getSeed();
-		spawns.add(s);
-	}
-	
-	public void unspawn() {
-		if (!spawns.isEmpty()) {
-			spawns.remove(spawns.size() - 1);
-		}
+		evaluator.addSpawn(getSandboxSpawn());
 	}
 	
 	public void start() {
@@ -200,59 +146,44 @@ public class Genetics extends JFrame {
 		}
 		
 		setSpinnersEnabled(false);
-		
-		extraWorldCount = getInt(extraWorldSpinner);
-		maxMutationRate = getInt(mutationSpinner);
-		programSize = getInt(sizeSpinner);
-		fitnessFrames = getInt(frameSpinner);
-		chunkSize = getInt(chunkSpinner);
-		idleMax = getInt(idleSpinner);
-		idleIoMax = getInt(idleIoSpinner);
-		exploreReward = getInt(exploreSpinner);
-		ramPenalty = getInt(rammingSpinner);
-		temporal = getInt(temporalSpinner) > 0;
-		forceStack = getInt(stackSpinner);
-		forceIO = getInt(ioSpinner) > 0;
-		
-		resizePopulation();
-		
-		user.x = sandbox.getRobot().getX();
-		user.y = sandbox.getRobot().getY();
-		user.facing = sandbox.getRobot().getFacing();
-		user.seed = sandbox.getWorld().getSeed();
+
+		configureEvaluator();
+		configureGA();
 		
 		thread = new Thread(new Runnable() {
 			public void run() {
 				while (running) {
-					generation();
+					ga.nextGeneration();
+
+					updateStats();
 				}
 			}
 		});
-		
-		for (Gene gene : population) {
-			gene.score = score(gene.ram);
-		}
 		
 		running = true;
 		thread.start();
 	}
 	
-	public void resizePopulation() {
-		int newSize = getInt(popSpinner);
+	public void configureEvaluator() {
+		evaluator.maxSimFrames = getInt(frameSpinner);
+		evaluator.extraWorldCount = getInt(extraWorldSpinner);
+		evaluator.idleMax = getInt(idleSpinner);
+		evaluator.idleIoMax = getInt(idleIoSpinner);
+		evaluator.exploreReward = getInt(exploreSpinner);
+		evaluator.ramPenalty = getInt(rammingSpinner);
+		evaluator.temporal = getInt(temporalSpinner) > 0;
+		evaluator.forceStack = getInt(stackSpinner);
+		evaluator.forceIO = getInt(ioSpinner) > 0;
 		
-		if (population.length != newSize) {
-			Gene[] newPop = new Gene[newSize];
-			
-			for (int i=0; i < newSize; i++) {
-				if (i < population.length) {
-					newPop[i] = population[i];
-				} else {
-					newPop[i] = random();
-				}
-			}
-			
-			population = newPop;
-		}
+		evaluator.userSpawn = getSandboxSpawn();
+	}
+
+	public void configureGA() {
+		ga.maxMutationRate = getInt(mutationSpinner);
+		ga.dnaLength = getInt(sizeSpinner);
+		ga.mutationSize = getInt(chunkSpinner);
+		
+		ga.resizePopulation(getInt(popSpinner));
 	}
 	
 	public void stop() {
@@ -260,240 +191,31 @@ public class Genetics extends JFrame {
 		setSpinnersEnabled(true);
 	}
 	
-	public Gene random() {
-		Gene gene = new Gene();
-		gene.ram = sandbox.getROM().clone();
-		gene.score = score(gene.ram);
-		return gene;
-	}
-	
 	public void flash() {
 		synchronized (sandbox.getWorld()) {
-			sandbox.loadROM(getBest().ram.clone());
+			sandbox.loadROM(ga.getBest().dna.clone());
 			sandbox.reset();
-			sandbox.getRobot().setFacing(user.facing);
-			sandbox.getRobot().position(user.x, user.y);
+			sandbox.getRobot().setFacing(evaluator.userSpawn.facing);
+			sandbox.getRobot().position(evaluator.userSpawn.x, evaluator.userSpawn.y);
 			sandbox.redraw();
 		}
 	}
 	
 	public void save() {
-		Gene best = getBest();
+		Gene best = ga.getBest();
 		
 		try {
-			Utils.write(sandbox.getFrame(), "bin", "Program Binary", best.ram);
+			Utils.write(sandbox.getFrame(), "bin", "Program Binary", best.dna);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
-	public void pin() {
-		pinned.add(getBest());
-	}
-	
-	public void unpin() {
-		pinned.clear();
-	}
-	
-	public void generation() {
-		int halfPoint = population.length / 2;
-		int pin = pinned.size();
 		
-		for (int i=halfPoint; i < population.length; i++) {
-			if (pin > 0) {
-				pin--;
-				population[i] = cross(pinned.get(pin), randomGene());
-			} else {
-				population[i] = cross();
-			}
-		}
-		
-		Arrays.sort(population);
-		float p = getWorst().score / getBest().score;
-		mutationRate = minMutationRate + (int)(p * maxMutationRate);
-		mutationRate = Math.max(minMutationRate, mutationRate);
-		mutationRate = Math.min(maxMutationRate, mutationRate);
-		generation++;
-		updateStats();
-	}
-	
-	public Gene randomGene() {
-		int i = random.nextInt(population.length / 2);
-		return population[i];
-	}
-	
-	public Gene cross() {
-		int a, b;
-		
-		do {
-			a = random.nextInt(population.length / 2);
-			b = random.nextInt(population.length / 2);
-		} while (a == b);
-		
-		return cross(population[a], population[b]);
-	}
-	
-	public Gene cross(Gene mom, Gene dad) {
-		Gene gene = new Gene();
-		gene.ram = mom.ram.clone();
-		gene.gen = generation;
-		
-		int src, dest, size;
-		
-		if (random.nextInt(100) <= mutationRate) {
-			dest = random.nextInt(programSize);
-			size = 1 + random.nextInt(chunkSize);
-			
-			for (int i=0; i < size; i++) {
-				gene.ram[(dest + i) % programSize] = (byte)random.nextInt(256);
-			}
-		}
-		
-		src = random.nextInt(programSize);
-		dest = random.nextInt(programSize);
-		size = 1 + random.nextInt(programSize);
-		
-		for (int i=0; i < size; i++) {
-			gene.ram[(dest + i) % programSize] = dad.ram[(src + i) % programSize];
-		}
-		
-		gene.score = score(gene.ram);
-		return gene;
-	}
-	
-	public float score(byte[] ram) {
-		float score = score(ram, user);
-		
-		for (Spawn s : spawns) {
-			score += score(ram, s);
-		}
-		
-		for (int i=1; i <= extraWorldCount; i++) {
-			score += score(ram, randomSpawn(i));
-		}
-		
-		return score;
-	}
-	
-	public Spawn randomSpawn(int i) {
-		Spawn spawn = new Spawn();
-		spawn.seed = (int)(Math.random() * 0xFFFFFF);
-		spawn.x = user.y;
-		spawn.y = user.y;
-		spawn.facing = user.facing + (float)(i * Math.PI * 0.25);
-		
-		World world = new World(user.seed + i);
-		Random random = new Random(user.seed + i);
-		
-		while (world.isSolid(spawn.x, spawn.y, 25)) {
-			spawn.x += (random.nextFloat() - 0.5f) * World.CELL_SIZE * 0.1f;
-			spawn.y += (random.nextFloat() - 0.5f) * World.CELL_SIZE * 0.1f;
-		}
-		
-		return spawn;
-	}
-	
-	public float score(byte[] ram, Spawn spawn) {
-		Robot robot = new Robot(1);
-		World world = new World(spawn.seed);
-		
-		world.addRobot(robot);
-		robot.position(spawn.x, spawn.y);
-		robot.setFacing(spawn.facing);
-		
-		robot.flash(ram.clone());
-		
-		float score = 0.0f;
-		int lastGold = 0;
-		int lastBattery = robot.getBattery();
-		HashSet<Integer> explored = new HashSet<>();
-		HashSet<Integer> rammed = new HashSet<>();
-		int lastExplored = 0;
-		VM vm = robot.getVM();
-		
-		for (int frame=0; frame < fitnessFrames; frame++) {
-			world.tick();
-			
-			if (forceStack > 0) {
-				if (vm.getStackPointer() < (0xFF - forceStack)) {
-					break;
-				}
-			}
-			
-			if (forceIO && robot.getLastInvalidIO() > 0) {
-				break;
-			}
-			
-			if (robot.isDead()) {
-				break;
-			}
-			
-			float t;
-			
-			if (temporal) {
-				t = 1.0f - (float)frame / (float)fitnessFrames;
-			} else {
-				t = 1.0f;
-			}
-			
-			int collected = robot.getGold() - lastGold;
-			
-			if (collected > 0) {
-				score += t * goldReward;
-			}
-			
-			int recharged = robot.getBattery() - lastBattery;
-			
-			if (recharged > 0) {
-				score += t * batteryReward;
-			}
-			
-			int col = (int)(robot.getX() / World.TILE_SIZE);
-			int row = (int)(robot.getY() / World.TILE_SIZE);
-			int key = col | (row << 16);
-			
-			if (explored.add(key)) {
-				score += t * exploreReward;
-				lastExplored = frame;
-			}
-			
-			if (ramPenalty != 0) {
-				if (robot.isRamming() && rammed.add(key)) {
-					score -= t * ramPenalty;
-				}
-			}
-			
-			lastGold = robot.getGold();
-			lastBattery = robot.getBattery();
-			
-			if (idleMax > 0 && frame > idleMax) {
-				if ((frame - lastExplored) > idleMax) {
-					break;
-				}
-			}
-			
-			if (idleIoMax > 0 && frame > idleIoMax) {
-				if ((frame - robot.getLastIO()) > idleIoMax) {
-					break;
-				}
-			}
-		}
-		
-		return score;
-	}
-	
-	public Gene getWorst() {
-		return population[population.length / 2 - 1];
-	}
-	
-	public Gene getBest() {
-		return population[0];
-	}
 	
 	public void updateStats() {
-		worstLabel.setText(String.valueOf(getWorst().score));
-		bestLabel.setText(String.valueOf(getBest().score));
-		genLabel.setText(String.valueOf(generation));
-		mutationLabel.setText(String.valueOf(mutationRate) + "%");
+		worstLabel.setText(String.valueOf(ga.getWorst().score));
+		bestLabel.setText(String.valueOf(ga.getBest().score));
+		genLabel.setText(String.valueOf(ga.generation));
+		mutationLabel.setText(String.valueOf(ga.mutationRate) + "%");
 	}
 }
