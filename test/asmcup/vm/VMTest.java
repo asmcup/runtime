@@ -132,7 +132,51 @@ public class VMTest {
 		vm.writeFloat(42, 3.14159f);
 		assertEquals(3.14159f, vm.readFloatIndirect(), 0.0001f);
 	}
-    		
+
+
+	@Test
+	public void testPush8() {
+		vm.push8(0xff);
+		vm.push8(0xee);
+		assertEquals(0xee, vm.pop8());
+		assertEquals(0xff, vm.pop8());
+	}
+
+	@Test
+	public void testPush16() {
+		vm.push16(0xffff);
+		vm.push16(0xeeee);
+		assertEquals(0xeeee, vm.pop16());
+		assertEquals(0xffff, vm.pop16());
+	}
+
+	@Test
+	public void testPush32() {
+		vm.push32(0xffffffff);
+		vm.push32(0xeeeeeeee);
+		assertEquals(0xeeeeeeee, vm.pop32());
+		assertEquals(0xffffffff, vm.pop32());
+	}
+
+	@Test
+	public void testPushFloat() {
+		vm.pushFloat(3.14159f);
+		vm.pushFloat(2.7182f);
+		assertEquals(2.7182f, vm.popFloat(), 0.0001f);
+		assertEquals(3.14159f, vm.popFloat(), 0.0001f);
+	}
+
+	@Test
+	public void testStackPointer() {
+		assertEquals(0xff, vm.getStackPointer());
+		vm.push8(0xff);
+		assertEquals(0xfe, vm.getStackPointer());
+		vm.push8(0xff);
+		vm.pop8();
+		assertEquals(0xfe, vm.getStackPointer());
+		vm.pop8();
+		assertEquals(0xff, vm.getStackPointer());
+	}
 
     @Test
     public void testStackOpsAdd() {
