@@ -8,6 +8,9 @@ import asmcup.vm.VM;
 // TODO: Add Evaluator test(s)!
 // - Evaluate same spawn x times
 
+// TODO: The split into an actual scoring unit and a "spawn manager" could be made
+// more decisively, but the lines should be clear for now.
+
 public class Evaluator {
 	public int maxSimFrames;
 	public Spawn userSpawn;
@@ -22,7 +25,8 @@ public class Evaluator {
 	public boolean temporal;
 	public boolean forceIO;
 	protected ArrayList<Spawn> spawns = new ArrayList<>();
-
+	private Scorer scorer = new Scorer();
+	
 	public Evaluator() {
 		maxSimFrames = 10 * 60;
 		extraWorldCount = 0;
@@ -37,107 +41,137 @@ public class Evaluator {
 	}
 	
 	public float score(byte[] ram) {
-		float score = scoreForSpawn(ram, userSpawn);
+		float score = scorer.scoreRamForSpawn(ram, userSpawn);
 		
 		for (Spawn s : spawns) {
-			score += scoreForSpawn(ram, s);
+			score += scorer.scoreRamForSpawn(ram, s);
 		}
 		
 		for (int i = 1; i <= extraWorldCount; i++) {
-			score += scoreForSpawn(ram, randomSpawn(i));
+			score += scorer.scoreRamForSpawn(ram, randomSpawn(i));
 		}
 		
 		return score;
 	}
-
 	
-	public float scoreForSpawn(byte[] ram, Spawn spawn) {
-		VM vm = new VM(ram.clone());
-		Robot robot = new Robot(1, vm);
-		World world = spawn.getNewWorld();
+	private class Scorer {
+		private Robot robot;
+		private VM vm;
+		private World world;
 		
-		world.addRobot(robot);
-		robot.position(spawn.x, spawn.y);
-		robot.setFacing(spawn.facing);
+		private int lastGold;
+		private int lastBattery;
+
+		private HashSet<Integer> rammed;
+		private HashSet<Integer> explored;
+		private int lastExplored;
 		
-		float score = 0.0f;
-		int lastGold = 0;
-		int lastBattery = robot.getBattery();
-		HashSet<Integer> explored = new HashSet<>();
-		HashSet<Integer> rammed = new HashSet<>();
-		int lastExplored = 0;
-		
-		for (int frame = 0; frame < maxSimFrames; frame++) {
-			world.tick();
+		public float scoreRamForSpawn(byte[] ram, Spawn spawn) {
+			vm = robot.getVM();
+			robot = new Robot(1, vm);
+			world = spawn.getNewWorld();
 			
-			// TODO: Break down into small functions
-			if (forceStack > 0) {
-				if (vm.getStackPointer() < (0xFF - forceStack)) {
+			world.addRobot(robot);
+			robot.position(spawn.x, spawn.y);
+			robot.setFacing(spawn.facing);
+			
+			float score = 0.0f;
+			
+			lastGold = 0;
+			lastBattery = robot.getBattery();
+			explored = new HashSet<>();
+			rammed = new HashSet<>();
+			lastExplored = 0;
+			
+			for (int frame = 0; frame < maxSimFrames; frame++) {
+				world.tick();
+				
+				if (violatesStackRules()) {
+					break;
+				}
+				if (violatesIoRules()) {
+					break;
+				}
+				if (robot.isDead()) {
+					break;
+				}
+				
+				float t = getTimeBenefitFactor(frame);
+				
+				score += rewardGoldCollection(t);
+				score += rewardBatteryCollection(t);
+
+				int tileKey = getTileKey();
+				score += rewardExploration(tileKey, t, frame);
+				score -= penaliseRamming(tileKey, t);
+				
+				lastGold = robot.getGold();
+				lastBattery = robot.getBattery();
+
+				if (idledTooLong(frame)) {
+					break;
+				}
+				if (ioIdledTooLong(frame)) {
 					break;
 				}
 			}
 			
-			if (forceIO && robot.getLastInvalidIO() > 0) {
-				break;
-			}
-			
-			if (robot.isDead()) {
-				break;
-			}
-			
-			float t;
-			
-			if (temporal) {
-				t = 1.0f - (float)frame / (float)maxSimFrames;
-			} else {
-				t = 1.0f;
-			}
-			
-			int collected = robot.getGold() - lastGold;
-			
-			if (collected > 0) {
-				score += t * goldReward;
-			}
-			
-			int recharged = robot.getBattery() - lastBattery;
-			
-			if (recharged > 0) {
-				score += t * batteryReward;
-			}
-			
+			return score;
+		}
+
+		private boolean violatesIoRules() {
+			return forceIO && robot.getLastInvalidIO() > 0;
+		}
+	
+		private boolean violatesStackRules() {
+			return forceStack > 0 && vm.getStackPointer() < (0xFF - forceStack);
+		}
+	
+		private float getTimeBenefitFactor(int frame) {
+			return (temporal ? 1.0f - (float)frame / (float)maxSimFrames : 1.0f);
+		}
+		
+		private float rewardGoldCollection(float t) {
+			return (robot.getGold() == lastGold) ? 0 : t * goldReward;
+		}
+		
+		private float rewardBatteryCollection(float t) {
+			return (robot.getBattery() <= lastBattery) ? 0 : t * batteryReward;
+		}
+
+		private int getTileKey() {
 			int col = (int)(robot.getX() / World.TILE_SIZE);
 			int row = (int)(robot.getY() / World.TILE_SIZE);
-			int key = col | (row << 16);
-			
+			return col | (row << 16);
+		}
+	
+		private float rewardExploration(int key, float t, int frame) {
 			if (explored.add(key)) {
-				score += t * exploreReward;
 				lastExplored = frame;
+				return t * exploreReward;
 			}
-			
+			return 0;
+		}
+	
+		private float penaliseRamming(int tileKey, float t) {
 			if (ramPenalty != 0) {
-				if (robot.isRamming() && rammed.add(key)) {
-					score -= t * ramPenalty;
+				if (robot.isRamming() && rammed.add(tileKey)) {
+					return t * ramPenalty;
 				}
 			}
-			
-			lastGold = robot.getGold();
-			lastBattery = robot.getBattery();
-			
-			if (idleMax > 0 && frame > idleMax) {
-				if ((frame - lastExplored) > idleMax) {
-					break;
-				}
-			}
-			
-			if (idleIoMax > 0 && frame > idleIoMax) {
-				if ((frame - robot.getLastIO()) > idleIoMax) {
-					break;
-				}
-			}
+			return 0;
+		}
+
+		private boolean idledTooLong(int frame) {
+			return idleMax > 0 && (frame - lastExplored) > idleMax;
 		}
 		
-		return score;
+		private boolean ioIdledTooLong(int frame) {
+			return idleIoMax > 0 && (frame - robot.getLastIO()) > idleIoMax;
+		}
 	}
+	
+	/// Spawns ///
 	
 	public Spawn randomSpawn(int offset) {
 		return userSpawn.applySeedOffset(offset);
