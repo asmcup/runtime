@@ -27,7 +27,7 @@ public class Genetics extends JFrame {
 		this.sandbox = sandbox;
 		
 		setTitle("Genetics");
-		//setResizable(false);
+		setResizable(false);
 		setIconImage(ImageIO.read(getClass().getResource("/dna.png")));
 		
 		evalPanel = new EvaluatorFrontPanel(sandbox);
@@ -48,7 +48,7 @@ public class Genetics extends JFrame {
 		gaPanel.update();
 		
 		setContentPane(panel);
-		//pack();
+		pack();
 	}
 	
 	public void start() {
