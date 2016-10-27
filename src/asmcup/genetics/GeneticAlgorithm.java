@@ -28,10 +28,7 @@ public class GeneticAlgorithm {
 		this.evaluator = evaluator;
 
 		random = new Random();
-		population = new Gene[1];
-		population[0] = new Gene();
-		population[0].dna = new byte[dnaLength];
-		generation = 0;
+		population = new Gene[0];
 		pinned = new ArrayList<>();
 	}
 
@@ -60,6 +57,12 @@ public class GeneticAlgorithm {
 		population = newPop;
 	}
 	
+	public void rescorePopulation() {
+		for (int i = 0; i < population.length; i++) {
+			population[i] = new Gene(population[i].dna);
+		}
+	}
+	
 	public void nextGeneration() {
 		adjustMutationRate();
 		
@@ -84,20 +87,22 @@ public class GeneticAlgorithm {
 	}
 	
 	public Gene getDefaultGene() {
+		return new Gene(randomDNA());
 		// FIXME: Where to get default gene from?
-		return population[0].clone();
 		//return defaultGene.clone();
 	}
 	
+	private byte[] randomDNA() {
+		byte[] dna = new byte[dnaLength];
+		for (int i = 0; i < dnaLength; i++) {
+			dna[i] = randomByte();
+		}
+		return dna;
+	}
+
 	public Gene selectRandomGene() {
 		int i = random.nextInt(population.length / 2);
 		return population[i];
-	}
-	
-	public void scorePopulation() {
-		for (Gene gene : population) {
-			gene.score = evaluator.score(gene.dna);
-		}
 	}
 	
 	public Gene cross() {
@@ -112,9 +117,7 @@ public class GeneticAlgorithm {
 	}
 	
 	public Gene cross(Gene mom, Gene dad) {
-		Gene gene = new Gene();
-		gene.dna = mom.dna.clone();
-		gene.gen = generation;
+		byte[] dna = mom.dna.clone();
 		
 		int src, dest, size;
 		
@@ -123,7 +126,7 @@ public class GeneticAlgorithm {
 			size = 1 + random.nextInt(mutationSize);
 			
 			for (int i=0; i < size; i++) {
-				gene.dna[(dest + i) % dnaLength] = randomByte();
+				dna[(dest + i) % dnaLength] = randomByte();
 			}
 		}
 		src = random.nextInt(dnaLength);
@@ -131,45 +134,60 @@ public class GeneticAlgorithm {
 		size = 1 + random.nextInt(dnaLength);
 		
 		for (int i=0; i < size; i++) {
-			gene.dna[(dest + i) % dnaLength] = dad.dna[(src + i) % dnaLength];
+			dna[(dest + i) % dnaLength] = dad.dna[(src + i) % dnaLength];
 		}
 		
-		gene.score = evaluator.score(gene.dna);
-		return gene;
+		return new Gene(dna);
 	}
 
-	public Gene getBest() {
-		return population[0];
+	public byte[] getBestDNA() {
+		return population[0].dna.clone();
 	}
 	
-	public Gene getWorst() {
-		return population[population.length / 2 - 1];
+	public float getBestScore() {
+		return population[0].score;
+	}
+	
+	public float getWorstScore() {
+		return population[population.length / 2 - 1].score;
 	}
 	
 	public void adjustMutationRate() {
-		float p = getWorst().score / getBest().score;
+		float p = getWorstScore() / getBestScore();
+		// TODO: That's the laziest lerp I've ever seen...
 		mutationRate = minMutationRate + (int)(p * maxMutationRate);
 		mutationRate = Math.max(minMutationRate, mutationRate);
 		mutationRate = Math.min(maxMutationRate, mutationRate);
 	}
 	
 	public void pin() {
-		pinned.add(getBest());
+		pinned.add(population[0]);
 	}
 	
 	public void unpin() {
 		pinned.clear();
 	}
 	
-
-	public static class Gene implements Comparable<Gene> {
-		byte[] dna;
-		float score;
-		int gen;
+	
+	private class Gene implements Comparable<Gene> {
+		public final byte[] dna;
+		public final float score;
+		public final int gen;
+		
 		
 		// TODO: Constructor (so gen is always defined)
 		// TODO: Score gene in constructor?
+
+		public Gene(byte[] dna) {
+			this(dna, evaluator.score(dna), generation);
+		}
 		
+		private Gene(byte[] dna, float score, int gen) {
+			this.dna = dna;
+			this.score = score;
+			this.gen = gen;
+		}
+
 		public int compareTo(Gene other) {
 			float d = score - other.score;
 			
@@ -182,15 +200,9 @@ public class GeneticAlgorithm {
 			return -1;
 		}
 		
-		// TODO: resizeDna method!
-		
 		public Gene clone()
 		{
-			Gene clone = new Gene();
-			clone.dna = dna.clone();
-			clone.score = score;
-			clone.gen = 0;
-			return clone;
+			return new Gene(dna.clone(), score, generation);
 		}
 	}
 }

@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-import asmcup.genetics.GeneticAlgorithm.Gene;
 import asmcup.runtime.Robot;
 import asmcup.sandbox.*;
 
@@ -87,6 +86,10 @@ public class Genetics extends JFrame {
 		hitem(spawnButton, unspawnButton);
 		hitem(saveButton, flashButton);
 		hitem(stopButton, startButton);
+
+		// The order is important here!
+		configureEvaluator();
+		configureGA();
 		
 		setContentPane(panel);
 		pack();
@@ -189,7 +192,7 @@ public class Genetics extends JFrame {
 	
 	public void flash() {
 		synchronized (sandbox.getWorld()) {
-			sandbox.loadROM(ga.getBest().dna.clone());
+			sandbox.loadROM(ga.getBestDNA());
 			sandbox.reset();
 			sandbox.getRobot().setFacing(evaluator.userSpawn.facing);
 			sandbox.getRobot().position(evaluator.userSpawn.x, evaluator.userSpawn.y);
@@ -198,10 +201,10 @@ public class Genetics extends JFrame {
 	}
 	
 	public void save() {
-		Gene best = ga.getBest();
+		byte[] best = ga.getBestDNA();
 		
 		try {
-			Utils.write(sandbox.getFrame(), "bin", "Program Binary", best.dna);
+			Utils.write(sandbox.getFrame(), "bin", "Program Binary", best);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -209,8 +212,8 @@ public class Genetics extends JFrame {
 		
 	
 	public void updateStats() {
-		worstLabel.setText(String.valueOf(ga.getWorst().score));
-		bestLabel.setText(String.valueOf(ga.getBest().score));
+		worstLabel.setText(String.valueOf(ga.getWorstScore()));
+		bestLabel.setText(String.valueOf(ga.getBestScore()));
 		genLabel.setText(String.valueOf(ga.generation));
 		mutationLabel.setText(String.valueOf(ga.mutationRate) + "%");
 	}
