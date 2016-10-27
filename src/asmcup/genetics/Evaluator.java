@@ -1,11 +1,8 @@
 package asmcup.genetics;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Random;
+import java.util.*;
 
-import asmcup.runtime.Robot;
-import asmcup.runtime.World;
+import asmcup.runtime.*;
 import asmcup.vm.VM;
 
 // TODO: Add Evaluator test(s)!

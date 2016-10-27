@@ -1,9 +1,6 @@
 package asmcup.sandbox;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -12,13 +9,9 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
-import asmcup.genetics.Evaluator;
-import asmcup.genetics.Genetics;
-import asmcup.genetics.Spawn;
-import asmcup.runtime.Cell;
-import asmcup.runtime.Item;
+import asmcup.genetics.*;
+import asmcup.runtime.*;
 import asmcup.runtime.Robot;
-import asmcup.runtime.World;
 
 public class Sandbox {
 	protected Mouse mouse;

@@ -2,16 +2,14 @@ package asmcup.genetics;
 
 import java.awt.GridLayout;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import asmcup.genetics.GeneticAlgorithm.Gene;
-import asmcup.runtime.*;
-import asmcup.sandbox.Sandbox;
-import asmcup.sandbox.Utils;
-import asmcup.vm.VM;
+import asmcup.runtime.Robot;
+import asmcup.sandbox.*;
 
 public class Genetics extends JFrame {
 	protected final Sandbox sandbox;
