@@ -17,7 +17,8 @@ public class Debugger extends JFrame {
 	protected JSlider lazerSlider;
 	protected JProgressBar batteryBar, sensorBar;
 	protected JLabel goldLabel;
-	protected JPanel panel, bottomPane;
+	protected FrontPanel bottomPane;
+	protected JPanel panel;
 	volatile protected boolean updating;
 	
 	public Debugger(Sandbox sandbox) throws IOException {
@@ -34,15 +35,14 @@ public class Debugger extends JFrame {
 		goldLabel = new JLabel("0");
 		
 		panel = new JPanel(new BorderLayout());
-		bottomPane = new JPanel();
-		bottomPane.setLayout(new BoxLayout(bottomPane, BoxLayout.Y_AXIS));
-		hitem("Motor:", motorSlider);
-		hitem("Steer:", steerSlider);
-		hitem("Lazer:", lazerSlider);
-		hitem("Clock:", overclockSlider);
-		hitem("Battery:", batteryBar);
-		hitem("Sensor:", sensorBar);
-		hitem("Gold:", goldLabel);
+		bottomPane = new FrontPanel();
+		bottomPane.addRow("Motor:", motorSlider);
+		bottomPane.addRow("Steer:", steerSlider);
+		bottomPane.addRow("Lazer:", lazerSlider);
+		bottomPane.addRow("Clock:", overclockSlider);
+		bottomPane.addRow("Battery:", batteryBar);
+		bottomPane.addRow("Sensor:", sensorBar);
+		bottomPane.addRow("Gold:", goldLabel);
 		updating = false;
 		
 		panel.add(scrollPane, BorderLayout.CENTER);
@@ -92,13 +92,6 @@ public class Debugger extends JFrame {
 			robot.setLazer(lazerSlider.getValue() / 100.0f);
 			robot.setOverclock(overclockSlider.getValue());
 		}
-	}
-	
-	protected void hitem(String label, JComponent c) {
-		JPanel p = new JPanel(new BorderLayout());
-		p.add(c, BorderLayout.CENTER);
-		p.add(new JLabel(label), BorderLayout.WEST);
-		bottomPane.add(p);
 	}
 	
 	protected class MemoryPane extends JComponent {
