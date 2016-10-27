@@ -9,7 +9,6 @@ public class Spawn {
 	private int seed;
 	
 	public Spawn(float x, float y, float facing, int seed) {
-		super();
 		this.x = x;
 		this.y = y;
 		this.facing = facing;
