@@ -67,7 +67,7 @@ public class Evaluator {
 		private int lastExplored;
 		
 		public float scoreRamForSpawn(byte[] ram, Spawn spawn) {
-			vm = robot.getVM();
+			vm = new VM(ram.clone());
 			robot = new Robot(1, vm);
 			world = spawn.getNewWorld();
 			
