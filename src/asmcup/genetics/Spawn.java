@@ -1,4 +1,4 @@
-package asmcup.sandbox;
+package asmcup.genetics;
 
 import java.util.Random;
 

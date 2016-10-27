@@ -1,4 +1,4 @@
-package asmcup.sandbox;
+package asmcup.genetics;
 
 import java.util.ArrayList;
 import java.util.Arrays;

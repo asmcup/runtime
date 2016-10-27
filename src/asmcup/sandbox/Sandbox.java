@@ -12,11 +12,13 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
+import asmcup.genetics.Evaluator;
+import asmcup.genetics.Genetics;
+import asmcup.genetics.Spawn;
 import asmcup.runtime.Cell;
 import asmcup.runtime.Item;
 import asmcup.runtime.Robot;
 import asmcup.runtime.World;
-import asmcup.sandbox.Evaluator;
 
 public class Sandbox {
 	protected Mouse mouse;
@@ -434,7 +436,7 @@ public class Sandbox {
 		return img;
 	}
 	
-	protected void redraw() {
+	public void redraw() {
 		if (backBuffer != null) {
 			synchronized (backBuffer) {
 				draw();
