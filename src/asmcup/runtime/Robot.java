@@ -26,9 +26,13 @@ public class Robot {
 		this(id, new VM());
 	}
 	
+	public Robot(int id, byte[] rom) {
+		this(id, new VM(rom.clone()));
+	}
+	
 	public Robot(int id, VM vm) {
 		this.id = id;
-		this.vm = new VM();
+		this.vm = vm;
 		this.battery = BATTERY_MAX;
 	}
 	
@@ -174,24 +178,6 @@ public class Robot {
 		}
 		
 		gold += g;
-	}
-	
-	public void flash(byte[] ram) {
-		if (ram.length != 256) {
-			throw new IllegalArgumentException("Program size must be 256");
-		}
-		
-		this.vm = new VM(ram);
-		motor = 0;
-		steer = 0;
-		lazer = 0;
-		lazerEnd = 0;
-		sensorIgnore = 0;
-		sensorFrame = 0;
-		lastX = x;
-		lastY = y;
-		overclock = 0;
-		ramming = false;
 	}
 	
 	public void tick(World world) {

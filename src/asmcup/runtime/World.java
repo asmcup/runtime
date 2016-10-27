@@ -37,6 +37,10 @@ public class World {
 		robots.add(robot);
 	}
 	
+	public void removeRobot(Robot robot) {
+		robots.remove(robot);
+	}
+	
 	public Cell getCell(int cellX, int cellY) {
 		int key = Cell.key(cellX, cellY);
 		Cell cell = cells.get(key);

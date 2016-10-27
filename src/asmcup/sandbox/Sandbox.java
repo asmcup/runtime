@@ -111,7 +111,13 @@ public class Sandbox {
 	public void loadROM(byte[] data) {
 		synchronized (world) {
 			rom = data;
-			robot.flash(rom);
+			Robot old = robot;
+			world.removeRobot(old);
+			
+			robot = new Robot(1, rom);
+			robot.position(old.getX(), old.getY());
+			robot.setFacing(old.getFacing());
+			world.addRobot(robot);
 		}
 	}
 	

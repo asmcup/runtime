@@ -52,14 +52,13 @@ public class Evaluator {
 
 	
 	public float scoreForSpawn(byte[] ram, Spawn spawn) {
-		Robot robot = new Robot(1);
+		VM vm = new VM(ram.clone());
+		Robot robot = new Robot(1, vm);
 		World world = spawn.getNewWorld();
 		
 		world.addRobot(robot);
 		robot.position(spawn.x, spawn.y);
 		robot.setFacing(spawn.facing);
-		
-		robot.flash(ram.clone());
 		
 		float score = 0.0f;
 		int lastGold = 0;
@@ -67,7 +66,6 @@ public class Evaluator {
 		HashSet<Integer> explored = new HashSet<>();
 		HashSet<Integer> rammed = new HashSet<>();
 		int lastExplored = 0;
-		VM vm = robot.getVM();
 		
 		for (int frame = 0; frame < maxSimFrames; frame++) {
 			world.tick();
