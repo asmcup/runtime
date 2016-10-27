@@ -16,7 +16,7 @@ public class Genetics extends JFrame {
 	protected Thread thread;
 	protected boolean running = false;
 	public Evaluator evaluator = new Evaluator();
-	protected GeneticAlgorithm ga = new GeneticAlgorithm(evaluator);
+	public GeneticAlgorithm ga = new GeneticAlgorithm(evaluator);
 	protected JLabel bestLabel = new JLabel("0");
 	protected JLabel worstLabel = new JLabel("0");
 	protected JLabel genLabel = new JLabel("0");
