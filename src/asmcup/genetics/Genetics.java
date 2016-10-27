@@ -15,8 +15,6 @@ public class Genetics extends JFrame {
 	protected int programSize = 256;
 	protected Thread thread;
 	protected boolean running = false;
-	public Evaluator evaluator = new Evaluator();
-	public GeneticAlgorithm ga = new GeneticAlgorithm(evaluator);
 	protected JLabel bestLabel = new JLabel("0");
 	protected JLabel worstLabel = new JLabel("0");
 	protected JLabel genLabel = new JLabel("0");
@@ -27,25 +25,14 @@ public class Genetics extends JFrame {
 	protected JButton saveButton = new JButton("Save");
 	protected JButton pinButton = new JButton("Pin");
 	protected JButton unpinButton = new JButton("Unpin");
-	protected JButton spawnButton = new JButton("Spawn");
-	protected JButton unspawnButton = new JButton("Unspawn");
 	protected ArrayList<JSpinner> spinners = new ArrayList<>();
 	protected JSpinner popSpinner = createSpinner(100, 1, 1000 * 1000);
-	protected JSpinner extraWorldSpinner = createSpinner(0, 0, 100);
 	protected JSpinner mutationSpinner = createSpinner(100, 0, 100);
 	protected JSpinner sizeSpinner = createSpinner(256, 1, 256);
-	protected JSpinner frameSpinner = createSpinner(10 * 60, 1, 10 * 60 * 60 * 24);
-	protected JSpinner idleSpinner = createSpinner(0, 0, 1000 * 1000);
-	protected JSpinner idleIoSpinner = createSpinner(0, 0, 1000 * 1000);
 	protected JSpinner chunkSpinner = createSpinner(4, 0, 256);
-	protected JSpinner exploreSpinner = createSpinner(4, -1000, 1000);
-	protected JSpinner rammingSpinner = createSpinner(2, -1000, 1000);
-	protected JSpinner goldSpinner = createSpinner(50, -1000, 1000);
-	protected JSpinner batterySpinner = createSpinner(100, -1000, 1000);
-	protected JSpinner temporalSpinner = createSpinner(0, 0, 1);
-	protected JSpinner stackSpinner = createSpinner(0, 0, 256);
-	protected JSpinner ioSpinner = createSpinner(0, 0, 1);
 	protected FrontPanel panel = new FrontPanel();
+	public EvaluatorFrontPanel evalPanel;
+	public GeneticAlgorithm ga;
 	
 	public Genetics(Sandbox sandbox) throws IOException {
 		this.sandbox = sandbox;
@@ -54,41 +41,31 @@ public class Genetics extends JFrame {
 		setResizable(false);
 		setIconImage(ImageIO.read(getClass().getResource("/dna.png")));
 		
+		evalPanel = new EvaluatorFrontPanel(sandbox);
+		ga = new GeneticAlgorithm(evalPanel.evaluator);
+		
 		flashButton.addActionListener(e -> flash());
 		startButton.addActionListener(e -> start());
 		stopButton.addActionListener(e -> stop());
 		saveButton.addActionListener(e -> save());
 		pinButton.addActionListener(e -> ga.pin());
 		unpinButton.addActionListener(e -> ga.unpin());
-		spawnButton.addActionListener(e -> spawn());
-		unspawnButton.addActionListener(e -> evaluator.unspawn());
 		
+		panel.addItem(evalPanel);
 		panel.addRow("Population:", popSpinner, "Number of robots that are kept in the gene pool");
-		panel.addRow("Frames:", frameSpinner, "Maximum number of frames for the simulation (10 frames = 1 second)");
-		panel.addRow("Random Tests:", extraWorldSpinner, "Bots are placed into a set of random worlds");
 		panel.addRow("Mutation Chance:", mutationSpinner, "Maximum chance that mutation will occur during mating");
 		panel.addRow("Mutation Size:", chunkSpinner, "Maximum number of bytes that will be changed per mutation");
 		panel.addRow("Program Size:", sizeSpinner, "Number of bytes in the ROM that will be used");
-		panel.addRow("Idle Timeout:", idleSpinner, "Number of frames a bot has to move before being killed (0 is disabled)");
-		panel.addRow("IO Idle Timeout:", idleIoSpinner, "Number of frames a bot has to use IO before being killed (0 is disabled)");
-		panel.addRow("Gold Reward:", goldSpinner, "Number of points earned by collecting some gold");
-		panel.addRow("Battery Reward:", batterySpinner, "Number of points earned by collecting some battery");
-		panel.addRow("Explore Reward:", exploreSpinner, "Number of points earned by touching a new tile");
-		panel.addRow("Collide Penalty:", rammingSpinner, "Number of points lost by ramming a tile for the first time");
-		panel.addRow("Early Reward:", temporalSpinner, "Scale mpoints so earlier activity is worth more");
-		panel.addRow("Force Stack:", stackSpinner, "Kill a bot if the stack pointer ever goes outside this much (0 is disabled)");
-		panel.addRow("Force IO:", ioSpinner, "Kill a bot if it ever generates an invalid IO command");
 		panel.addRow("Best:", bestLabel, "Highest score in the gene pool");
 		panel.addRow("Worst:", worstLabel, "Lowest score in the gene pool");
 		panel.addRow("Mutation:", mutationLabel, "Current chance of mutation");
 		panel.addRow("Generation:", genLabel, "Current generation of gene pool");
 		panel.addItems(pinButton, unpinButton);
-		panel.addItems(spawnButton, unspawnButton);
 		panel.addItems(saveButton, flashButton);
 		panel.addItems(stopButton, startButton);
 
 		// The order is important here!
-		configureEvaluator();
+		evalPanel.update();
 		configureGA();
 		
 		setContentPane(panel);
@@ -112,17 +89,6 @@ public class Genetics extends JFrame {
 		return (Integer)spinner.getValue();
 	}
 	
-	public Spawn getSandboxSpawn()
-	{
-		Robot robot = sandbox.getRobot();
-		return new Spawn(robot.getX(), robot.getY(),
-				robot.getFacing(), sandbox.getWorld().getSeed());
-	}
-	
-	public void spawn() {
-		evaluator.addSpawn(getSandboxSpawn());
-	}
-	
 	public void start() {
 		if (thread != null && thread.isAlive()) {
 			return;
@@ -130,7 +96,7 @@ public class Genetics extends JFrame {
 		
 		setSpinnersEnabled(false);
 
-		configureEvaluator();
+		evalPanel.update();
 		configureGA();
 		
 		thread = new Thread(new Runnable() {
@@ -145,20 +111,6 @@ public class Genetics extends JFrame {
 		
 		running = true;
 		thread.start();
-	}
-	
-	public void configureEvaluator() {
-		evaluator.maxSimFrames = getInt(frameSpinner);
-		evaluator.extraWorldCount = getInt(extraWorldSpinner);
-		evaluator.idleMax = getInt(idleSpinner);
-		evaluator.idleIoMax = getInt(idleIoSpinner);
-		evaluator.exploreReward = getInt(exploreSpinner);
-		evaluator.ramPenalty = getInt(rammingSpinner);
-		evaluator.temporal = getInt(temporalSpinner) > 0;
-		evaluator.forceStack = getInt(stackSpinner);
-		evaluator.forceIO = getInt(ioSpinner) > 0;
-		
-		evaluator.userSpawn = getSandboxSpawn();
 	}
 
 	public void configureGA() {
@@ -177,10 +129,7 @@ public class Genetics extends JFrame {
 	public void flash() {
 		synchronized (sandbox.getWorld()) {
 			sandbox.loadROM(ga.getBestDNA());
-			sandbox.reset();
-			sandbox.getRobot().setFacing(evaluator.userSpawn.facing);
-			sandbox.getRobot().position(evaluator.userSpawn.x, evaluator.userSpawn.y);
-			sandbox.redraw();
+			sandbox.applySpawn(evalPanel.evaluator.userSpawn);
 		}
 	}
 	

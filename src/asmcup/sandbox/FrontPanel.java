@@ -1,18 +1,24 @@
 package asmcup.sandbox;
 
 import java.awt.LayoutManager;
+import java.util.ArrayList;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
 
 public class FrontPanel extends JPanel {
 
 	GridBagLayout gridLayout = new GridBagLayout();
 	GridBagConstraints cItem = new GridBagConstraints();
 	GridBagConstraints cLabel = new GridBagConstraints();
+
+	protected ArrayList<JSpinner> spinners = new ArrayList<>();
 	
 	int currentRow = 0;
 	
@@ -22,6 +28,23 @@ public class FrontPanel extends JPanel {
 		cItem.gridx = 1;
 		cLabel.anchor = GridBagConstraints.WEST;
 		cItem.fill = GridBagConstraints.HORIZONTAL;
+	}
+	
+	public JSpinner createSpinner(int value, int min, int max) {
+		SpinnerModel model = new SpinnerNumberModel(value, min, max, 1);
+		JSpinner spinner = new JSpinner(model);
+		spinners.add(spinner);
+		return spinner;
+	}
+	
+	public void setSpinnersEnabled(boolean enabled) {
+		for (JSpinner spinner : spinners) {
+			spinner.setEnabled(enabled);
+		}
+	}
+	
+	public int getInt(JSpinner spinner) {
+		return (Integer)spinner.getValue();
 	}
 	
 	public void addRow(String label, JComponent component) {
@@ -35,6 +58,15 @@ public class FrontPanel extends JPanel {
 		addItem(label, component);
 	}
 
+	public void addItem(JComponent a) {
+		cItem.gridy = currentRow;
+		cItem.gridx = 0;
+		cItem.gridwidth = 2;
+		add(a, cItem);
+		cItem.gridwidth = 1;
+		cItem.gridx = 1;
+		currentRow++;
+	}
 	public void addItem(JLabel a, JComponent b) {
 		cLabel.gridy = currentRow;
 		cItem.gridy = currentRow;

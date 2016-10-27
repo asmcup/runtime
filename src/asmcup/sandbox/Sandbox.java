@@ -138,6 +138,19 @@ public class Sandbox {
 		robot.position(x, y);
 	}
 	
+	public void applySpawn(Spawn spawn) {
+		reset(spawn.seed);
+		robot.setFacing(spawn.facing);
+		robot.position(spawn.x, spawn.y);
+		redraw();
+	}
+	
+	public Spawn getCurrentSpawn()
+	{
+		return new Spawn(robot.getX(), robot.getY(),
+				robot.getFacing(), world.getSeed());
+	}
+	
 	protected Image[] loadImage(String path) throws IOException {
 		URL url = getClass().getResource(path);
 		Image sheet = ImageIO.read(url);
@@ -219,13 +232,16 @@ public class Sandbox {
 		world.addRobot(robot);
 		redraw();
 	}
-	
+
 	public void reset() {
+		reset(world.getSeed());
+	}
+	
+	public void reset(int seed) {
 		synchronized (world) {
 			world = new World(world.getSeed());
 			world.addRobot(robot);
 		}
-		
 		redraw();
 	}
 	
@@ -267,7 +283,7 @@ public class Sandbox {
 		
 		g.setColor(Color.PINK);
 		
-		for (Spawn spawn : genetics.evaluator.getSpawns()) {
+		for (Spawn spawn : genetics.evalPanel.evaluator.getSpawns()) {
 			int x = screenX(spawn.x);
 			int y = screenY(spawn.y);
 			
