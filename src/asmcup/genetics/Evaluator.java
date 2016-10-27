@@ -23,24 +23,18 @@ public class Evaluator {
 	public boolean forceIO;
 	protected ArrayList<Spawn> spawns = new ArrayList<>();
 
-	public Evaluator(){
-		// Empty constructor exists for convenience
+	public Evaluator() {
+		maxSimFrames = 10 * 60;
+		extraWorldCount = 0;
+		idleMax = 0;
+		idleIoMax = 0;
+		exploreReward = 4;
+		ramPenalty = 2;
+		goldReward = 50;
+		batteryReward = 100;
+		temporal = true;
+		forceIO = false;
 	}
-
-	public Evaluator(int maxSimFrames, int extraWorldCount, int idleMax, int idleIoMax, int exploreReward,
-			int ramPenalty, int goldReward, int batteryReward, boolean temporal, boolean forceIO) {
-		this.maxSimFrames = maxSimFrames;
-		this.extraWorldCount = extraWorldCount;
-		this.idleMax = idleMax;
-		this.idleIoMax = idleIoMax;
-		this.exploreReward = exploreReward;
-		this.ramPenalty = ramPenalty;
-		this.goldReward = goldReward;
-		this.batteryReward = batteryReward;
-		this.temporal = temporal;
-		this.forceIO = forceIO;
-	}
-
 	
 	public float score(byte[] ram) {
 		float score = scoreForSpawn(ram, userSpawn);
