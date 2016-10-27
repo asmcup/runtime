@@ -119,6 +119,16 @@ public class World {
 		cell.setTile(col, row, value);
 	}
 	
+	public void randomizePosition(Robot robot)
+	{
+		int x, y;
+		do {
+			x = (int)(Math.random() * SIZE);
+			y = (int)(Math.random() * SIZE);
+		} while (isSolid(x, y, 32));
+		robot.position(x, y);
+	}
+	
 	public void tick() {
 		for (Robot robot : robots) {
 			robot.tick(this);
