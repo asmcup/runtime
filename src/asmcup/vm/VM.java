@@ -126,10 +126,6 @@ public class VM implements VMConsts {
 	public void pushFloat(float x) {
 		push32(Float.floatToRawIntBits(x));
 	}
-	
-	public void pushFloat(double x) {
-		pushFloat((float)x);
-	}
 
 	public int pop8() {
 		sp = (sp - 1) & 0xFF;
@@ -271,22 +267,22 @@ public class VM implements VMConsts {
 			break;
 			
 		case F_COS:
-			pushFloat(Math.cos(popFloat()));
+			pushFloat((float) Math.cos(popFloat()));
 			break;
 		case F_SIN:
-			pushFloat(Math.sin(popFloat()));
+			pushFloat((float) Math.sin(popFloat()));
 			break;
 		case F_TAN:
-			pushFloat(Math.tan(popFloat()));
+			pushFloat((float) Math.tan(popFloat()));
 			break;
 		case F_ACOS:
-			pushFloat(Math.acos(popFloat()));
+			pushFloat((float) Math.acos(popFloat()));
 			break;
 		case F_ASIN:
-			pushFloat(Math.asin(popFloat()));
+			pushFloat((float) Math.asin(popFloat()));
 			break;
 		case F_ATAN:
-			pushFloat(Math.atan(popFloat()));
+			pushFloat((float) Math.atan(popFloat()));
 			break;
 		case F_ABSF:
 			pushFloat(Math.abs(popFloat()));
@@ -298,13 +294,13 @@ public class VM implements VMConsts {
 			pushFloat(Math.max(popFloat(), popFloat()));
 			break;
 		case F_POW:
-			pushFloat(Math.pow(popFloat(), popFloat()));
+			pushFloat((float) Math.pow(popFloat(), popFloat()));
 			break;
 		case F_LOG:
-			pushFloat(Math.log(popFloat()));
+			pushFloat((float) Math.log(popFloat()));
 			break;
 		case F_LOG10:
-			pushFloat(Math.log10(popFloat()));
+			pushFloat((float) Math.log10(popFloat()));
 			break;
 			
 		case F_IF_EQ8:
