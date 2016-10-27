@@ -3,6 +3,7 @@ package asmcup.vm;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class VM implements VMConsts {
 	private final byte[] ram;
@@ -27,6 +28,17 @@ public class VM implements VMConsts {
 		pc = stream.readUnsignedByte() & 0xFF;
 		sp = stream.readUnsignedByte() & 0xFF;
 		io = stream.readBoolean();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof VM)) return false;
+
+		VM vm = (VM) obj;
+		return Arrays.equals(getMemory(), vm.getMemory()) &&
+				getProgramCounter() == vm.getProgramCounter() &&
+				getStackPointer() == vm.getStackPointer() &&
+				io == vm.io;
 	}
 	
 	public void save(DataOutputStream stream) throws IOException {
