@@ -11,14 +11,18 @@ import asmcup.runtime.Robot;
 
 public class Debugger extends JFrame {
 	protected final Sandbox sandbox;
+	
 	protected MemoryPane memPane;
 	protected JScrollPane scrollPane;
+	
 	protected JSlider motorSlider, steerSlider, overclockSlider;
 	protected JSlider lazerSlider;
 	protected JProgressBar batteryBar, sensorBar;
 	protected JLabel goldLabel;
 	protected FrontPanel bottomPane;
+	
 	protected JPanel panel;
+	
 	volatile protected boolean updating;
 	
 	public Debugger(Sandbox sandbox) throws IOException {
@@ -36,6 +40,7 @@ public class Debugger extends JFrame {
 		
 		panel = new JPanel(new BorderLayout());
 		bottomPane = new FrontPanel();
+		//bottomPane.minimizeLabels();
 		bottomPane.addRow("Motor:", motorSlider);
 		bottomPane.addRow("Steer:", steerSlider);
 		bottomPane.addRow("Lazer:", lazerSlider);

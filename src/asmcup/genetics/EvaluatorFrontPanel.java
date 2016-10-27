@@ -8,6 +8,7 @@ import asmcup.sandbox.FrontPanel;
 import asmcup.sandbox.Sandbox;
 
 public class EvaluatorFrontPanel extends FrontPanel {
+	
 	public Evaluator evaluator = new Evaluator();
 	private Sandbox sandbox;
 

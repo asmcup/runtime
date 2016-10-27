@@ -15,8 +15,11 @@ import javax.swing.SpinnerNumberModel;
 public class FrontPanel extends JPanel {
 
 	GridBagLayout gridLayout = new GridBagLayout();
-	GridBagConstraints cItem = new GridBagConstraints();
+	GridBagConstraints cComponent = new GridBagConstraints();
 	GridBagConstraints cLabel = new GridBagConstraints();
+	GridBagConstraints cWideItem = new GridBagConstraints();
+	GridBagConstraints cItemLeft = new GridBagConstraints();
+	GridBagConstraints cItemRight = new GridBagConstraints();
 
 	protected ArrayList<JSpinner> spinners = new ArrayList<>();
 	
@@ -25,9 +28,27 @@ public class FrontPanel extends JPanel {
 	public FrontPanel() {
 		this.setLayout(gridLayout);
 		cLabel.gridx = 0;
-		cItem.gridx = 1;
-		cLabel.anchor = GridBagConstraints.WEST;
-		cItem.fill = GridBagConstraints.HORIZONTAL;
+		cLabel.fill = GridBagConstraints.HORIZONTAL;
+		cComponent.gridx = 1;
+		cComponent.weightx = 1;
+		cComponent.fill = GridBagConstraints.HORIZONTAL;
+		cItemLeft.gridx = 0;
+		cItemLeft.weightx = 1;
+		cItemLeft.fill = GridBagConstraints.HORIZONTAL;
+		cItemRight.gridx = 1;
+		cItemRight.weightx = 1;
+		cItemRight.fill = GridBagConstraints.HORIZONTAL;
+		cWideItem.gridx = 0;
+		cWideItem.gridwidth = 2;
+		normalLabels();
+	}
+
+	public void minimizeLabels() {
+		cLabel.weightx = 0;
+	}
+	
+	public void normalLabels() {
+		cLabel.weightx = 1;
 	}
 	
 	public JSpinner createSpinner(int value, int min, int max) {
@@ -55,31 +76,26 @@ public class FrontPanel extends JPanel {
 		JLabel label = new JLabel(labelText);
 		component.setToolTipText(hint);
 		label.setToolTipText(hint);
-		addItem(label, component);
+		addLabelledItem(label, component);
 	}
 
-	public void addItem(JComponent a) {
-		cItem.gridy = currentRow;
-		cItem.gridx = 0;
-		cItem.gridwidth = 2;
-		add(a, cItem);
-		cItem.gridwidth = 1;
-		cItem.gridx = 1;
+	public void addWideItem(JComponent item) {
+		cWideItem.gridy = currentRow;
+		add(item, cWideItem);
 		currentRow++;
 	}
-	public void addItem(JLabel a, JComponent b) {
+	public void addLabelledItem(JLabel label, JComponent component) {
 		cLabel.gridy = currentRow;
-		cItem.gridy = currentRow;
-		add(a, cLabel);
-		add(b, cItem);
+		cComponent.gridy = currentRow;
+		add(label, cLabel);
+		add(component, cComponent);
 		currentRow++;
 	}
-	public void addItems(JComponent a, JComponent b) {
-		cItem.gridy = currentRow;
-		cItem.gridx = 0;
-		add(a, cItem);
-		cItem.gridx = 1;
-		add(b, cItem);
+	public void addItems(JComponent left, JComponent right) {
+		cItemLeft.gridy = currentRow;
+		cItemRight.gridy = currentRow;
+		add(left, cItemLeft);
+		add(right, cItemRight);
 		currentRow++;
 	}
 }

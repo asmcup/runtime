@@ -119,7 +119,7 @@ public class Sandbox {
 			robot.setFacing(old.getFacing());
 			world.addRobot(robot);
 			
-			genetics.ga.pin(data);
+			genetics.gaPanel.ga.pin(data);
 		}
 	}
 	
