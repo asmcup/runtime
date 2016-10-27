@@ -45,6 +45,10 @@ public class Cell {
 	}
 	
 	public void addItem(Item item) {
+		if (item == null) {
+			throw new NullPointerException();
+		}
+		
 		items.add(item);
 	}
 	

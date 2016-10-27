@@ -118,6 +118,8 @@ public class Sandbox {
 			robot.position(old.getX(), old.getY());
 			robot.setFacing(old.getFacing());
 			world.addRobot(robot);
+			
+			genetics.ga.pin(data);
 		}
 	}
 	

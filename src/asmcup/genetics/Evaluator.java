@@ -25,7 +25,6 @@ public class Evaluator {
 	public boolean temporal;
 	public boolean forceIO;
 	protected ArrayList<Spawn> spawns = new ArrayList<>();
-	private Scorer scorer = new Scorer();
 	
 	public Evaluator() {
 		maxSimFrames = 10 * 60;
@@ -41,14 +40,15 @@ public class Evaluator {
 	}
 	
 	public float score(byte[] ram) {
-		float score = scorer.scoreRamForSpawn(ram, userSpawn);
+		Scorer scorer = new Scorer();
+		float score = scorer.calculate(ram, userSpawn);
 		
 		for (Spawn s : spawns) {
-			score += scorer.scoreRamForSpawn(ram, s);
+			score += scorer.calculate(ram, s);
 		}
 		
 		for (int i = 1; i <= extraWorldCount; i++) {
-			score += scorer.scoreRamForSpawn(ram, randomSpawn(i));
+			score += scorer.calculate(ram, userSpawn.search(i));
 		}
 		
 		return score;
@@ -66,7 +66,7 @@ public class Evaluator {
 		private HashSet<Integer> explored;
 		private int lastExplored;
 		
-		public float scoreRamForSpawn(byte[] ram, Spawn spawn) {
+		public float calculate(byte[] ram, Spawn spawn) {
 			vm = new VM(ram.clone());
 			robot = new Robot(1, vm);
 			world = spawn.getNewWorld();
@@ -169,12 +169,6 @@ public class Evaluator {
 		private boolean ioIdledTooLong(int frame) {
 			return idleIoMax > 0 && (frame - robot.getLastIO()) > idleIoMax;
 		}
-	}
-	
-	/// Spawns ///
-	
-	public Spawn randomSpawn(int offset) {
-		return userSpawn.applySeedOffset(offset);
 	}
 
 	public void addSpawn(Spawn spawn) {
