@@ -1,16 +1,9 @@
 package asmcup.sandbox;
 
-import java.awt.LayoutManager;
+import java.awt.*;
 import java.util.ArrayList;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
 
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerModel;
-import javax.swing.SpinnerNumberModel;
+import javax.swing.*;
 
 public class FrontPanel extends JPanel {
 

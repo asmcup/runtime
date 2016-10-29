@@ -1,11 +1,8 @@
 package asmcup.genetics;
 
-import javax.swing.JButton;
-import javax.swing.JSpinner;
+import javax.swing.*;
 
-import asmcup.runtime.Robot;
-import asmcup.sandbox.FrontPanel;
-import asmcup.sandbox.Sandbox;
+import asmcup.sandbox.*;
 
 public class EvaluatorFrontPanel extends FrontPanel {
 	
