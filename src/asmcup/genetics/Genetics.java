@@ -1,13 +1,10 @@
 package asmcup.genetics;
 
-import java.awt.GridLayout;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-import asmcup.runtime.Robot;
 import asmcup.sandbox.*;
 
 public class Genetics extends JFrame {

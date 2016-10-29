@@ -1,17 +1,11 @@
 package asmcup.genetics;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JSpinner;
+import javax.swing.*;
 
 import asmcup.sandbox.FrontPanel;
-import asmcup.sandbox.Sandbox;
 
 public class GAFrontPanel extends FrontPanel {
-
 	public GeneticAlgorithm ga;
-	private Evaluator evaluator;
-
 	protected JSpinner popSpinner = createSpinner(100, 1, 1000 * 1000);
 	protected JSpinner mutationSpinner = createSpinner(100, 0, 100);
 	protected JSpinner sizeSpinner = createSpinner(256, 1, 256);
@@ -24,7 +18,6 @@ public class GAFrontPanel extends FrontPanel {
 	protected JButton unpinButton = new JButton("Unpin");
 	
 	public GAFrontPanel(Evaluator evaluator) {
-		this.evaluator = evaluator;
 		ga = new GeneticAlgorithm(evaluator);
 
 		addRow("Population:", popSpinner, "Number of robots that are kept in the gene pool");
