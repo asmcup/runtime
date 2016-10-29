@@ -19,20 +19,16 @@ public class Menu extends JMenuBar {
 		addRobotMenu();
 		addViewMenu();
 		addToolsMenu();
+		addGeneticsMenu();
 		addHelpMenu();
 	}
 	
-	protected JMenuItem item(String label, ActionListener f,
-			KeyStroke shortcut) {
-		JMenuItem item = new JMenuItem();
-		item.setAction(new AbstractAction(label) {
-			public void actionPerformed(ActionEvent e) {
-				f.actionPerformed(e);
-			}
-		});
+	protected JMenuItem item(String label, ActionListener f, KeyStroke k) {
+		JMenuItem item = new JMenuItem(label);
+		item.addActionListener(f);
 		
-		if (shortcut != null) {
-			item.setAccelerator(shortcut);
+		if (k != null) {
+			item.setAccelerator(k);
 		}
 		
 		return item;
@@ -46,14 +42,6 @@ public class Menu extends JMenuBar {
 		return item(label, f, KeyStroke.getKeyStroke(key, 0));
 	}
 	
-	public void teleport() {
-		sandbox.getMouse().startTeleport();
-	}
-
-	public void pauseResume() {
-		sandbox.pauseResume();
-	}
-	
 	public void singleTick() {
 		sandbox.singleTick();
 	}
@@ -63,39 +51,15 @@ public class Menu extends JMenuBar {
 	}
 	
 	public void showCodeEditor() {
-		sandbox.getCodeEditor().setVisible(true);
+		sandbox.codeEditor.setVisible(true);
 	}
 	
 	public void showDebugger() {
-		sandbox.getDebugger().setVisible(true);
-	}
-	
-	public void reseed() {
-		sandbox.reseed();
-	}
-	
-	public void reset() {
-		sandbox.reset();
-	}
-	
-	public void showWorldInfo() {
-		
-	}
-	
-	public void centerView() {
-		sandbox.centerView();
-	}
-	
-	public void toggleGrid() {
-		sandbox.toggleGrid();
-	}
-
-	public void toggleLockCenter() {
-		sandbox.toggleLockCenter();
+		sandbox.debugger.setVisible(true);
 	}
 	
 	public void showGenetics() {
-		sandbox.getGenetics().setVisible(true);
+		sandbox.genetics.setVisible(true);
 	}
 	
 	public void showAbout() {
@@ -121,9 +85,9 @@ public class Menu extends JMenuBar {
 		textArea.setEditable(false);
 		textArea.setText(text);
 		
-		about = new JDialog(sandbox.getFrame(), "About");
+		about = new JDialog(sandbox.frame, "About");
 		about.setSize(500, 350);
-		about.setLocationRelativeTo(sandbox.getFrame());
+		about.setLocationRelativeTo(sandbox.frame);
 		about.setContentPane(new JScrollPane(textArea));
 	}
 	
@@ -146,7 +110,7 @@ public class Menu extends JMenuBar {
 	
 	public void loadROM() {
 		try {
-			byte[] rom = Utils.readAsBytes(sandbox.getFrame(), "bin", "Program Binary");
+			byte[] rom = Utils.readAsBytes(sandbox.frame, "bin", "Program Binary");
 			sandbox.loadROM(rom);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -193,24 +157,24 @@ public class Menu extends JMenuBar {
 		menu.add(item("Paste ROM", e-> pasteROM()));
 		menu.add(item("Copy ROM", e -> copyROM()));
 		menu.addSeparator();
-		menu.add(item("Teleport", e -> teleport(), KeyEvent.VK_T));
+		menu.add(item("Flash", e -> sandbox.flash(), KeyEvent.VK_F));
 		add(menu);
 	}
 	
 	protected void addWorldMenu() {
 		JMenu menu = new JMenu("World");
-		menu.add(item("Generate New", e -> reseed(), KeyEvent.VK_N));
-		menu.add(item("Reset", e -> reset(), KeyEvent.VK_R));
+		menu.add(item("Generate New", e -> sandbox.reseed(), KeyEvent.VK_N));
+		menu.add(item("Reset", e -> sandbox.resetWorld(), KeyEvent.VK_R));
 		menu.addSeparator();
-		menu.add(item("Pause/Resume", e -> pauseResume(), KeyEvent.VK_P));
+		menu.add(item("Pause/Resume", e -> sandbox.togglePaused(), KeyEvent.VK_P));
 		menu.add(item("Single tick", e -> singleTick(), KeyEvent.VK_S));
-		addSimspeedMenu(menu);
+		addSpeedMenu(menu);
 		menu.addSeparator();
 		menu.add(item("Quit", e -> sandbox.quit(), KeyEvent.VK_ESCAPE));
 		add(menu);
 	}
 	
-	private void addSimspeedMenu(JMenu menu) {
+	private void addSpeedMenu(JMenu menu) {
 		JMenu speedMenu = new JMenu("Simulation speed");
 		speedMenu.add(item("0.5x", e -> setSpeed(0.5f)));
 		speedMenu.add(item("1x", e -> setSpeed(1f)));
@@ -222,11 +186,11 @@ public class Menu extends JMenuBar {
 
 	protected void addViewMenu() {
 		JMenu menu = new JMenu("View");
-		menu.add(item("Toggle Grid", e -> toggleGrid(),
+		menu.add(item("Toggle Grid", e -> sandbox.toggleGrid(),
 				KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.CTRL_MASK)));
 		menu.addSeparator();
-		menu.add(item("Center View", e -> centerView(), KeyEvent.VK_SPACE));
-		menu.add(item("Lock view to center", e -> toggleLockCenter(), KeyEvent.VK_C));
+		menu.add(item("Center Camera", e -> sandbox.centerView(), KeyEvent.VK_SPACE));
+		menu.add(item("Lock Camera", e -> sandbox.toggleLockCenter(), KeyEvent.VK_C));
 		add(menu);
 	}
 	
@@ -244,5 +208,9 @@ public class Menu extends JMenuBar {
 		menu.add(item("Github Project", e -> showGithub()));
 		menu.add(item("About", e -> showAbout()));
 		add(menu);
+	}
+	
+	protected void addGeneticsMenu() {
+		add(sandbox.genetics.getMenu());
 	}
 }

@@ -5,11 +5,15 @@ import java.awt.*;
 import javax.swing.JComponent;
 
 public class Canvas extends JComponent {
-	protected final Sandbox sandbox;
+	public final Sandbox sandbox;
+	public final CanvasMenu menu;
 	
 	public Canvas(Sandbox sandbox) {
 		this.sandbox = sandbox;
+		this.menu = new CanvasMenu(this);
+		
 		setPreferredSize(new Dimension(Sandbox.WIDTH, Sandbox.HEIGHT));
+		setComponentPopupMenu(menu);
 	}
 	
 	@Override
