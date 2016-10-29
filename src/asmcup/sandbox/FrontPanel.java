@@ -6,20 +6,17 @@ import java.util.ArrayList;
 import javax.swing.*;
 
 public class FrontPanel extends JPanel {
-
-	GridBagLayout gridLayout = new GridBagLayout();
-	GridBagConstraints cComponent = new GridBagConstraints();
-	GridBagConstraints cLabel = new GridBagConstraints();
-	GridBagConstraints cWideItem = new GridBagConstraints();
-	GridBagConstraints cItemLeft = new GridBagConstraints();
-	GridBagConstraints cItemRight = new GridBagConstraints();
-
+	protected GridBagLayout gridLayout = new GridBagLayout();
+	protected GridBagConstraints cComponent = new GridBagConstraints();
+	protected GridBagConstraints cLabel = new GridBagConstraints();
+	protected GridBagConstraints cWideItem = new GridBagConstraints();
+	protected GridBagConstraints cItemLeft = new GridBagConstraints();
+	protected GridBagConstraints cItemRight = new GridBagConstraints();
 	protected ArrayList<JSpinner> spinners = new ArrayList<>();
-	
-	int currentRow = 0;
+	protected int currentRow = 0;
 	
 	public FrontPanel() {
-		this.setLayout(gridLayout);
+		setLayout(gridLayout);
 		cLabel.gridx = 0;
 		cLabel.fill = GridBagConstraints.HORIZONTAL;
 		cComponent.gridx = 1;
@@ -77,6 +74,7 @@ public class FrontPanel extends JPanel {
 		add(item, cWideItem);
 		currentRow++;
 	}
+	
 	public void addLabelledItem(JLabel label, JComponent component) {
 		cLabel.gridy = currentRow;
 		cComponent.gridy = currentRow;
@@ -84,6 +82,7 @@ public class FrontPanel extends JPanel {
 		add(component, cComponent);
 		currentRow++;
 	}
+	
 	public void addItems(JComponent left, JComponent right) {
 		cItemLeft.gridy = currentRow;
 		cItemRight.gridy = currentRow;
