@@ -21,7 +21,7 @@ public class RobotTest {
 
 	@Test
 	public void testAccelerometer() {
-		World world = generateEmptyWorld((int) robot.getX(), (int) robot.getY(), 2);
+		World world = generateEmptyWorld((int) robot.getX(), (int) robot.getY(), 50);
 		// Read Accelerometer
 		VM vm = robot.getVM();
 		vm.push8(Robot.IO_ACCELEROMETER);
@@ -55,8 +55,8 @@ public class RobotTest {
 
 	public World generateEmptyWorld(int x, int y, int radius) {
 		World world = new World();
-		for (int i = x - radius; i < x + radius; ++i) {
-			for (int j = y - radius; j < y + radius; ++j) {
+		for (int i = x - radius; i < x + radius; i += World.TILE_SIZE) {
+			for (int j = y - radius; j < y + radius; j += World.TILE_SIZE) {
 				world.setTileXY(i, j, Cell.TILE_GROUND);
 			}
 		}
