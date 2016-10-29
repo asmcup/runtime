@@ -1,67 +1,83 @@
 package asmcup.sandbox;
 
-import java.awt.Cursor;
 import java.awt.event.*;
 
 public class Mouse extends MouseAdapter {
-	protected final Sandbox sandbox;
+	public final Sandbox sandbox;
 	protected boolean panning;
+	protected int screenX, screenY;
+	protected int worldX, worldY;
 	protected int panStartX, panStartY;
-	protected boolean teleport;
-	protected int teleX, teleY;
 	
 	public Mouse(Sandbox sandbox) {
 		this.sandbox = sandbox;
 	}
 	
+	public int getWorldX() {
+		return worldX;
+	}
+	
+	public int getWorldY() {
+		return worldY;
+	}
+	
+	protected void update(MouseEvent e) {
+		screenX = e.getX();
+		screenY = e.getY();
+		worldX = sandbox.getPanX() + screenX - Sandbox.WIDTH / 2;
+		worldY = sandbox.getPanY() + screenY - Sandbox.HEIGHT / 2;
+	}
+	
+	protected void startPanning() {
+		panStartX = screenX;
+		panStartY = screenY;
+		panning = true;
+		sandbox.redraw();
+	}
+	
+	protected void pan() {
+		int dx = panStartX - screenX;
+		int dy = panStartY - screenY;
+		sandbox.pan(dx, dy);
+		sandbox.redraw();
+		
+		panStartX = screenX;
+		panStartY = screenY;
+	}
+	
+	protected void finishPanning() {
+		panning = false;
+		sandbox.redraw();
+	}
+	
 	@Override
 	public void mousePressed(MouseEvent e) {
+		update(e);
+		
 		switch (e.getButton()) {
 		case MouseEvent.BUTTON1:
-			if (teleport) {
-				finishTeleport(e);
-				break;
-			}
-			
-			panStartX = e.getX();
-			panStartY = e.getY();
-			panning = true;
-			sandbox.redraw();
+			startPanning();
 			break;
 		}
 	}
 	
 	@Override
 	public void mouseReleased(MouseEvent e) {
+		update(e);
+		
 		switch (e.getButton()) {
 		case MouseEvent.BUTTON1:
-			panning = false;
-			sandbox.redraw();
+			finishPanning();
 			break;
 		}
 	}
 	
 	@Override
 	public void mouseDragged(MouseEvent e) {
+		update(e);
+		
 		if (panning) {
-			int dx = panStartX - e.getX();
-			int dy = panStartY - e.getY();
-			sandbox.pan(dx, dy);
-			sandbox.redraw();
-			
-			panStartX = e.getX();
-			panStartY = e.getY();
+			pan();
 		}
-	}
-	
-	public void startTeleport() {
-		sandbox.getFrame().setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
-		teleport = true;
-	}
-	
-	public void finishTeleport(MouseEvent e) {
-		sandbox.getFrame().setCursor(Cursor.getDefaultCursor());
-		sandbox.teleport(e.getX(), e.getY());
-		teleport = false;
 	}
 }

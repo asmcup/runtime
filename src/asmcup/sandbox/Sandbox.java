@@ -7,19 +7,20 @@ import java.io.IOException;
 import java.net.URL;
 
 import javax.imageio.ImageIO;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 
 import asmcup.genetics.*;
 import asmcup.runtime.*;
 import asmcup.runtime.Robot;
 
 public class Sandbox {
-	protected Mouse mouse;
-	protected Menu menu;
-	protected Canvas canvas;
-	protected Frame frame;
-	protected CodeEditor codeEditor;
-	protected Debugger debugger;
+	public final Mouse mouse;
+	public final Menu menu;
+	public final Canvas canvas;
+	public final JFrame frame;
+	public final CodeEditor codeEditor;
+	public final Debugger debugger;
+	public final Genetics genetics;
 	protected Image backBuffer;
 	protected World world;
 	protected Robot robot;
@@ -31,22 +32,32 @@ public class Sandbox {
 	protected Image bot;
 	protected boolean showGrid;
 	protected boolean lockCenter;
-	protected Genetics genetics;
 	protected byte[] rom = new byte[256];
 	
 	public Sandbox() throws IOException {
 		reseed();
 		
+		// Core components
 		mouse = new Mouse(this);
-		menu = new Menu(this);
 		canvas = new Canvas(this);
-		frame = new Frame(this);
+		frame = new JFrame("Sandbox");
+		
+		// Modules
 		codeEditor = new CodeEditor(this);
 		debugger = new Debugger(this);
 		genetics = new Genetics(this);
 		
+		// Menu gets built last
+		menu = new Menu(this);
+		
 		canvas.addMouseListener(mouse);
 		canvas.addMouseMotionListener(mouse);
+		
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setResizable(false);
+		frame.setJMenuBar(menu);
+		frame.setContentPane(canvas);
+		frame.pack();
 		
 		ground = loadImage("/ground.png");
 		wall = loadImage("/wall.png");
@@ -68,34 +79,6 @@ public class Sandbox {
 		return panY;
 	}
 	
-	public Mouse getMouse() {
-		return mouse;
-	}
-	
-	public Menu getMenu() {
-		return menu;
-	}
-	
-	public Canvas getCanvas() {
-		return canvas;
-	}
-	
-	public Frame getFrame() {
-		return frame;
-	}
-	
-	public CodeEditor getCodeEditor() {
-		return codeEditor;
-	}
-	
-	public Debugger getDebugger() {
-		return debugger;
-	}
-	
-	public Genetics getGenetics() {
-		return genetics;
-	}
-	
 	public World getWorld() {
 		return world;
 	}
@@ -108,9 +91,16 @@ public class Sandbox {
 		return rom;
 	}
 	
-	public void loadROM(byte[] data) {
+	public void setROM(byte[] rom) {
+		if (rom.length != 256) {
+			throw new IllegalArgumentException("ROM must be 256 bytes");
+		}
+		
+		this.rom = rom;
+	}
+	
+	public void flash() {
 		synchronized (world) {
-			rom = data;
 			Robot old = robot;
 			world.removeRobot(old);
 			
@@ -118,9 +108,12 @@ public class Sandbox {
 			robot.position(old.getX(), old.getY());
 			robot.setFacing(old.getFacing());
 			world.addRobot(robot);
-			
-			genetics.gaPanel.ga.pin(data);
 		}
+	}
+	
+	public void loadROM(byte[] rom) {
+		setROM(rom);
+		flash();
 	}
 	
 	public void showError(String msg) {
@@ -130,25 +123,6 @@ public class Sandbox {
 	public void pan(int dx, int dy) {
 		panX += dx;
 		panY += dy;
-	}
-	
-	public void teleport(float canvasX, float canvasY) {
-		float x = panX + canvasX - WIDTH/2;
-		float y = panY + canvasY - HEIGHT/2;
-		robot.position(x, y);
-	}
-	
-	public void applySpawn(Spawn spawn) {
-		reset(spawn.seed);
-		robot.setFacing(spawn.facing);
-		robot.position(spawn.x, spawn.y);
-		redraw();
-	}
-	
-	public Spawn getCurrentSpawn()
-	{
-		return new Spawn(robot.getX(), robot.getY(),
-				robot.getFacing(), world.getSeed());
 	}
 	
 	protected Image[] loadImage(String path) throws IOException {
@@ -188,6 +162,7 @@ public class Sandbox {
 			if (lockCenter) {
 				centerView();
 			}
+			
 			world.tick();
 			debugger.updateDebugger();
 			redraw();
@@ -202,7 +177,7 @@ public class Sandbox {
 		sleep(wait);
 	}
 	
-	public void pauseResume()
+	public void togglePaused()
 	{
 		paused = !paused;
 		redraw();
@@ -233,15 +208,16 @@ public class Sandbox {
 		redraw();
 	}
 
-	public void reset() {
-		reset(world.getSeed());
+	public void resetWorld() {
+		resetWorld(world.getSeed());
 	}
 	
-	public void reset(int seed) {
+	public void resetWorld(int seed) {
 		synchronized (world) {
 			world = new World(world.getSeed());
 			world.addRobot(robot);
 		}
+		
 		redraw();
 	}
 	
@@ -283,7 +259,7 @@ public class Sandbox {
 		
 		g.setColor(Color.PINK);
 		
-		for (Spawn spawn : genetics.evalPanel.evaluator.getSpawns()) {
+		for (Spawn spawn : genetics.evaluator.getSpawns()) {
 			int x = screenX(spawn.x);
 			int y = screenY(spawn.y);
 			
@@ -477,6 +453,7 @@ public class Sandbox {
 	
 	public void toggleGrid() {
 		showGrid = !showGrid;
+		redraw();
 	}
 
 	public void toggleLockCenter() {

@@ -5,15 +5,15 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class GeneticAlgorithm {
-	public Random random;
-	public Evaluator evaluator;
+	public final ArrayList<Gene> pinned;
+	public final Random random;
+	public final Evaluator evaluator;
 	public Gene[] population;
 	public int generation;
 	public int mutationRate = 50;
 	public int minMutationRate = 1;
 	public int maxMutationRate = 100;
 	public int mutationSize = 4;
-	public ArrayList<Gene> pinned;
 	public int dnaLength = 256;
 
 	// FIXME: Handle DNA length changes gracefully
@@ -159,7 +159,7 @@ public class GeneticAlgorithm {
 		pinned.add(population[0]);
 	}
 	
-	public void unpin() {
+	public void clearPinned() {
 		pinned.clear();
 	}
 	

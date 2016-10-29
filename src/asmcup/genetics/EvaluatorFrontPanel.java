@@ -5,10 +5,7 @@ import javax.swing.*;
 import asmcup.sandbox.*;
 
 public class EvaluatorFrontPanel extends FrontPanel {
-	
-	public Evaluator evaluator = new Evaluator();
-	private Sandbox sandbox;
-
+	protected final Evaluator evaluator;
 	protected JSpinner frameSpinner = createSpinner(10 * 60, 1, 10 * 60 * 60 * 24);
 	protected JSpinner extraWorldSpinner = createSpinner(0, 0, 100);
 	protected JSpinner idleSpinner = createSpinner(0, 0, 1000 * 1000);
@@ -21,11 +18,10 @@ public class EvaluatorFrontPanel extends FrontPanel {
 	protected JSpinner stackSpinner = createSpinner(0, 0, 256);
 	protected JSpinner ioSpinner = createSpinner(0, 0, 1);
 	
-	protected JButton spawnButton = new JButton("Spawn");
-	protected JButton unspawnButton = new JButton("Unspawn");
-	
-	public EvaluatorFrontPanel(Sandbox sandbox) {
-		this.sandbox = sandbox;
+	public EvaluatorFrontPanel(Evaluator evaluator) {
+		this.evaluator = evaluator;
+		
+		setBorder(BorderFactory.createTitledBorder("Fitness Metrics"));
 		
 		addRow("Random Tests:", extraWorldSpinner, "Bots are placed into a set of random worlds");
 		addRow("Frames:", frameSpinner, "Maximum number of frames for the simulation (10 frames = 1 second)");
@@ -38,10 +34,6 @@ public class EvaluatorFrontPanel extends FrontPanel {
 		addRow("IO Idle Timeout:", idleIoSpinner, "Number of frames a bot has to use IO before being killed (0 is disabled)");
 		addRow("Force Stack:", stackSpinner, "Kill a bot if the stack pointer ever goes outside this much (0 is disabled)");
 		addRow("Force IO:", ioSpinner, "Kill a bot if it ever generates an invalid IO command");
-		
-		spawnButton.addActionListener(e -> spawn());
-		unspawnButton.addActionListener(e -> evaluator.unspawn());
-		addItems(spawnButton, unspawnButton);
 	}
 
 	public void update() {
@@ -55,10 +47,6 @@ public class EvaluatorFrontPanel extends FrontPanel {
 		evaluator.forceStack = getInt(stackSpinner);
 		evaluator.forceIO = getInt(ioSpinner) > 0;
 		
-		evaluator.userSpawn = sandbox.getCurrentSpawn();
-	}
-	
-	public void spawn() {
-		evaluator.addSpawn(sandbox.getCurrentSpawn());
+		//evaluator.userSpawn = sandbox.getCurrentSpawn();
 	}
 }

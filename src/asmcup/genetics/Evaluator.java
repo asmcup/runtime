@@ -12,8 +12,8 @@ import asmcup.vm.VM;
 // more decisively, but the lines should be clear for now.
 
 public class Evaluator {
+	protected final ArrayList<Spawn> spawns = new ArrayList<>();
 	public int maxSimFrames;
-	public Spawn userSpawn;
 	public int extraWorldCount;
 	public int idleMax;
 	public int idleIoMax;
@@ -24,7 +24,6 @@ public class Evaluator {
 	public int forceStack;
 	public boolean temporal;
 	public boolean forceIO;
-	protected ArrayList<Spawn> spawns = new ArrayList<>();
 	
 	public Evaluator() {
 		maxSimFrames = 10 * 60;
@@ -41,14 +40,14 @@ public class Evaluator {
 	
 	public float score(byte[] ram) {
 		Scorer scorer = new Scorer();
-		float score = scorer.calculate(ram, userSpawn);
+		float score = 0.0f;
 		
-		for (Spawn s : spawns) {
-			score += scorer.calculate(ram, s);
-		}
-		
-		for (int i = 1; i <= extraWorldCount; i++) {
-			score += scorer.calculate(ram, userSpawn.search(i));
+		for (Spawn spawn : spawns) {
+			score += scorer.calculate(ram, spawn);
+			
+			for (int i = 1; i <= extraWorldCount; i++) {
+				score += scorer.calculate(ram, spawn.search(i));
+			}
 		}
 		
 		return score;
@@ -174,12 +173,6 @@ public class Evaluator {
 	public void addSpawn(Spawn spawn) {
 		spawns.add(spawn);
 	}
-	
-	public void unspawn() {
-		if (!spawns.isEmpty()) {
-			spawns.remove(spawns.size() - 1);
-		}
-	}
 
 	public void clearSpawns() {
 		spawns.clear();
@@ -187,5 +180,9 @@ public class Evaluator {
 	
 	public Iterable<Spawn> getSpawns() {
 		return spawns;
+	}
+	
+	public int getSpawnCount() {
+		return spawns.size();
 	}
 }

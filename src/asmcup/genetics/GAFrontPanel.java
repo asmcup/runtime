@@ -5,7 +5,7 @@ import javax.swing.*;
 import asmcup.sandbox.FrontPanel;
 
 public class GAFrontPanel extends FrontPanel {
-	public GeneticAlgorithm ga;
+	public final GeneticAlgorithm ga;
 	protected JSpinner popSpinner = createSpinner(100, 1, 1000 * 1000);
 	protected JSpinner mutationSpinner = createSpinner(100, 0, 100);
 	protected JSpinner sizeSpinner = createSpinner(256, 1, 256);
@@ -14,11 +14,11 @@ public class GAFrontPanel extends FrontPanel {
 	protected JLabel worstLabel = new JLabel("0");
 	protected JLabel genLabel = new JLabel("0");
 	protected JLabel mutationLabel = new JLabel("0");
-	protected JButton pinButton = new JButton("Pin");
-	protected JButton unpinButton = new JButton("Unpin");
 	
-	public GAFrontPanel(Evaluator evaluator) {
-		ga = new GeneticAlgorithm(evaluator);
+	public GAFrontPanel(GeneticAlgorithm ga) {
+		this.ga = ga;
+		
+		setBorder(BorderFactory.createTitledBorder("Gene Pool"));
 
 		addRow("Population:", popSpinner, "Number of robots that are kept in the gene pool");
 		addRow("Mutation Chance:", mutationSpinner, "Maximum chance that mutation will occur during mating");
@@ -28,10 +28,6 @@ public class GAFrontPanel extends FrontPanel {
 		addRow("Worst:", worstLabel, "Lowest score in the gene pool");
 		addRow("Mutation:", mutationLabel, "Current chance of mutation");
 		addRow("Generation:", genLabel, "Current generation of gene pool");
-		addItems(pinButton, unpinButton);
-		
-		pinButton.addActionListener(e -> ga.pin());
-		unpinButton.addActionListener(e -> ga.unpin());
 	}
 
 	public void update() {
@@ -39,7 +35,7 @@ public class GAFrontPanel extends FrontPanel {
 		ga.dnaLength = getInt(sizeSpinner);
 		ga.mutationSize = getInt(chunkSpinner);
 		
-		ga.resizePopulation(getInt(popSpinner));
+		//ga.resizePopulation(getInt(popSpinner));
 	}
 	
 	public void updateStats() {
@@ -49,4 +45,7 @@ public class GAFrontPanel extends FrontPanel {
 		mutationLabel.setText(String.valueOf(ga.mutationRate) + "%");
 	}
 	
+	public int getPopulationSize() {
+		return getInt(popSpinner);
+	}
 }
