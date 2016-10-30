@@ -15,7 +15,7 @@ public class Gene implements Comparable<Gene> {
 		float d = score - other.score;
 		
 		if (d == 0) {
-			return other.gen - gen;
+			return 0;
 		} else if (d < 0) {
 			return 1;
 		}
