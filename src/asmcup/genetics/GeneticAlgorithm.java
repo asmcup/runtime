@@ -77,7 +77,7 @@ public class GeneticAlgorithm {
 	}
 	
 	private byte[] randomDNA() {
-		byte[] dna = new byte[dnaLength];
+		byte[] dna = new byte[256];
 		
 		for (int i = 0; i < dnaLength; i++) {
 			dna[i] = randomByte();
