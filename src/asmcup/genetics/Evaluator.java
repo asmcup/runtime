@@ -164,11 +164,18 @@ public class Evaluator {
 		}
 	
 		private float penaliseRamming(int tileKey, float t) {
-			if (ramPenalty != 0) {
-				if (robot.isRamming() && rammed.add(tileKey)) {
+			if (ramPenalty == 0) {
+				return 0;
+			}
+			
+			if (robot.isRamming()) {
+				if (rammed.add(tileKey)) {
 					return t * ramPenalty;
+				} else {
+					return t * ramPenalty * 0.01f;
 				}
 			}
+			
 			return 0;
 		}
 
