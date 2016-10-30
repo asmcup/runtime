@@ -105,13 +105,14 @@ public class GeneticAlgorithm {
 	public Gene cross(Gene mom, Gene dad) {
 		byte[] dna = mom.dna.clone();
 		
-		int src, dest, size;
+		int src, dest, size, gap;
 		
 		if (random.nextInt(100) <= mutationRate) {
 			dest = random.nextInt(dnaLength);
 			size = 1 + random.nextInt(mutationSize);
+			gap = 1 + random.nextInt(mutationSize);
 			
-			for (int i=0; i < size; i++) {
+			for (int i=0; i < size; i += gap) {
 				dna[(dest + i) % dnaLength] = randomByte();
 			}
 		}
@@ -119,8 +120,9 @@ public class GeneticAlgorithm {
 		src = random.nextInt(dnaLength);
 		dest = random.nextInt(dnaLength);
 		size = 1 + random.nextInt(dnaLength);
+		gap = 1 + random.nextInt(dnaLength);
 		
-		for (int i=0; i < size; i++) {
+		for (int i=0; i < size; i += gap) {
 			dna[(dest + i) % dnaLength] = dad.dna[(src + i) % dnaLength];
 		}
 		
