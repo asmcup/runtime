@@ -123,7 +123,14 @@ public class Evaluator {
 		}
 	
 		private boolean violatesStackRules() {
-			return forceStack > 0 && vm.getStackPointer() < (0xFF - forceStack);
+			if (forceStack <= 0) {
+				return false;
+			}
+			
+			int stackLimit = (0xFF - forceStack);
+			int sp = vm.getStackPointer();
+			int pc = vm.getProgramCounter();
+			return sp < stackLimit || pc > stackLimit;
 		}
 	
 		private float getTimeBenefitFactor(int frame) {
