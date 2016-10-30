@@ -40,18 +40,10 @@ public class GeneticAlgorithm {
 	}
 	
 	public void resizePopulation(int newSize) {
-		if (population.length == newSize) {
-			return;
-		}
-		
 		Gene[] newPop = new Gene[newSize];
 		
 		for (int i=0; i < newSize; i++) {
-			if (i < population.length) {
-				newPop[i] = population[i];
-			} else {
-				newPop[i] = randomGene();
-			}
+			newPop[i] = randomGene();
 		}
 		
 		population = newPop;
