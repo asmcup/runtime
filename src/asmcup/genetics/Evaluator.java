@@ -88,9 +88,11 @@ public class Evaluator {
 				if (violatesStackRules()) {
 					break;
 				}
+				
 				if (violatesIoRules()) {
 					break;
 				}
+				
 				if (robot.isDead()) {
 					break;
 				}
@@ -110,6 +112,7 @@ public class Evaluator {
 				if (idledTooLong(frame)) {
 					break;
 				}
+				
 				if (ioIdledTooLong(frame)) {
 					break;
 				}
@@ -156,6 +159,7 @@ public class Evaluator {
 				lastExplored = frame;
 				return t * exploreReward;
 			}
+			
 			return 0;
 		}
 	
