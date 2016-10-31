@@ -1,9 +1,6 @@
-
-Homepage:
-  asmcup.github.io
-  
-Project Page:
-  github.com/asmcup/runtime
+Version:   1.4.2 (Beta)   
+Homepage:  asmcup.github.io
+Project:   github.com/asmcup/runtime
 
 Creator:
   Kristopher Ives
