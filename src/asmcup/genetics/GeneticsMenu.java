@@ -13,6 +13,7 @@ public class GeneticsMenu extends JMenu {
 		
 		add("Flash Best", e -> genetics.flash());
 		add("Pin Best", e -> genetics.ga.pin());
+		add("Pin ROM", e -> genetics.ga.pin(genetics.sandbox.getROM()));
 		addSeparator();
 		add("Start Training", e -> genetics.start());
 		add("Stop Training", e-> genetics.stop());
