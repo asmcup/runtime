@@ -53,7 +53,167 @@ public class RobotTest {
 		assertNotEquals(x, y, 0.001f);
 	}
 
-	public World generateEmptyWorld(int x, int y, int radius) {
+	@Test
+	public void testSteer() {
+		World world = new World();
+		float previous = robot.getFacing();
+		robot.tickSteer(world);
+		assertEquals("Robot steered", previous, robot.getFacing(), 0.0001f);
+
+		robot.setSteer(1.0f);
+		robot.tickSteer(world);
+		assertTrue("Robot did not steer.", previous < robot.getFacing());
+	}
+
+	@Test
+	public void testMotor() {
+		World world = generateEmptyWorld((int) robot.getX(), (int) robot.getY(), 30);
+		float x = robot.getX();
+		float y = robot.getY();
+		robot.setMotor(1.0f);
+		robot.setFacing(0.5f);
+		robot.tickMotor(world);
+
+		assertNotEquals(x, robot.getX(), 0.00001f);
+		assertNotEquals(y, robot.getY(), 0.00001f);
+	}
+
+	@Test
+	public void testIOMotor() {
+		World world = new World();
+		VM vm = robot.getVM();
+		vm.pushFloat(0.5f);
+		vm.push8(Robot.IO_MOTOR);
+		vm.setIO(true);
+		robot.handleIO(world);
+		assertEquals(0.5f, robot.getMotor(), 0.0001f);
+
+		vm.pushFloat(1.5f);
+		vm.push8(Robot.IO_MOTOR);
+		vm.setIO(true);
+		robot.handleIO(world);
+		assertEquals(1.0f, robot.getMotor(), 0.0001f);
+	}
+
+	@Test
+	public void testIOSteer() {
+		World world = new World();
+		VM vm = robot.getVM();
+		vm.pushFloat(0.5f);
+		vm.push8(Robot.IO_STEER);
+		vm.setIO(true);
+		robot.handleIO(world);
+		assertEquals(0.5f, robot.getSteer(), 0.0001f);
+
+		vm.pushFloat(1.5f);
+		vm.push8(Robot.IO_STEER);
+		vm.setIO(true);
+		robot.handleIO(world);
+		assertEquals(1.0f, robot.getSteer(), 0.0001f);
+	}
+
+	@Test
+	public void testIOOverclock() {
+		World world = new World();
+		VM vm = robot.getVM();
+		vm.push8(200);
+		vm.push8(Robot.IO_OVERCLOCK);
+		vm.setIO(true);
+		robot.handleIO(world);
+		assertEquals(100, robot.getOverclock());
+
+		vm.push8(50);
+		vm.push8(Robot.IO_OVERCLOCK);
+		vm.setIO(true);
+		robot.handleIO(world);
+		assertEquals(50, robot.getOverclock());
+	}
+
+	@Test
+	public void testIOBattery() {
+		World world = new World();
+		VM vm = robot.getVM();
+		robot.battery = Robot.BATTERY_MAX;
+		vm.push8(Robot.IO_BATTERY);
+		vm.setIO(true);
+		robot.handleIO(world);
+		assertEquals(1.0f, vm.popFloat(), 0.0001f);
+	}
+
+	@Test
+	public void testIOCompass() {
+		World world = new World();
+		VM vm = robot.getVM();
+		robot.setFacing(0.0f);
+		vm.push8(Robot.IO_COMPASS);
+		vm.setIO(true);
+		robot.handleIO(world);
+		assertEquals(0.0f, vm.popFloat(), 0.0001f);
+
+		robot.setFacing((float) Math.PI * 2);
+		vm.push8(Robot.IO_COMPASS);
+		vm.setIO(true);
+		robot.handleIO(world);
+		assertEquals(0.0f, vm.popFloat(), 0.0001f);
+	}
+
+	@Test
+	public void testMark() {
+		World world = new World();
+		VM vm = robot.getVM();
+		vm.push8(0);
+		vm.push8(42);
+		vm.push8(Robot.IO_MARK);
+		vm.setIO(true);
+		robot.handleIO(world);
+
+		vm.push8(0);
+		vm.push8(Robot.IO_MARK_READ);
+		vm.setIO(true);
+		robot.handleIO(world);
+		assertEquals(42, vm.pop8());
+
+		// Test reading mark, when not marked
+		robot.position(100, 100);
+		vm.push8(0);
+		vm.push8(Robot.IO_MARK_READ);
+		vm.setIO(true);
+		robot.handleIO(world);
+		assertEquals(0, vm.pop8());
+	}
+
+	@Test
+	public void testMarkOffset() {
+		World world = new World();
+		VM vm = robot.getVM();
+		// Mark offset 0
+		vm.push8(0);
+		vm.push8(42);
+		vm.push8(Robot.IO_MARK);
+		vm.setIO(true);
+		robot.handleIO(world);
+		// Mark offset 1
+		vm.push8(1);
+		vm.push8(4);
+		vm.push8(Robot.IO_MARK);
+		vm.setIO(true);
+		robot.handleIO(world);
+
+		// Read both
+		vm.push8(1);
+		vm.push8(Robot.IO_MARK_READ);
+		vm.setIO(true);
+		robot.handleIO(world);
+		assertEquals(4, vm.pop8());
+
+		vm.push8(0);
+		vm.push8(Robot.IO_MARK_READ);
+		vm.setIO(true);
+		robot.handleIO(world);
+		assertEquals(42, vm.pop8());
+	}
+
+	private World generateEmptyWorld(int x, int y, int radius) {
 		World world = new World();
 		for (int i = x - radius; i < x + radius; i += World.TILE_SIZE) {
 			for (int j = y - radius; j < y + radius; j += World.TILE_SIZE) {
