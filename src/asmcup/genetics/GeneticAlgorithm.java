@@ -77,7 +77,7 @@ public class GeneticAlgorithm {
 	}
 	
 	private byte[] randomDNA() {
-		byte[] dna = new byte[dnaLength];
+		byte[] dna = new byte[256];
 		
 		for (int i = 0; i < dnaLength; i++) {
 			dna[i] = randomByte();
@@ -105,28 +105,51 @@ public class GeneticAlgorithm {
 	public Gene cross(Gene mom, Gene dad) {
 		byte[] dna = mom.dna.clone();
 		
-		int src, dest, size, gap;
-		
-		if (random.nextInt(100) <= mutationRate) {
-			dest = random.nextInt(dnaLength);
-			size = 1 + random.nextInt(mutationSize);
-			gap = 1 + random.nextInt(mutationSize);
-			
-			for (int i=0; i < size; i += gap) {
-				dna[(dest + i) % dnaLength] = randomByte();
-			}
+		switch (random.nextInt(2)) {
+		case 0:
+			crossTwoPoint(mom, dad, dna);
+			break;
+		case 1:
+		default:
+			crossUniform(mom, dad, dna);
+			break;	
 		}
 		
-		src = random.nextInt(dnaLength);
-		dest = random.nextInt(dnaLength);
-		size = 1 + random.nextInt(dnaLength);
-		gap = 1 + random.nextInt(dnaLength);
-		
-		for (int i=0; i < size; i += gap) {
-			dna[(dest + i) % dnaLength] = dad.dna[(src + i) % dnaLength];
+		if (random.nextInt(100) <= mutationRate) {
+			mutate(dna);
 		}
 		
 		return createGene(dna);
+	}
+	
+	protected void crossTwoPoint(Gene mom, Gene dad, byte[] dna) {
+		int dest, src, size;
+
+		src = random.nextInt(dnaLength);
+		dest = random.nextInt(dnaLength);
+		size = 1 + random.nextInt(dnaLength);
+
+		for (int i = 0; i < size; i++) {
+			dna[(dest + i) % dnaLength] = dad.dna[(src + i) % dnaLength];
+		}
+	}
+	
+	protected void crossUniform(Gene mom, Gene dad, byte[] dna) {
+		for (int i=0; i < dnaLength; i++) {
+			if (random.nextBoolean()) {
+				dna[i] = dad.dna[i];
+			}
+		}
+	}
+	
+	protected void mutate(byte[] dna) {
+		int dest = random.nextInt(dnaLength);
+		int size = 1 + random.nextInt(mutationSize);
+		int gap = 1 + random.nextInt(mutationSize);
+		
+		for (int i=0; i < size; i += gap) {
+			dna[(dest + i) % dnaLength] = randomByte();
+		}
 	}
 
 	public byte[] getBestDNA() {

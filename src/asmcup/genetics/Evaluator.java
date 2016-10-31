@@ -41,16 +41,37 @@ public class Evaluator {
 	public float score(byte[] ram) {
 		Scorer scorer = new Scorer();
 		float score = 0.0f;
+		int seed = 0;
 		
 		for (Spawn spawn : spawns) {
-			score += scorer.calculate(ram, spawn);
-			
-			for (int i = 1; i <= extraWorldCount; i++) {
-				score += scorer.calculate(ram, spawn.search(i));
-			}
+			score += scorer.calculate360(ram, spawn);
+			seed += spawn.seed;
+		}
+		
+		for (int i = 1; i <= extraWorldCount; i++) {
+			score += scorer.calculate360(ram, randomSpawn(seed + i));
 		}
 		
 		return score;
+	}
+	
+	public Spawn randomSpawn(int seed) {
+		Random random = new Random(seed);
+		float sx = random.nextFloat() * World.SIZE;
+		float sy = random.nextFloat() * World.SIZE;
+		float facing = random.nextFloat() * (float)Math.PI * 2;
+		World world = new World(seed);
+		
+		// Wiggle around until the start position is fair.
+		// TODO ? Make this the job of world ("deterministic" random)?
+		// TODO needs to check for an isSpawnable
+		
+		while (world.isSolid(sx, sy, 25)) {
+			sx += (random.nextFloat() - 0.5f) * World.CELL_SIZE;
+			sy += (random.nextFloat() - 0.5f) * World.CELL_SIZE;
+		}
+		
+		return new Spawn(sx, sy, facing, seed);
 	}
 	
 	private class Scorer {
@@ -65,14 +86,24 @@ public class Evaluator {
 		private HashSet<Integer> explored;
 		private int lastExplored;
 		
-		public float calculate(byte[] ram, Spawn spawn) {
+		public float calculate360(byte[] ram, Spawn spawn) {
+			float score = 0.0f;
+			
+			for (int turn = 0; turn < 360; turn += 45) {
+				score += calculate(ram, spawn, (float)Math.toRadians(turn));
+			}
+			
+			return score;
+		}
+		
+		public float calculate(byte[] ram, Spawn spawn, float turn) {
 			vm = new VM(ram.clone());
 			robot = new Robot(1, vm);
 			world = spawn.getNewWorld();
 			
 			world.addRobot(robot);
 			robot.position(spawn.x, spawn.y);
-			robot.setFacing(spawn.facing);
+			robot.setFacing(spawn.facing + turn);
 			
 			float score = 0.0f;
 			
@@ -88,9 +119,11 @@ public class Evaluator {
 				if (violatesStackRules()) {
 					break;
 				}
+				
 				if (violatesIoRules()) {
 					break;
 				}
+				
 				if (robot.isDead()) {
 					break;
 				}
@@ -110,9 +143,12 @@ public class Evaluator {
 				if (idledTooLong(frame)) {
 					break;
 				}
+				
 				if (ioIdledTooLong(frame)) {
 					break;
 				}
+				
+				score += 0.001f;
 			}
 			
 			return score;
@@ -156,15 +192,23 @@ public class Evaluator {
 				lastExplored = frame;
 				return t * exploreReward;
 			}
+			
 			return 0;
 		}
 	
 		private float penaliseRamming(int tileKey, float t) {
-			if (ramPenalty != 0) {
-				if (robot.isRamming() && rammed.add(tileKey)) {
+			if (ramPenalty == 0) {
+				return 0;
+			}
+			
+			if (robot.isRamming()) {
+				if (rammed.add(tileKey)) {
 					return t * ramPenalty;
+				} else {
+					return t * ramPenalty * 0.01f;
 				}
 			}
+			
 			return 0;
 		}
 
