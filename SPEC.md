@@ -221,8 +221,8 @@ and executes a command:
  3     | IO_OVERCLOCK     | CPU Clock Control
  4     | IO_LASER         | Laser Attack (not yet implemented)
  5     | IO_BATTERY       | Read Battery
- 6     | IO_MARK          | Mark ("pee") (not yet implemented)
- 7     | IO_MARK_READ     | Mark Read ("smell") (not yet implemented)
+ 6     | IO_MARK          | Mark ("pee")
+ 7     | IO_MARK_READ     | Mark Read ("smell") 
  8     | IO_ACCELEROMETER | Accelerometer
  9     | IO_RADIO         | (Planned) Set radio strength
  10    | IO_SEND          | (Planned) Emit data via radio
