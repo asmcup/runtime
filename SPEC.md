@@ -113,7 +113,7 @@ Value | Command   | In | Out | Notes
 49    | c_1f      | 0  | 4   | Push Float `1.0f`
 50    | c_2f      | 0  | 4   | Push Float `2.0f`
 51    | c_3f      | 0  | 4   | Push Float `3.0f`
-52    | c_4f      | 0  | 4   | Push Float `4.0f`
+52    | c_m1f     | 0  | 4   | Push Float `-1.0f`
 53    | c_inf     | 0  | 4   | Push Float Infinity
 54    | if_nan    | 4  | 1   | Float NaN Check
 55    | dup8      | 1  | 2   | Byte Duplicate
