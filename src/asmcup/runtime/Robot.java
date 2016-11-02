@@ -341,7 +341,7 @@ public class Robot {
 			vm.push8(world.recv(this, frequency));
 			break;
 		case IO_COMPASS:
-			vm.pushFloat(facing % (float)Math.PI);
+			vm.pushFloat(floatModPositive(facing, (float)(Math.PI * 2)));
 			break;
 		default:
 			lastInvalidIO = world.getFrame();
@@ -420,6 +420,10 @@ public class Robot {
 		}
 		
 		return f;
+	}
+	
+	protected static float floatModPositive(float dividend, float divisor) {
+		return ((dividend % divisor) + divisor) % divisor;
 	}
 	
 	public static final int IO_SENSOR = 0;
