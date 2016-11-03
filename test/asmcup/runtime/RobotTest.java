@@ -212,6 +212,28 @@ public class RobotTest {
 		robot.handleIO(world);
 		assertEquals(42, vm.pop8());
 	}
+	
+	public void testBeamAngle() {
+		World world = generateEmptyWorld((int) robot.getX(), (int) robot.getY(), 50);
+		VM vm = robot.getVM();
+		// Face west
+		robot.setFacing(0);
+		// Beam south?
+		vm.pushFloat(1.0f);
+		vm.push8(Robot.IO_BEAM_DIRECTION);
+		vm.setIO(true);
+		robot.handleIO(world);
+		assertEquals((float)Math.PI/2, robot.getBeamAngle(), 0.0001f);
+		
+		// Face north
+		robot.setFacing(-(float)Math.PI/2);
+		// Beam north-west?
+		vm.pushFloat(-0.5f);
+		vm.push8(Robot.IO_BEAM_DIRECTION);
+		vm.setIO(true);
+		robot.handleIO(world);
+		assertEquals((float)-Math.PI * 0.75f, robot.getBeamAngle(), 0.0001f);
+	}
 
 	private World generateEmptyWorld(int x, int y, int radius) {
 		World world = new World();

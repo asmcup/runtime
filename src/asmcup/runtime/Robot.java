@@ -17,6 +17,7 @@ public class Robot {
 	protected float frequency;
 	protected int gold;
 	protected float sensor;
+	protected float beamDirection;
 	protected int sensorIgnore;
 	protected int sensorFrame;
 	protected boolean ramming;
@@ -90,6 +91,10 @@ public class Robot {
 	
 	public float getSensor() {
 		return sensor;
+	}
+	
+	public float getBeamAngle() {
+		return (float)(facing + beamDirection * Math.PI / 2);
 	}
 	
 	public int getSensorFrame() {
@@ -249,8 +254,8 @@ public class Robot {
 			return;
 		}
 		
-		float cos = (float)Math.cos(facing);
-		float sin = (float)Math.sin(facing);
+		float cos = (float)Math.cos(getBeamAngle());
+		float sin = (float)Math.sin(getBeamAngle());
 		
 		for (int i=0; i < RAY_STEPS; i++) {
 			if ((i * RAY_INTERVAL) >= (lazer * LAZER_RANGE)) {
@@ -343,6 +348,9 @@ public class Robot {
 		case IO_COMPASS:
 			vm.pushFloat(facing % (float)Math.PI);
 			break;
+		case IO_BEAM_DIRECTION:
+			beamDirection = popFloatSafe(-1.0f, 1.0f);
+			break;
 		default:
 			lastInvalidIO = world.getFrame();
 			return;
@@ -352,8 +360,8 @@ public class Robot {
 	}
 	
 	protected void sensorRay(World world) {
-		float cos = (float)Math.cos(facing);
-		float sin = (float)Math.sin(facing);
+		float cos = (float)Math.cos(getBeamAngle());
+		float sin = (float)Math.sin(getBeamAngle());
 		sensorFrame = world.getFrame();
 		
 		for (int i = 0; i < RAY_STEPS; i++) {
@@ -438,6 +446,7 @@ public class Robot {
 	public static final int IO_RECEIVE = 11;
 	public static final int IO_SENSOR_CONFIG = 12;
 	public static final int IO_COMPASS = 13;
+	public static final int IO_BEAM_DIRECTION = 14;
 	
 	public static final float SPEED_MAX = 8;
 	public static final float STEER_RATE = (float)(Math.PI * 0.1);

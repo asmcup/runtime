@@ -353,6 +353,9 @@ public class Sandbox {
 		
 		g.rotate(robot.getFacing(), sx, sy);
 		g.drawImage(bot, sx - World.TILE_HALF, sy - World.TILE_HALF, null);
+		g.setTransform(t);
+		
+		g.rotate(robot.getBeamAngle(), sx, sy);
 		
 		if (robot.getLazerEnd() > 0) {
 			int w = (int)(robot.getLazerEnd());
