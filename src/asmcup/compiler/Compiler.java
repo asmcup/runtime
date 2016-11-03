@@ -491,7 +491,7 @@ public class Compiler implements VMConsts {
 			
 			public void compile() {
 				int addr = labels.get(s);
-				int r = addr - pc;
+				int r = addr - (pc + 1);
 				
 				if (r < -32 || r > 31) {
 					throw new IllegalArgumentException("Address is not within range");
