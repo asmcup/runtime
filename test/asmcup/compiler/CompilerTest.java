@@ -229,6 +229,88 @@ public class CompilerTest {
     }
 
     @Test
+    public void testParseIndirection() {
+    	assertTrue(Compiler.isIndirect("[anything]"));
+    	assertTrue(Compiler.isIndirect("(anything)"));
+    }
+
+    @Test
+    public void testPushes() {
+    	compiler.compile("push8 #13 \n push8 37 \n push8 #$ab \n push8 $cd \n" + 
+				"pushf 1.2");
+    }
+    
+    public void testPushesRelative() {
+    	compiler.compile("label: dbf 0.0 \n push8r label");
+    	// FIXME: Disabled for now. Implementation has an issue (#136).
+    	//compiler.compile("push8r 5 \n push8r $0a");
+    }
+    
+    @Test
+    public void testPops() {
+    	compiler.compile("pop8 37 \n pop8 $ab \n popf 13 \n popf $3d");
+    }
+    
+    @Test
+    public void testPopsRelative() {
+    	compiler.compile("label: dbf 0.0 \n pop8r label");
+    	// FIXME: Disabled for now. Implementation has an issue (#136).
+    	//compiler.compile("pop8r 7 \n pop8r $0a");
+    }
+        
+    // FIXME: Disabled for now. Implementation has an issue (#99).
+    /*
+    @Test
+    public void testPopsIndirect() {
+    	compiler.compile("pop8 [13] \n pop8 [$cd] \n popf [13] \n popf [$cd]");
+    }*/
+
+    @Test
+    public void testPushrLiteralFail() {
+    	try {
+    		compiler.compile("push8r #1");
+	        fail("Compiler did not fail on referencing a literal.");
+	    } catch (IllegalArgumentException e) {
+	        assert(e.getMessage().startsWith("Cannot address a literal"));
+	    }
+	}
+    
+    @Test
+    public void testPopLiteralFail() {
+        try {
+        	compiler.compile("pop8 #1");
+            fail("Compiler did not fail on referencing a literal.");
+        } catch (IllegalArgumentException e) {
+            assert(e.getMessage().startsWith("Cannot address a literal"));
+        }
+    }
+    
+    @Test
+    public void testIllegalIndirect() {
+        try {
+        	compiler.compile("push8 [0]");
+            fail("Compiler did not fail on indirect push.");
+        } catch (IllegalArgumentException e) {
+            assert(e.getMessage().startsWith("Invalid value"));
+        }
+    }
+
+    @Test
+    public void testPush8LabelAddress() {
+    	byte[] ram = compiler.compile("db8 #0 \n labelAt1: db8 #0 \n push8 &labelAt1");
+    	// Note: If the compiler ever figures out that this can be collapsed to 
+    	// one of the constant functions, this test will fail.
+    	assertEquals(1, ram[3]);
+    }
+    
+    // FIXME: Disabled for now. Implementation has an issue (#135).
+    /*
+    @Test(expected = IllegalArgumentException.class)
+    public void testPush8NonlabelAddress() {
+    	compiler.compile("push8 &2");
+    }*/
+
+    @Test
     public void testParseComments() {
         assertEquals("not a comment", Compiler.parseComments(" not a comment"));
         assertEquals("text before", Compiler.parseComments("text before ; this comment"));
@@ -243,6 +325,28 @@ public class CompilerTest {
         assertEquals(3, compiler.statements.size());
         assertEquals("kein label", compiler.parseLabels("kein label"));
     }
+
+    // FIXME: Disabled for now. Implementation has an issue (#134).
+    /*
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidLabelSpaces() {
+        try {
+            compiler.parseLabels("label with spaces:");
+            fail("Compiler did not fail on invalid label name.");
+        } catch (IllegalArgumentException e) {
+            assert(e.getMessage().startsWith("Invalid label name"));
+        }
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidLabelNumbers() {
+        try {
+            compiler.parseLabels("123labelsMustntStartWithNumbers:");
+            fail("Compiler did not fail on invalid label name.");
+        } catch (IllegalArgumentException e) {
+            assert(e.getMessage().startsWith("Invalid label name"));
+        }
+    }*/
 
     @Test
     public void testParseArgs() {
