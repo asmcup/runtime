@@ -242,8 +242,7 @@ public class CompilerTest {
     
     public void testPushesRelative() {
     	compiler.compile("label: dbf 0.0 \n push8r label");
-    	// FIXME: Disabled for now. Implementation has an issue (#136).
-    	//compiler.compile("push8r 5 \n push8r $0a");
+    	compiler.compile("push8r 5 \n push8r $0a");
     }
     
     @Test
@@ -254,8 +253,7 @@ public class CompilerTest {
     @Test
     public void testPopsRelative() {
     	compiler.compile("label: dbf 0.0 \n pop8r label");
-    	// FIXME: Disabled for now. Implementation has an issue (#136).
-    	//compiler.compile("pop8r 7 \n pop8r $0a");
+    	compiler.compile("pop8r 7 \n pop8r $0a");
     }
         
     // FIXME: Disabled for now. Implementation has an issue (#99).
