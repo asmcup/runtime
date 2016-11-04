@@ -67,7 +67,7 @@ public class RobotTest {
 
 	@Test
 	public void testMotor() {
-		World world = generateEmptyWorld((int) robot.getX(), (int) robot.getY(), 30);
+		World world = generateEmptyWorld((int) robot.getX(), (int) robot.getY(), 50);
 		float x = robot.getX();
 		float y = robot.getY();
 		robot.setMotor(1.0f);
