@@ -1,18 +1,17 @@
-package asmcup.genetics;
+package evaluation;
 
-import java.util.*;
+import java.util.HashSet;
 
-import asmcup.runtime.*;
+import asmcup.genetics.Spawn;
+import asmcup.runtime.Robot;
+import asmcup.runtime.World;
 import asmcup.vm.VM;
 
-// TODO: Add Evaluator test(s)!
-// - Evaluate same spawn x times
-
-// TODO: The split into an actual scoring unit and a "spawn manager" could be made
-// more decisively, but the lines should be clear for now.
+//TODO: Add Evaluator test(s)!
+//- Evaluate same spawn x times
 
 public class Evaluator {
-	protected final ArrayList<Spawn> spawns = new ArrayList<>();
+
 	public int maxSimFrames;
 	public int extraWorldCount;
 	public int idleMax;
@@ -24,6 +23,8 @@ public class Evaluator {
 	public int forceStack;
 	public boolean temporal;
 	public boolean forceIO;
+	
+	public int baseSeed = 0;
 	
 	public Evaluator() {
 		maxSimFrames = 10 * 60;
@@ -38,43 +39,19 @@ public class Evaluator {
 		forceIO = false;
 	}
 	
+	// TODO: Make more transparent for threading...
 	public float score(byte[] ram) {
 		Scorer scorer = new Scorer();
 		float score = 0.0f;
-		int seed = 0;
-		
-		for (Spawn spawn : spawns) {
-			score += scorer.calculate360(ram, spawn);
-			seed += spawn.seed;
-		}
-		
-		for (int i = 1; i <= extraWorldCount; i++) {
-			score += scorer.calculate360(ram, randomSpawn(seed + i));
+
+		for (int i = 0; i < extraWorldCount; i++) {
+			score += scorer.calculate360(ram, Spawn.randomFromSeed(baseSeed + i));
 		}
 		
 		return score;
 	}
 	
-	public Spawn randomSpawn(int seed) {
-		Random random = new Random(seed);
-		float sx = random.nextFloat() * World.SIZE;
-		float sy = random.nextFloat() * World.SIZE;
-		float facing = random.nextFloat() * (float)Math.PI * 2;
-		World world = new World(seed);
-		
-		// Wiggle around until the start position is fair.
-		// TODO ? Make this the job of world ("deterministic" random)?
-		// TODO needs to check for an isSpawnable
-		
-		while (world.isSolid(sx, sy, 25)) {
-			sx += (random.nextFloat() - 0.5f) * World.CELL_SIZE;
-			sy += (random.nextFloat() - 0.5f) * World.CELL_SIZE;
-		}
-		
-		return new Spawn(sx, sy, facing, seed);
-	}
-	
-	private class Scorer {
+	protected class Scorer {
 		private Robot robot;
 		private VM vm;
 		private World world;
@@ -219,21 +196,5 @@ public class Evaluator {
 		private boolean ioIdledTooLong(int frame) {
 			return idleIoMax > 0 && (frame - robot.getLastIO()) > idleIoMax;
 		}
-	}
-
-	public void addSpawn(Spawn spawn) {
-		spawns.add(spawn);
-	}
-
-	public void clearSpawns() {
-		spawns.clear();
-	}
-	
-	public Iterable<Spawn> getSpawns() {
-		return spawns;
-	}
-	
-	public int getSpawnCount() {
-		return spawns.size();
 	}
 }

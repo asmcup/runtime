@@ -1,4 +1,4 @@
-package asmcup.genetics;
+package evaluation;
 
 import javax.swing.*;
 
@@ -21,7 +21,7 @@ public class EvaluatorFrontPanel extends FrontPanel {
 	public EvaluatorFrontPanel(Evaluator evaluator) {
 		this.evaluator = evaluator;
 		
-		setBorder(BorderFactory.createTitledBorder("Fitness Metrics"));
+		setBorder(BorderFactory.createTitledBorder("Evaluation Metrics"));
 		
 		addRow("Random Tests:", extraWorldSpinner, "Bots are placed into a set of random worlds");
 		addRow("Frames:", frameSpinner, "Maximum number of frames for the simulation (10 frames = 1 second)");
@@ -46,7 +46,5 @@ public class EvaluatorFrontPanel extends FrontPanel {
 		evaluator.temporal = getInt(temporalSpinner) > 0;
 		evaluator.forceStack = getInt(stackSpinner);
 		evaluator.forceIO = getInt(ioSpinner) > 0;
-		
-		//evaluator.userSpawn = sandbox.getCurrentSpawn();
 	}
 }

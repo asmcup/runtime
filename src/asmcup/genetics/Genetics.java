@@ -5,14 +5,15 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-import asmcup.runtime.*;
 import asmcup.sandbox.*;
+import evaluation.SpawnEvaluator;
+import evaluation.EvaluatorFrontPanel;
 
 public class Genetics extends JFrame {
 	public final Sandbox sandbox;
 	public final GeneticsMenu menu;
 	public final GeneticAlgorithm ga;
-	public final Evaluator evaluator;
+	public final SpawnEvaluator evaluator;
 	public final FrontPanel panel = new FrontPanel();
 	public final EvaluatorFrontPanel evalPanel;
 	public final GAFrontPanel gaPanel;
@@ -26,7 +27,7 @@ public class Genetics extends JFrame {
 		this.sandbox = sandbox;
 		
 		menu = new GeneticsMenu(this);
-		evaluator = new Evaluator();
+		evaluator = new SpawnEvaluator(sandbox.spawns);
 		ga = new GeneticAlgorithm(evaluator);
 		evalPanel = new EvaluatorFrontPanel(evaluator);
 		gaPanel = new GAFrontPanel(ga);
@@ -58,8 +59,8 @@ public class Genetics extends JFrame {
 			return;
 		}
 		
-		if (evaluator.getSpawnCount() <= 0) {
-			addSpawnAtRobot();
+		if (sandbox.spawns.size() <= 0) {
+			sandbox.spawns.addSpawnAtRobot();
 		}
 		
 		startButton.setEnabled(false);
@@ -95,21 +96,5 @@ public class Genetics extends JFrame {
 	
 	public void flash() {
 		sandbox.loadROM(ga.getBestDNA());
-	}
-	
-	public void addSpawnAtMouse() {
-		Mouse mouse = sandbox.mouse;
-		Robot robot = sandbox.getRobot();
-		World world = sandbox.getWorld();
-		Spawn spawn = new Spawn(mouse.getWorldX(), mouse.getWorldY(), robot.getFacing(), world.getSeed());
-		evaluator.addSpawn(spawn);
-		sandbox.redraw();
-	}
-	
-	public void addSpawnAtRobot() {
-		Robot robot = sandbox.getRobot();
-		World world = sandbox.getWorld();
-		Spawn spawn = new Spawn(robot.getX(), robot.getY(), robot.getFacing(), world.getSeed());
-		evaluator.addSpawn(spawn);
 	}
 }

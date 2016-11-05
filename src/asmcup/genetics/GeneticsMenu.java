@@ -21,7 +21,8 @@ public class GeneticsMenu extends JMenu {
 		add("Modify Parameters", e -> genetics.setVisible(true));
 		addSeparator();
 		add("Clear Pinned", e -> genetics.ga.clearPinned());
-		add("Clear Spawns", e -> genetics.evaluator.clearSpawns());
+		//FIXME: Find a solution, probably in the form of a spawns window.
+		//add("Clear Spawns", e -> genetics.evaluator.clearSpawns());
 	}
 	
 	protected void add(String label, ActionListener listener) {

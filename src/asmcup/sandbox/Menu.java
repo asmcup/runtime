@@ -63,6 +63,10 @@ public class Menu extends JMenuBar {
 		sandbox.debugger.setVisible(true);
 	}
 	
+	public void showEvaluator() {
+		sandbox.evaluator.setVisible(true);
+	}
+	
 	public void showGenetics() {
 		sandbox.genetics.setVisible(true);
 	}
@@ -204,6 +208,7 @@ public class Menu extends JMenuBar {
 		JMenu menu = new JMenu("Tools");
 		menu.add(item("Code Editor", e -> showCodeEditor(), KeyEvent.VK_E));
 		menu.add(item("Debugger", e -> showDebugger(), KeyEvent.VK_D));
+		menu.add(item("Evaluator", e -> showEvaluator(), KeyEvent.VK_V));
 		menu.add(item("Genetics", e-> showGenetics(), KeyEvent.VK_G));
 		add(menu);
 	}
