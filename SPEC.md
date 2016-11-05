@@ -5,7 +5,6 @@ Robots are powered by a simple virtual machine with a RISC instruction
 set for managing memory via a stack. The instruction language supports native
 operations on 8-bit integers and 32-bit floats.
 
-
 ## Memory Size
 
 All programs are 256 bytes in size and are mapped into an 8-bit address
@@ -22,9 +21,11 @@ a part of the stack for this purpose.
 
 ## Battery
 
-Robots are powered via their internal battery used to power each instruction. If
-the battery reaches zero they will die. Robots can control their CPU clock speed
-from 1 hz (1 instruction per second) to 1 khz (1024 instructions per second).
+Robots are powered via their internal battery. Each instruction executed consumes
+one unit of power. Once a robot's battery reaches zero, it dies. Note that robots
+may also gain (and lose) charges through interaction with their environment.
+Robots can control their CPU clock speed from one instruction per world tick to 100
+instructions per world tick.
 The internal battery currently holds enough charge for executing 86400 instructions.
 
 ## Instructions
@@ -164,37 +165,22 @@ Statement     | Size | Description
 jmp $f0       | 2    | Jump Always
 jnz $f0       | 2    | Jump Not Zero
 jmp [$f0]     | 2    | Jump Always Indirect
-jnzr $f0      | 1    | Jump Not Zero Relative
+jnzr $f0      | 1    | Jump Not Zero Relative. Only legal if executed within 31 bytes of the target address
 
 `jnzr` stores the relative location of the target address in its data bytes,
 thereby saving ROM space but being restricted to nearby addresses.
 The `jne` and `jner` commands are equivalent to `jnz` and `jnzr`, respectively.
 
-### JSR and RET
-
-The `ret` function pops and jumps to the address at the top of the stack. `jsr` does
-the same, but also pushes the address of the instruction following it.
-
-```
-push8 &half_speed
-jsr
-
-half_speed:
-  pushf 0.5
-  push8 #IO_MOTOR
-  io
-  ret
-```
-
-
 ## Further compiler information
 
-Line contents after a semicolon (;) are ignored by the compiler.
+Line contents after a semicolon (`;`) are ignored by the compiler.
 
 You may define labels (e.g. `start:`) and refer to them using their name (e.g.
-`jmp start`), which will be replaced by the memory location in the compiled code
-that they were defined at. A statement (including more labels) may follow on
-the same line.
+`jmp start`), which will be replaced by the memory location (address) in the
+compiled code that they were defined at. A statement (including more labels)
+may follow on the same line.
+The literal value of the label address can be obtained with the `&` operator.
+See below (JSR and RET) for the use of this.
 
 The compiler also accepts statements of these forms:
 
@@ -207,9 +193,26 @@ dbf 0.1       | 4    | Data bytes from float
 A common idiom is using `myVar: db8 #0` to create named variables.
 This allows using statements like `push8 myVar`.
 
+### JSR and RET
+
+The `ret` function pops and jumps to the address at the top of the stack. `jsr` does
+the same, but also pushes the address of the instruction following it. Consider this
+example:
+
+```
+push8 &half_speed
+jsr
+
+half_speed:
+  pushf 0.5
+  push8 #IO_MOTOR
+  io
+  ret
+```
+
 ## IO
 
-While the VM itself allows you to construct arbitrary programs the IO
+While the VM itself allows you to construct arbitrary programs, the IO
 controls the robot itself. The `io` command  takes the top value from the stack
 and executes a command:
 
@@ -230,7 +233,7 @@ and executes a command:
 
 ### Beam Sensor
 
-Casts a beam at the current looking direction.
+Casts a sensor beam at the current looking direction.
 
 ```
 push8 #IO_SENSOR
@@ -240,7 +243,7 @@ popf distance
 ```
 
 After `io` the stack will contain a byte on the top with a float below it.
-The float is the distance the beam travelled, which maximum range is `256.0`.
+The float is the distance the beam travelled (maximum range is `256.0`).
 The byte specifies which type of thing was hit by the beam:
 
 Value | Meaning
@@ -269,7 +272,18 @@ push8 #IO_SENSOR_CONFIG
 io
 ```
 
+Another way to change the sensor (and laser) beam behavior is to set the angle
+at which it is cast:
 
+```
+pushf -1.0
+push8 #IO_BEAM_DIRECTION
+io
+```
+
+Acceptable values range from `-1.0` (90° to the left of the robot's facing)
+to `1.0` (90° to the right of the robot's facing). This affects both the beam
+sensor and the laser!
 
 ### Motor Control
 
@@ -306,8 +320,7 @@ io
 
 ### CPU Clock Control
 
-The CPU speed of the robot can be "overclocked" by pushing two
-bytes to the stack and calling `io`:
+The CPU speed of the robot can be "overclocked" like this:
 
 ```
 push8 #100
@@ -316,12 +329,12 @@ io
 ```
 
 The maximum CPU speed is 100, setting any number higher is the same as setting
-to 100. The game operates at 10 frames per second meaning a fully overclocked
+to 100. The game operates at 10 frames per second, meaning a fully overclocked
 CPU will execute 1000 instructions per second, 100 per frame.
 
 ### Battery Check
 
-A robot can know how much battery it has:
+A robot can query how much battery it has:
 
 ```
 push8 #IO_BATTERY
@@ -329,15 +342,15 @@ io
 popf batteryLevel
 ```
 
-The float on the stack will be between `0.0` and `1.0` describing how much
-battery is remaining.
+The float on the stack will scale between `0.0` (completely empty) and `1.0`
+(starting amount) to indicate the amount of battery remaining.
 
 ### Laser
 
 Robots get a laser beam which can damage some obstacles and other robots in
 combat. Currently a laser can break rocks which may be blocking doors. Having
 the laser on costs up to `256` battery per game frame, less if the laser is
-not fully powered or hits something early.
+not fully powered (which results in reduced range) or hits something early.
 
 ```
 ; Full power laser
@@ -351,10 +364,13 @@ push8 #IO_LASER
 io
 ```
 
+Note that the laser beam's angle relative to the robot can be changed. See the
+Beam Sensor section for details.
+
 ### Accelerometer
 
-The accelerometer allows a robot to detect relative changes in it's position.
-Each time you use the IO_ACCELEROMETER command the last position is saved and
+The accelerometer allows a robot to detect relative changes in its position.
+Each time you use the IO_ACCELEROMETER command, the last position is saved and
 the difference is pushed on the stack as two floats.
 
 ```
@@ -366,7 +382,9 @@ popf relX
 
 ### Compass
 
-The compass allows a robot to determine which direction they are facing.
+The compass allows a robot to determine which direction it is facing. Facing
+is always positive and ranges from `0` (west) over `PI/2` (north) etc. up to
+`2 PI`.
 
 ```
 push8 #IO_COMPASS
@@ -376,13 +394,13 @@ popf facing
 
 ### World Marking
 
-Robots can "mark" the world which is kind of like how animals can pee and sniff
+Robots can "mark" the world which is kind of like how animals can pee and smell
 the pee. A robot uses `IO_MARK` to write bytes to the current tile and can
 use `IO_MARK_READ` to read data of the current tile. Each tile has 8 bytes
 of storage.
 
 ```
-push8 #00  ; Offset
+push8 #00  ; Offset (index) of byte to write
 push8 #42  ; Value to save
 push8 #IO_MARK
 io
@@ -391,14 +409,14 @@ io
 You can read the same data back using:
 
 ```
-push8 #00 ; Offset
+push8 #00 ; Offset (index) of byte to read
 push8 #IO_MARK_READ
 io
 pop8 tileData
 ```
 
-Note that other robots (if in a shared world) also may read or write data to
-the same tile.
+Note that other robots (if in a shared world) may also read or (over)write
+this data from/to the same tile.
 
 ### Radio
 
