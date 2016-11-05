@@ -115,10 +115,10 @@ public class World {
 		int col = (int)(x / TILE_SIZE - cell.getX() * TILES_PER_CELL);
 		int row = (int)(y / TILE_SIZE - cell.getY() * TILES_PER_CELL);
 		
-		col = Math.max(col, 0);
-		row = Math.max(row, 0);
-		col = Math.min(col, TILES_PER_CELL * CELL_COUNT - 1);
-		row = Math.min(row, TILES_PER_CELL * CELL_COUNT - 1);
+		col = StrictMath.max(col, 0);
+		row = StrictMath.max(row, 0);
+		col = StrictMath.min(col, TILES_PER_CELL * CELL_COUNT - 1);
+		row = StrictMath.min(row, TILES_PER_CELL * CELL_COUNT - 1);
 		
 		cell.setTile(col, row, value);
 	}
@@ -127,8 +127,8 @@ public class World {
 	{
 		int x, y;
 		do {
-			x = (int)(Math.random() * SIZE);
-			y = (int)(Math.random() * SIZE);
+			x = (int)(StrictMath.random() * SIZE);
+			y = (int)(StrictMath.random() * SIZE);
 		} while (isSolid(x, y, 32));
 		robot.position(x, y);
 	}

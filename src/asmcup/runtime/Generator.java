@@ -159,8 +159,8 @@ public class Generator {
 	
 	protected int wiggle(int x) {
 		x += nextInt(3) - 1;
-		x = Math.min(x, World.TILES_PER_CELL - 1);
-		x = Math.max(x, 0);
+		x = StrictMath.min(x, World.TILES_PER_CELL - 1);
+		x = StrictMath.max(x, 0);
 		return x;
 	}
 
@@ -168,9 +168,9 @@ public class Generator {
 		wpad = 1 + nextInt(3);
 		hpad = 1 + nextInt(3);
 		width = World.TILES_PER_CELL - wpad * 2;
-		width = Math.max(5, width);
+		width = StrictMath.max(5, width);
 		height = World.TILES_PER_CELL - hpad * 2;
-		height = Math.max(5, height);
+		height = StrictMath.max(5, height);
 		left = wpad + 1;
 		top = hpad + 1;
 		right = left + width - 2;

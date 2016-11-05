@@ -41,7 +41,7 @@ public class Cell {
 	}
 	
 	protected static int clampCell(int i) {
-		return Math.max(0, Math.min(World.CELL_COUNT, i));
+		return StrictMath.max(0, StrictMath.min(World.CELL_COUNT, i));
 	}
 	
 	public void addItem(Item item) {
@@ -75,7 +75,7 @@ public class Cell {
 	}
 	
 	public static int clampTile(int i) {
-		return Math.max(0, Math.min(World.TILES_PER_CELL - 1, i));
+		return StrictMath.max(0, StrictMath.min(World.TILES_PER_CELL - 1, i));
 	}
 	
 	public int getTileXY(float x, float y) {
