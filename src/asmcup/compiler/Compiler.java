@@ -192,7 +192,7 @@ public class Compiler implements VMConsts {
 			
 			public void compile() {
 				for (String s : args) {
-					writeFloat(Float.parseFloat(s));
+					writeFloat(parseFloat(s));
 				}
 			}
 		});
@@ -263,7 +263,7 @@ public class Compiler implements VMConsts {
 	}
 	
 	protected void pushLiteralFloat(String s) {
-		float f = Float.parseFloat(s);
+		float f = parseFloat(s);
 		
 		if (f == -1.0f) {
 			immediate(OP_FUNC, F_C_M1F, NO_DATA);
@@ -407,6 +407,13 @@ public class Compiler implements VMConsts {
 		catch (NumberFormatException e) {
 			throw new IllegalArgumentException("Invalid value: " + s);
 		}
+	}
+	
+	protected static float parseFloat(String s) {
+		if (isLiteral(s)) {
+			s = s.substring(1);
+		}
+		return Float.parseFloat(s);
 	}
 	
 	protected void reference(int op, int data, String s) {

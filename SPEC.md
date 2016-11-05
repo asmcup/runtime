@@ -42,7 +42,7 @@ There are four basic types of operations:
 ## Values and Addressing
 
 Literal values are denoted by a `#` in front of them. Float values can only be literals,
-so the `#` can be/must be (*not yet decided*) omitted for float literals.
+so the `#` can be omitted for float literals.
 Any values that are not literals are taken to be memory addresses.
 Values preceded by a `$` are interpreted as hexadecimal, otherwise they
 will be treated as decimals.
