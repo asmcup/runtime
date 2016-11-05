@@ -19,7 +19,7 @@ public abstract class Item {
 	public boolean withinDistance(float tx, float ty) {
 		float dx = tx - x;
 		float dy = ty - y;
-		return Math.sqrt(dx * dx + dy * dy) <= 20;
+		return StrictMath.sqrt(dx * dx + dy * dy) <= 20;
 	}
 	
 	public abstract void collect(Robot robot);

@@ -94,7 +94,7 @@ public class Robot {
 	}
 	
 	public float getBeamAngle() {
-		return (float)(facing + beamDirection * Math.PI / 2);
+		return (float)(facing + beamDirection * StrictMath.PI / 2);
 	}
 	
 	public int getSensorFrame() {
@@ -122,7 +122,7 @@ public class Robot {
 	}
 	
 	public void setOverclock(int v) {
-		overclock = Math.min(100, Math.max(0, v));
+		overclock = StrictMath.min(100, StrictMath.max(0, v));
 	}
 	
 	public void setFacing(float facing) {
@@ -208,7 +208,7 @@ public class Robot {
 	}
 	
 	protected void tickSteer(World world) {
-		if (Math.abs(steer) <= 0.01f) {
+		if (StrictMath.abs(steer) <= 0.01f) {
 			steer = 0.0f;
 		}
 		
@@ -218,7 +218,7 @@ public class Robot {
 	protected void tickMotor(World world) {
 		float s;
 		
-		if (Math.abs(motor) <= 0.01f) {
+		if (StrictMath.abs(motor) <= 0.01f) {
 			motor = 0.0f;
 			return;
 		}
@@ -229,8 +229,8 @@ public class Robot {
 			s = motor * SPEED_MAX;
 		}
 		
-		float tx = x + (float)Math.cos(facing) * s;
-		float ty = y + (float)Math.sin(facing) * s;
+		float tx = x + (float)StrictMath.cos(facing) * s;
+		float ty = y + (float)StrictMath.sin(facing) * s;
 		int radius = COLLIDE_RADIUS;
 		
 		if (!world.isSolid(tx, ty, radius)) {
@@ -254,8 +254,8 @@ public class Robot {
 			return;
 		}
 		
-		float cos = (float)Math.cos(getBeamAngle());
-		float sin = (float)Math.sin(getBeamAngle());
+		float cos = (float)StrictMath.cos(getBeamAngle());
+		float sin = (float)StrictMath.sin(getBeamAngle());
 		
 		for (int i=0; i < RAY_STEPS; i++) {
 			if ((i * RAY_INTERVAL) >= (lazer * LAZER_RANGE)) {
@@ -346,7 +346,7 @@ public class Robot {
 			vm.push8(world.recv(this, frequency));
 			break;
 		case IO_COMPASS:
-			vm.pushFloat(floatModPositive(facing, (float)(Math.PI * 2)));
+			vm.pushFloat(floatModPositive(facing, (float)(StrictMath.PI * 2)));
 			break;
 		case IO_BEAM_DIRECTION:
 			beamDirection = popFloatSafe(-1.0f, 1.0f);
@@ -360,8 +360,8 @@ public class Robot {
 	}
 	
 	protected void sensorRay(World world) {
-		float cos = (float)Math.cos(getBeamAngle());
-		float sin = (float)Math.sin(getBeamAngle());
+		float cos = (float)StrictMath.cos(getBeamAngle());
+		float sin = (float)StrictMath.sin(getBeamAngle());
 		sensorFrame = world.getFrame();
 		
 		for (int i = 0; i < RAY_STEPS; i++) {
@@ -453,7 +453,7 @@ public class Robot {
 	public static final int IO_BEAM_DIRECTION = 14;
 	
 	public static final float SPEED_MAX = 8;
-	public static final float STEER_RATE = (float)(Math.PI * 0.1);
+	public static final float STEER_RATE = (float)(StrictMath.PI * 0.1);
 	public static final int BATTERY_MAX = 60 * 60 * 24;
 	public static final int OVERCLOCK_MAX = 100;
 	public static final float FREQUENCY_MAX = 1000 * 10;

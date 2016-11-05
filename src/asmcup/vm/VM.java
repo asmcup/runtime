@@ -279,40 +279,40 @@ public class VM implements VMConsts {
 			break;
 			
 		case F_COS:
-			pushFloat((float) Math.cos(popFloat()));
+			pushFloat((float) StrictMath.cos(popFloat()));
 			break;
 		case F_SIN:
-			pushFloat((float) Math.sin(popFloat()));
+			pushFloat((float) StrictMath.sin(popFloat()));
 			break;
 		case F_TAN:
-			pushFloat((float) Math.tan(popFloat()));
+			pushFloat((float) StrictMath.tan(popFloat()));
 			break;
 		case F_ACOS:
-			pushFloat((float) Math.acos(popFloat()));
+			pushFloat((float) StrictMath.acos(popFloat()));
 			break;
 		case F_ASIN:
-			pushFloat((float) Math.asin(popFloat()));
+			pushFloat((float) StrictMath.asin(popFloat()));
 			break;
 		case F_ATAN:
-			pushFloat((float) Math.atan(popFloat()));
+			pushFloat((float) StrictMath.atan(popFloat()));
 			break;
 		case F_ABSF:
-			pushFloat(Math.abs(popFloat()));
+			pushFloat(StrictMath.abs(popFloat()));
 			break;
 		case F_MINF:
-			pushFloat(Math.min(popFloat(), popFloat()));
+			pushFloat(StrictMath.min(popFloat(), popFloat()));
 			break;
 		case F_MAXF:
-			pushFloat(Math.max(popFloat(), popFloat()));
+			pushFloat(StrictMath.max(popFloat(), popFloat()));
 			break;
 		case F_POW:
-			pushFloat((float) Math.pow(popFloat(), popFloat()));
+			pushFloat((float) StrictMath.pow(popFloat(), popFloat()));
 			break;
 		case F_LOG:
-			pushFloat((float) Math.log(popFloat()));
+			pushFloat((float) StrictMath.log(popFloat()));
 			break;
 		case F_LOG10:
-			pushFloat((float) Math.log10(popFloat()));
+			pushFloat((float) StrictMath.log10(popFloat()));
 			break;
 			
 		case F_IF_EQ8:
