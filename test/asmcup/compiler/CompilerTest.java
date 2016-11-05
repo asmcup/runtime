@@ -269,13 +269,11 @@ public class CompilerTest {
     	// FIXME: Disabled for now. Implementation has an issue (#136).
     	//compiler.compile("pop8r 7 \n pop8r $0a");
     }
-        
-    // FIXME: Disabled for now. Implementation has an issue (#99).
-    /*
+
     @Test
     public void testPopsIndirect() {
     	compiler.compile("pop8 [13] \n pop8 [$cd] \n popf [13] \n popf [$cd]");
-    }*/
+    }
 
     @Test
     public void testPushrLiteralFail() {

@@ -241,7 +241,14 @@ public class Compiler implements VMConsts {
 	}
 	
 	protected void pop8(String[] args) {
-		reference(OP_POP, MAGIC_POP_BYTE, args);
+		String s = expectOne(args);
+
+		if (isIndirect(s)) {
+			s = s.substring(1, s.length() - 1);
+			reference(OP_POP, MAGIC_POP_BYTE_INDIRECT, s);
+		} else {
+			reference(OP_POP, MAGIC_POP_BYTE, s);
+		}
 	}
 	
 	protected void pop8r(String[] args) {
@@ -283,7 +290,14 @@ public class Compiler implements VMConsts {
 	}
 	
 	protected void popf(String[] args) {
-		reference(OP_POP, MAGIC_POP_FLOAT, args);
+		String s = expectOne(args);
+
+		if (isIndirect(s)) {
+			s = s.substring(1, s.length() - 1);
+			reference(OP_POP, MAGIC_POP_FLOAT_INDIRECT, s);
+		} else {
+			reference(OP_POP, MAGIC_POP_FLOAT, s);
+		}
 	}
 	
 	protected void jnz(String[] args) {
