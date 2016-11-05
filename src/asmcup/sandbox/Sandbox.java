@@ -18,6 +18,7 @@ public class Sandbox {
 	public final Menu menu;
 	public final Canvas canvas;
 	public final JFrame frame;
+	public final LoadWorldDialog loadWorld;
 	public final CodeEditor codeEditor;
 	public final Debugger debugger;
 	public final Genetics genetics;
@@ -43,6 +44,7 @@ public class Sandbox {
 		frame = new JFrame("Sandbox");
 		
 		// Modules
+		loadWorld = new LoadWorldDialog(this);
 		codeEditor = new CodeEditor(this);
 		debugger = new Debugger(this);
 		genetics = new Genetics(this);
@@ -203,7 +205,6 @@ public class Sandbox {
 		
 		world.randomizePosition(robot);
 		centerView();
-		// TODO: This looks wrong... Same bot may get added multiple times.
 		world.addRobot(robot);
 		redraw();
 	}
@@ -214,11 +215,18 @@ public class Sandbox {
 	
 	public void resetWorld(int seed) {
 		synchronized (world) {
-			world = new World(world.getSeed());
+			world = new World(seed);
 			world.addRobot(robot);
 		}
 		
 		redraw();
+	}
+	
+	public void loadSpawn(Spawn spawn) {
+		robot.position(spawn.x, spawn.y);
+		robot.setFacing(spawn.facing);
+		resetWorld(spawn.seed);
+		centerView();
 	}
 	
 	public void centerView() {

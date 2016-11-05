@@ -41,8 +41,14 @@ public class FrontPanel extends JPanel {
 		cLabel.weightx = 1;
 	}
 	
-	public JSpinner createSpinner(int value, int min, int max) {
-		SpinnerModel model = new SpinnerNumberModel(value, min, max, 1);
+	@SuppressWarnings("rawtypes")
+	public JSpinner createSpinner(Number value, Comparable min, Comparable max) {
+		return createSpinner(value, min, max, 1);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public JSpinner createSpinner(Number value, Comparable min, Comparable max, Number step) {
+		SpinnerModel model = new SpinnerNumberModel(value, min, max, step);
 		JSpinner spinner = new JSpinner(model);
 		spinners.add(spinner);
 		return spinner;
@@ -56,6 +62,10 @@ public class FrontPanel extends JPanel {
 	
 	public int getInt(JSpinner spinner) {
 		return (Integer)spinner.getValue();
+	}
+	
+	public float getFloat(JSpinner spinner) {
+		return (Float)spinner.getValue();
 	}
 	
 	public void addRow(String label, JComponent component) {

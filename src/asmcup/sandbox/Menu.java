@@ -42,6 +42,11 @@ public class Menu extends JMenuBar {
 		return item(label, f, KeyStroke.getKeyStroke(key, 0));
 	}
 	
+	public void showLoadWorld() {
+		sandbox.loadWorld.update();
+		sandbox.loadWorld.setVisible(true);
+	}
+	
 	public void singleTick() {
 		sandbox.singleTick();
 	}
@@ -165,6 +170,7 @@ public class Menu extends JMenuBar {
 		JMenu menu = new JMenu("World");
 		menu.add(item("Generate New", e -> sandbox.reseed(), KeyEvent.VK_N));
 		menu.add(item("Reset", e -> sandbox.resetWorld(), KeyEvent.VK_R));
+		menu.add(item("Load World", e -> showLoadWorld(), KeyEvent.VK_L));
 		menu.addSeparator();
 		menu.add(item("Pause/Resume", e -> sandbox.togglePaused(), KeyEvent.VK_P));
 		menu.add(item("Single tick", e -> singleTick(), KeyEvent.VK_S));
