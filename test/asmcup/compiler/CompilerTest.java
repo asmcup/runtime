@@ -331,12 +331,12 @@ public class CompilerTest {
         assertEquals(1, compiler.statements.size());
         assertEquals("", compiler.parseLabels("  two:more:"));
         assertEquals(3, compiler.statements.size());
+        assertEquals("", compiler.parseLabels("  with  : spaces\t: "));
+        assertEquals(5, compiler.statements.size());
         assertEquals("kein label", compiler.parseLabels("kein label"));
     }
 
-    // FIXME: Disabled for now. Implementation has an issue (#134).
-    /*
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testInvalidLabelSpaces() {
         try {
             compiler.parseLabels("label with spaces:");
@@ -346,7 +346,7 @@ public class CompilerTest {
         }
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testInvalidLabelNumbers() {
         try {
             compiler.parseLabels("123labelsMustntStartWithNumbers:");
@@ -354,7 +354,7 @@ public class CompilerTest {
         } catch (IllegalArgumentException e) {
             assert(e.getMessage().startsWith("Invalid label name"));
         }
-    }*/
+    }
 
     @Test
     public void testParseArgs() {

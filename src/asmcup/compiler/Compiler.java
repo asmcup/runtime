@@ -373,7 +373,10 @@ public class Compiler implements VMConsts {
 				throw new IllegalArgumentException("Expected label name");
 			}
 			
-			String name = line.substring(0, pos);
+			String name = line.substring(0, pos).trim();
+			if (!isSymbol(name)) {
+				throw new IllegalArgumentException("Invalid label name: " + name);
+			}
 
 			statements.add(new Label(name));
 			line = line.substring(pos + 1).trim();
