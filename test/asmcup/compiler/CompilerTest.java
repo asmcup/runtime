@@ -227,6 +227,18 @@ public class CompilerTest {
     public void testParseLiteralHex() {
         assertEquals(0xff, Compiler.parseLiteral("#$ff"));
     }
+    
+    @Test
+    public void testParseFloats() {
+        assertEquals(3.14159f, Compiler.parseFloat("3.14159"), 0.0001);
+        assertEquals(12000f, Compiler.parseFloat("12e3"), 0.1);
+    }
+
+    @Test
+    public void testParseLiteralFloats() {
+        assertEquals(3.14159f, Compiler.parseFloat("#3.14159"), 0.0001);
+        assertEquals(12000f, Compiler.parseFloat("#12e3"), 0.1);
+    }
 
     @Test
     public void testParseIndirection() {
