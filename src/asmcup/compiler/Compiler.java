@@ -422,6 +422,24 @@ public class Compiler implements VMConsts {
 			throw new IllegalArgumentException("Invalid value: " + s);
 		}
 	}
+
+	protected int getAddress(String s) {
+		int addr;
+
+		if (isLiteral(s)) {
+			throw new IllegalArgumentException("Cannot address a literal as jump target");
+		}
+		if (isSymbol(s)) {
+			if (!labels.containsKey(s)) {
+				throw new IllegalArgumentException(String.format("Cannot find label '%s'", s));
+			}
+			
+			addr = labels.get(s);
+		} else {
+			addr = parseValue(s);
+		}
+		return addr;
+	}
 	
 	protected static float parseFloat(String s) {
 		if (isLiteral(s)) {
@@ -437,20 +455,7 @@ public class Compiler implements VMConsts {
 			}
 			
 			public void compile() {
-				int addr;
-
-				if (isLiteral(s)) {
-					throw new IllegalArgumentException("Cannot address a literal as jump target");
-				}
-				if (isSymbol(s)) {
-					if (!labels.containsKey(s)) {
-						throw new IllegalArgumentException(String.format("Cannot find label '%s'", s));
-					}
-					
-					addr = labels.get(s);
-				} else {
-					addr = parseValue(s);
-				}
+				int addr = getAddress(s);
 				
 				writeOp(op, data);
 				write8(addr);
@@ -511,7 +516,7 @@ public class Compiler implements VMConsts {
 			}
 			
 			public void compile() {
-				int addr = labels.get(s);
+				int addr = getAddress(s);
 				int r = addr - (pc + 1);
 				
 				if (r < -32 || r > 31) {
