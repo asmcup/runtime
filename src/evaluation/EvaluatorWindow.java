@@ -33,6 +33,7 @@ public class EvaluatorWindow extends JFrame {
 		
 		setTitle("User Bot Evaluator");
 		setResizable(false);
+		// TODO: Icon
 		pack();
 	}
 	

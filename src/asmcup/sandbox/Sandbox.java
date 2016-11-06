@@ -14,6 +14,7 @@ import asmcup.runtime.*;
 import asmcup.runtime.Robot;
 import evaluation.EvaluatorWindow;
 import evaluation.Spawns;
+import evaluation.SpawnsWindow;
 
 public class Sandbox {
 	public final Mouse mouse;
@@ -26,6 +27,7 @@ public class Sandbox {
 	public final EvaluatorWindow evaluator;
 	public final Genetics genetics;
 	public final Spawns spawns;
+	public final SpawnsWindow spawnsWindow;
 	protected Image backBuffer;
 	protected World world;
 	protected Robot robot;
@@ -52,6 +54,8 @@ public class Sandbox {
 		codeEditor = new CodeEditor(this);
 		debugger = new Debugger(this);
 		spawns = new Spawns(this);
+		spawnsWindow = new SpawnsWindow(this);
+		
 		evaluator = new EvaluatorWindow(this);
 		genetics = new Genetics(this);
 		

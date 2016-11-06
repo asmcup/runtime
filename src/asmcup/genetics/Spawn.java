@@ -37,4 +37,9 @@ public class Spawn {
 		
 		return new Spawn(sx, sy, facing, seed);
 	}
+
+	@Override
+	public String toString() {
+		return "(" + x + ", " + y + " -> " + facing + ") in " + seed;
+	}
 }
