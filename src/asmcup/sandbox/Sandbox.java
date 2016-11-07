@@ -12,6 +12,9 @@ import javax.swing.*;
 import asmcup.genetics.*;
 import asmcup.runtime.*;
 import asmcup.runtime.Robot;
+import evaluation.EvaluatorWindow;
+import evaluation.Spawns;
+import evaluation.SpawnsWindow;
 
 public class Sandbox {
 	public final Mouse mouse;
@@ -21,7 +24,10 @@ public class Sandbox {
 	public final LoadWorldDialog loadWorld;
 	public final CodeEditor codeEditor;
 	public final Debugger debugger;
+	public final EvaluatorWindow evaluator;
 	public final Genetics genetics;
+	public final Spawns spawns;
+	public final SpawnsWindow spawnsWindow;
 	protected Image backBuffer;
 	protected World world;
 	protected Robot robot;
@@ -47,6 +53,10 @@ public class Sandbox {
 		loadWorld = new LoadWorldDialog(this);
 		codeEditor = new CodeEditor(this);
 		debugger = new Debugger(this);
+		spawns = new Spawns(this);
+		spawnsWindow = new SpawnsWindow(this);
+		
+		evaluator = new EvaluatorWindow(this);
 		genetics = new Genetics(this);
 		
 		// Menu gets built last
@@ -267,7 +277,7 @@ public class Sandbox {
 		
 		g.setColor(Color.PINK);
 		
-		for (Spawn spawn : genetics.evaluator.getSpawns()) {
+		for (Spawn spawn : spawns) {
 			int x = screenX(spawn.x);
 			int y = screenY(spawn.y);
 			

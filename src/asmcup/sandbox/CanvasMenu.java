@@ -49,7 +49,7 @@ public class CanvasMenu extends JPopupMenu {
 	}
 	
 	public void addGeneticSpawn(ActionEvent e) {
-		sandbox.genetics.addSpawnAtMouse();
+		sandbox.spawns.addSpawnAtMouse();
 	}
 	
 	public void addGeneticReward(ActionEvent e) {

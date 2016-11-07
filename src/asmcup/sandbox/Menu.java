@@ -63,6 +63,14 @@ public class Menu extends JMenuBar {
 		sandbox.debugger.setVisible(true);
 	}
 	
+	public void showSpawns() {
+		sandbox.spawnsWindow.setVisible(true);
+	}
+	
+	public void showEvaluator() {
+		sandbox.evaluator.setVisible(true);
+	}
+	
 	public void showGenetics() {
 		sandbox.genetics.setVisible(true);
 	}
@@ -173,7 +181,7 @@ public class Menu extends JMenuBar {
 		menu.add(item("Load World", e -> showLoadWorld(), KeyEvent.VK_L));
 		menu.addSeparator();
 		menu.add(item("Pause/Resume", e -> sandbox.togglePaused(), KeyEvent.VK_P));
-		menu.add(item("Single tick", e -> singleTick(), KeyEvent.VK_S));
+		menu.add(item("Single tick", e -> singleTick(), KeyEvent.VK_T));
 		addSpeedMenu(menu);
 		menu.addSeparator();
 		menu.add(item("Quit", e -> sandbox.quit(), KeyEvent.VK_ESCAPE));
@@ -204,6 +212,8 @@ public class Menu extends JMenuBar {
 		JMenu menu = new JMenu("Tools");
 		menu.add(item("Code Editor", e -> showCodeEditor(), KeyEvent.VK_E));
 		menu.add(item("Debugger", e -> showDebugger(), KeyEvent.VK_D));
+		menu.add(item("Spawns", e -> showSpawns(), KeyEvent.VK_S));
+		menu.add(item("Evaluator", e -> showEvaluator(), KeyEvent.VK_V));
 		menu.add(item("Genetics", e-> showGenetics(), KeyEvent.VK_G));
 		add(menu);
 	}
