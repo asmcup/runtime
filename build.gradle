@@ -50,3 +50,17 @@ jacocoTestReport {
     }
 }
 
+// ------------------ static analysis ---------------------------- //
+
+apply plugin: 'findbugs'
+
+findbugs {
+    reportLevel = "high"
+}
+
+tasks.withType(FindBugs) {
+    reports {
+        xml.enabled false
+        html.enabled true
+    }
+}

@@ -8,9 +8,11 @@ public class World {
 	protected final HashMap<Integer, byte[]> tileData;
 	protected final int seed;
 	protected int frame;
+
+	private static final Random random = new Random();
 	
 	public World() {
-		this(new Random().nextInt());
+		this(random.nextInt());
 	}
 	
 	public World(int seed) {

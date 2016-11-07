@@ -7,6 +7,8 @@ import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
 import asmcup.compiler.Compiler;
 
@@ -23,7 +25,11 @@ public class DecompilerTest {
 
 	@Before
 	public void setUpStreams() {
-		System.setOut(new PrintStream(out));
+		try {
+			System.setOut(new PrintStream(out, false, "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			fail(e.getMessage());
+		}
 	}
 
 	@After
@@ -32,13 +38,13 @@ public class DecompilerTest {
 	}
 
 	@Test
-	public void testDump() {
+	public void testDump() throws UnsupportedEncodingException {
 		decompiler.dump(0xff, "blabla");
-		assertEquals("ff: blabla\n", out.toString());
+		assertEquals("ff: blabla\n", out.toString("UTF-8"));
 	}
 
 	@Test
-	public void testDecompile() {
+	public void testDecompile() throws UnsupportedEncodingException {
 		// This code is not sensible and does not produce a good or valid program
 		byte[] ram = (new Compiler()).compile(getProgram(
 				"start:",
@@ -71,7 +77,7 @@ public class DecompilerTest {
 				"10: jmp $00",
 				"12: jnz $00",
 				"14: jmp [$cc]"
-		), out.toString());
+		), out.toString("UTF-8"));
 	}
 
 	private static String getProgram(String... lines) {

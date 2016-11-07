@@ -86,8 +86,8 @@ public class VMTest {
 	@Test
 	public void testWriteFloat() {
 		ByteBuffer bb = getByteBuffer(vm.getMemory());
-		vm.writeFloat(0, 3.14159f);
-		assertEquals(3.14159f, bb.getFloat(0), 0.1);
+		vm.writeFloat(0, 1.23456f);
+		assertEquals(1.23456f, bb.getFloat(0), 0.1);
 		assertEquals(0x00, bb.getInt(4)); // We're not overflowing
 	}
 
@@ -122,15 +122,15 @@ public class VMTest {
 
 	@Test
 	public void testReadFloat() {
-		vm.writeFloat(0, 3.14159f);
-		assertEquals(3.14159f, vm.readFloat(), 0.00001f);
+		vm.writeFloat(0, 1.23456f);
+		assertEquals(1.23456f, vm.readFloat(), 0.00001f);
 	}
 
 	@Test
 	public void testReadFloatIndirect() {
 		vm.write8(0, 42);
-		vm.writeFloat(42, 3.14159f);
-		assertEquals(3.14159f, vm.readFloatIndirect(), 0.0001f);
+		vm.writeFloat(42, 1.23456f);
+		assertEquals(1.23456f, vm.readFloatIndirect(), 0.0001f);
 	}
 
 
@@ -160,10 +160,10 @@ public class VMTest {
 
 	@Test
 	public void testPushFloat() {
-		vm.pushFloat(3.14159f);
+		vm.pushFloat(1.23456f);
 		vm.pushFloat(2.7182f);
 		assertEquals(2.7182f, vm.popFloat(), 0.0001f);
-		assertEquals(3.14159f, vm.popFloat(), 0.0001f);
+		assertEquals(1.23456f, vm.popFloat(), 0.0001f);
 	}
 
 	@Test

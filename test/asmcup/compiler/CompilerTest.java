@@ -174,8 +174,8 @@ public class CompilerTest {
     @Test
     public void testWriteFloat() {
         ByteBuffer bb = getByteBuffer(compiler.ram);
-        compiler.writeFloat(3.14159f);
-        assertEquals(3.14159f, bb.getFloat(0), 0.1);
+        compiler.writeFloat(1.23456f);
+        assertEquals(1.23456f, bb.getFloat(0), 0.1);
         assertEquals(0x00, bb.getInt(4)); // We're not overflowing
 
         // check pc
@@ -230,13 +230,13 @@ public class CompilerTest {
     
     @Test
     public void testParseFloats() {
-        assertEquals(3.14159f, Compiler.parseFloat("3.14159"), 0.0001);
+        assertEquals(1.23456f, Compiler.parseFloat("1.23456"), 0.0001);
         assertEquals(12000f, Compiler.parseFloat("12e3"), 0.1);
     }
 
     @Test
     public void testParseLiteralFloats() {
-        assertEquals(3.14159f, Compiler.parseFloat("#3.14159"), 0.0001);
+        assertEquals(1.23456f, Compiler.parseFloat("#1.23456"), 0.0001);
         assertEquals(12000f, Compiler.parseFloat("#12e3"), 0.1);
     }
 
