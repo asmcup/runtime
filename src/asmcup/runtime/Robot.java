@@ -384,6 +384,9 @@ public class Robot {
 	
 	protected int sensorPoint(World world, float sx, float sy) {
 		int tileVariation = world.getTileXY(sx, sy) & Cell.TILE_VARIATION_BITS;
+		// In the tile, variation is stored in the 4th and 5th bit.
+		// We need it at the 7th and 8th bit.
+		tileVariation = tileVariation << 3;
 		
 		if (world.isTile(sx, sy, Cell.TILE_WALL)) {
 			if ((sensorIgnore & SENSOR_WALL) == 0) {
