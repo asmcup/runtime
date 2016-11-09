@@ -9,12 +9,12 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+import asmcup.evaluation.EvaluatorWindow;
+import asmcup.evaluation.Spawns;
+import asmcup.evaluation.SpawnsWindow;
 import asmcup.genetics.*;
 import asmcup.runtime.*;
 import asmcup.runtime.Robot;
-import evaluation.EvaluatorWindow;
-import evaluation.Spawns;
-import evaluation.SpawnsWindow;
 
 public class Sandbox {
 	public final Mouse mouse;

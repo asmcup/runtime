@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
-import evaluation.Evaluator;
+import asmcup.evaluation.Evaluator;
 
 public class GeneticAlgorithm {
 	public final ArrayList<Gene> pinned;
