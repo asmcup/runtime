@@ -170,20 +170,20 @@ public class VM implements VMConsts {
 		return ram[0xFF - ((sp - r - 1) & 0xFF)] & 0xFF;
 	}
 	
-	public int peek16() {
-		return peek8(1) | (peek8(0) << 8); 
-	}
-	
 	public int peek16(int r) {
 		return peek8(r + 1) | (peek8(r) << 8);
 	}
 	
-	public int peek32() {
-		return peek16(2) | (peek16(0) << 16);
+	public int peek32(int r) {
+		return peek16(r + 2) | (peek16(r) << 16);
 	}
 	
 	public float peekFloat() {
-		return Float.intBitsToFloat(peek32());
+		return peekFloat(0);
+	}
+	
+	public float peekFloat(int r) {
+		return Float.intBitsToFloat(peek32(r));
 	}
 	
 	public boolean checkIO() {
@@ -402,6 +402,13 @@ public class VM implements VMConsts {
 			break;
 		case F_RET:
 			pc = pop8();
+			break;
+
+		case F_FT8:
+			push8(peek8(pop8()));
+			break;
+		case F_FTF:
+			pushFloat(peekFloat(pop8()));
 			break;
 			
 		case F_IO:

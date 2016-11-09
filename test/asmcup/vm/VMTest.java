@@ -221,6 +221,24 @@ public class VMTest {
     	Assert.assertEquals(vm.getProgramCounter(), startPC);
     }
 
+    @Test
+    public void testFetch8() {
+    	vm.push8(13);
+    	vm.push8(37);
+    	vm.push8(1);
+    	vm.op_func(VMFuncs.F_FT8);
+    	Assert.assertTrue(vm.pop8() == 13);
+    }
+    
+    @Test
+    public void testFetchFloat() {
+    	vm.pushFloat(1.3f);
+    	vm.pushFloat(3.7f);
+    	vm.push8(4);
+    	vm.op_func(VMFuncs.F_FTF);
+    	Assert.assertTrue(vm.popFloat() == 1.3f);
+    }
+
 	/**
 	 * Returns a little endian byte buffer for given ram
 	 * @param ram ram to wrap byte buffer around
