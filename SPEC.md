@@ -121,8 +121,8 @@ Value | Command   | In | Out | Notes
 56    | dupf      | 4  | 8   | Float Duplicate
 57    | jsr       | 1  | 1   | Jump Subroutine
 58    | ret       | 1  | 0   | Return
-59    |           |    |     | Unused 3
-60    |           |    |     | Unused 4
+59    | ft8       | 1  | 1   | Fetch Byte
+60    | ftf       | 1  | 4   | Fetch Float
 61    |           |    |     | Unused 5
 62    |           |    |     | Unused 6
 63    | io        | ?  | ?   | Input / Output (IO)
@@ -208,6 +208,33 @@ half_speed:
   push8 #IO_MOTOR
   io
   ret
+```
+
+### Fetches
+
+The `ft8` and `ftf` functions allow retrieving values from the stack at an offset
+from the current stack pointer. The offset is a byte value popped from the stack.
+
+```
+push8 #13
+push8 #37
+push8 #1
+ft8
+; The stack is now (from top to bottom): 13 37 13
+
+pushf 1.3
+pushf 3.7
+push8 #4  ; ! 
+ftf
+; Same as above, with floats.
+
+;   These are useless (but helpful for understanding):
+push8 #0
+ft8
+; This did the exact same thing as dup8, just more expensive.
+
+push8 #-1
+ft8       ; This instruction does literally nothing.
 ```
 
 ## IO

@@ -79,6 +79,9 @@ public interface VMFuncs {
 	
 	public static final int F_JSR = 57;
 	public static final int F_RET = 58;
+
+	public static final int F_FT8 = 59;
+	public static final int F_FTF = 60;
 	
 	public static final int F_IO = 63;
 }
