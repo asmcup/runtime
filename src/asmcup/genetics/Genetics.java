@@ -5,9 +5,9 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+import asmcup.evaluation.EvaluatorFrontPanel;
+import asmcup.evaluation.SpawnEvaluator;
 import asmcup.sandbox.*;
-import evaluation.SpawnEvaluator;
-import evaluation.EvaluatorFrontPanel;
 
 public class Genetics extends JFrame {
 	public final Sandbox sandbox;

@@ -1,4 +1,4 @@
-package evaluation;
+package asmcup.evaluation;
 
 import java.awt.Dimension;
 

@@ -1,4 +1,4 @@
-package evaluation;
+package asmcup.evaluation;
 
 import javax.swing.*;
 
