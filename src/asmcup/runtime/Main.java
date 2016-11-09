@@ -1,6 +1,7 @@
 package asmcup.runtime;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.Base64;
 
 import asmcup.vm.VM;
@@ -14,7 +15,7 @@ public class Main implements Recorder {
 		Main main = new Main();
 		
 		if (args.length > 1) {
-			System.err.printf("USAGE: asmcup-runtime [file]\n");
+			System.err.printf("USAGE: asmcup-runtime [file]%n");
 			System.exit(1);
 			return;
 		}
@@ -32,9 +33,9 @@ public class Main implements Recorder {
 	}
 	
 	public void configure(InputStream input) throws IOException {
-		InputStreamReader streamReader = new InputStreamReader(input);
+		InputStreamReader streamReader = new InputStreamReader(input, Charset.forName("US-ASCII"));
 		BufferedReader reader = new BufferedReader(streamReader);
-		String line = "";
+		String line;
 		
 		while ((line = reader.readLine()) != null) {
 			configure(line);
@@ -44,8 +45,8 @@ public class Main implements Recorder {
 	}
 	
 	public void configure(String line) {
-		String command = "";
-		String[] parts = {};
+		String command;
+		String[] parts;
 		
 		line = line.trim();
 		
@@ -118,6 +119,6 @@ public class Main implements Recorder {
 	
 	public void record(RecordedRobot robot, byte[] data) {
 		String encoded = Base64.getEncoder().encodeToString(data);
-		System.out.printf("io %d %d %s\n", world.getFrame(), robot.id, encoded);
+		System.out.printf("io %d %d %s%n", world.getFrame(), robot.id, encoded);
 	}
 }

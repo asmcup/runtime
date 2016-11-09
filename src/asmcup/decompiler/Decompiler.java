@@ -34,7 +34,7 @@ public class Decompiler implements VMConsts {
 	}
 	
 	public void dump(int pc, String s) {
-		System.out.printf("%02x: %s\n", pc, s);
+		System.out.printf("%02x: %s%n", pc, s);
 	}
 
 	public int decompileCommand(byte[] ram, int pc) {

@@ -1,6 +1,7 @@
 package asmcup.sandbox;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.file.*;
 
 import javax.swing.*;
@@ -16,7 +17,7 @@ public class Utils {
 	}
 	
 	public static String readAsString(Path path) throws IOException {
-		return new String(Files.readAllBytes(path));
+		return new String(Files.readAllBytes(path), Charset.forName("US-ASCII"));
 	}
 	
 	public static String readAsString(JFrame frame, String ext, String desc) throws IOException {
@@ -32,11 +33,12 @@ public class Utils {
 	public static String readAsString(InputStream input) throws IOException {
 		String line;
 		StringBuilder builder = new StringBuilder();
-		InputStreamReader streamReader = new InputStreamReader(input);
+		InputStreamReader streamReader = new InputStreamReader(input, Charset.forName("US-ASCII"));
 		BufferedReader reader = new BufferedReader(streamReader);
 		
 		while ((line = reader.readLine()) != null) {
-			builder.append(line + "\n");
+			builder.append(line);
+			builder.append("\n");
 		}
 		
 		return builder.toString();

@@ -224,7 +224,7 @@ public class Sandbox {
 	}
 	
 	public void resetWorld(int seed) {
-		synchronized (world) {
+		synchronized (this) {
 			world = new World(seed);
 			world.addRobot(robot);
 		}

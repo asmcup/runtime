@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Objects;
 
 public class VM implements VMConsts {
 	private final byte[] ram;
@@ -40,7 +41,12 @@ public class VM implements VMConsts {
 				getStackPointer() == vm.getStackPointer() &&
 				io == vm.io;
 	}
-	
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(getMemory(), getProgramCounter(), getStackPointer(), io);
+	}
+
 	public void save(DataOutputStream stream) throws IOException {
 		stream.write(ram);
 		stream.writeByte(pc);
