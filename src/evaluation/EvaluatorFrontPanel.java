@@ -37,11 +37,13 @@ public class EvaluatorFrontPanel extends FrontPanel {
 	}
 
 	public void update() {
-		evaluator.maxSimFrames = getInt(frameSpinner);
 		evaluator.extraWorldCount = getInt(extraWorldSpinner);
+		evaluator.maxSimFrames = getInt(frameSpinner);
+		evaluator.goldReward = getInt(goldSpinner);
+		evaluator.batteryReward = getInt(batterySpinner);
+		evaluator.exploreReward = getInt(exploreSpinner);
 		evaluator.idleMax = getInt(idleSpinner);
 		evaluator.idleIoMax = getInt(idleIoSpinner);
-		evaluator.exploreReward = getInt(exploreSpinner);
 		evaluator.ramPenalty = getInt(rammingSpinner);
 		evaluator.temporal = getInt(temporalSpinner) > 0;
 		evaluator.forceStack = getInt(stackSpinner);
