@@ -341,11 +341,11 @@ public class Generator {
 	}
 	
 	public Item.Gold gold() {
-		return new Item.Gold(1 + nextInt(99));
+		return new Item.Gold(50);
 	}
 	
 	public Item.Battery battery() {
-		return new Item.Battery(1 + nextInt(99));
+		return new Item.Battery(50);
 	}
 	
 	public static interface TileFunc {
