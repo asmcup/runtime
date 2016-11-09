@@ -83,7 +83,7 @@ public class Cell {
 	}
 	
 	public boolean isSolid(int col, int row) {
-		switch (getTile(col, row) & 0b111) {
+		switch (getTile(col, row) & TILE_TYPE_BITS) {
 		case TILE_WALL:
 		case TILE_OBSTACLE:
 			return true;
@@ -93,7 +93,7 @@ public class Cell {
 	}
 	
 	public boolean isSpawnable(int col, int row) {
-		switch (getTile(col, row) & 0b111) {
+		switch (getTile(col, row) & TILE_TYPE_BITS) {
 		case TILE_HAZARD:
 		case TILE_WALL:
 		case TILE_OBSTACLE:
@@ -129,4 +129,7 @@ public class Cell {
 	public static final int TILE_WALL = 2;
 	public static final int TILE_OBSTACLE = 3;
 	public static final int TILE_FLOOR = 4;
+
+	public static final int TILE_TYPE_BITS = 0b111; 
+	public static final int TILE_VARIATION_BITS = 0b11000; 
 }

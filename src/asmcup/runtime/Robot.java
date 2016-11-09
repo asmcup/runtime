@@ -383,17 +383,25 @@ public class Robot {
 	}
 	
 	protected int sensorPoint(World world, float sx, float sy) {
-		if (world.isSolid(sx, sy)) {
-			if ((sensorIgnore & SENSOR_SOLID) == 0) {
-				return SENSOR_SOLID;
+		int tileVariation = world.getTileXY(sx, sy) & Cell.TILE_VARIATION_BITS;
+		
+		if (world.isTile(sx, sy, Cell.TILE_WALL)) {
+			if ((sensorIgnore & SENSOR_WALL) == 0) {
+				return SENSOR_WALL | tileVariation;
 			} else {
 				return 0;
 			}
 		}
 		
 		if ((sensorIgnore & SENSOR_HAZARD) == 0) {
-			if (world.isHazard(sx, sy)) {
-				return SENSOR_HAZARD;
+			if (world.isTile(sx, sy, Cell.TILE_HAZARD)) {
+				return SENSOR_HAZARD | tileVariation;
+			}
+		}
+
+		if ((sensorIgnore & SENSOR_OBSTACLE) == 0) {
+			if (world.isTile(sx, sy, Cell.TILE_OBSTACLE)) {
+				return SENSOR_OBSTACLE | tileVariation;
 			}
 		}
 		
@@ -459,11 +467,13 @@ public class Robot {
 	public static final float FREQUENCY_MAX = 1000 * 10;
 	public static final int LAZER_RANGE = 100;
 	public static final int LAZER_BATTERY_COST = 4;
-	
-	public static final int SENSOR_SOLID = 1;
+
+	public static final int SENSOR_WALL = 1;
 	public static final int SENSOR_HAZARD = 2;
 	public static final int SENSOR_GOLD = 4;
 	public static final int SENSOR_BATTERY = 8;
+	public static final int SENSOR_OBSTACLE = 16;
+	public static final int SENSOR_ROBOT = 32;
 	
 	public static final int RAY_INTERVAL = 4;
 	public static final int RAY_STEPS = 64;
