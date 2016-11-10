@@ -53,7 +53,7 @@ public abstract class Item {
 			this(DEFAULT_VALUE);
 		}
 		
-		private Gold(int value) {
+		public Gold(int value) {
 			this.value = value;
 		}
 		
