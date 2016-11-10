@@ -1,23 +1,26 @@
 package asmcup.evaluation;
 
-import java.util.ArrayList;
+import java.util.*;
+
 import javax.swing.ListModel;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
+import javax.swing.event.*;
 
 import asmcup.genetics.Spawn;
-import asmcup.runtime.Robot;
-import asmcup.runtime.World;
-import asmcup.sandbox.Mouse;
-import asmcup.sandbox.Sandbox;
+import asmcup.runtime.*;
+import asmcup.sandbox.*;
 
-public class Spawns extends ArrayList<Spawn> implements ListModel<Spawn> {
+public class Spawns implements ListModel<Spawn> {
+	private ArrayList<Spawn> spawns = new ArrayList<>();
 	protected final Sandbox sandbox;
 	
 	ArrayList<ListDataListener> listeners = new ArrayList<>();
 	
 	public Spawns(Sandbox sandbox) {
 		this.sandbox = sandbox;
+	}
+	
+	public AbstractCollection<Spawn> getIterable() {
+		return new ArrayList<Spawn>(spawns);
 	}
 	
 	public void addSpawnAtMouse() {
@@ -34,44 +37,51 @@ public class Spawns extends ArrayList<Spawn> implements ListModel<Spawn> {
 		add(spawn);
 	}
 
-	@Override
 	public boolean add(Spawn spawn) {
-		super.add(spawn);
-		notifyListeners(size()-1, size()-1);
+		spawns.add(spawn);
+		notifyListeners(spawns.size()-1, spawns.size()-1);
 		return true;
 	}
 	
-	@Override
 	public Spawn remove(int index) {
-		Spawn ret = super.remove(index);
-		notifyListeners(index, index);
+		if (index < 0 || index >= spawns.size()) {
+			return null;
+		}
+		Spawn ret = spawns.remove(index);
+		notifyListeners(index, size());
 		return ret;
 	}
 	
-	@Override
 	public void clear() {
-		int previousSize = size();
-		super.clear();
+		int previousSize = spawns.size();
+		spawns.clear();
 		notifyListeners(0, previousSize-1);
 	}
 	
 	public int getCombinedSeed() {
 		int seed = 0;
 		
-		for (Spawn spawn : this) {
+		for (Spawn spawn : spawns) {
 			seed += spawn.seed;
 		}
 		return seed;
 	}
 
+	public int size() {
+		return spawns.size();
+	}
+
 	public int getSize() {
-		return size();
+		return spawns.size();
 	}
 	
 	public Spawn getElementAt(int index) {
-		return get(index);
+		if (index < 0 || index >= size()) {
+			return null;
+		}
+		return spawns.get(index);
 	}
-	
+
 	private void notifyListeners(int index0, int index1) {
 		for (ListDataListener l : listeners) {
 			// Yeah, lazy, I know.
