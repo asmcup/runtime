@@ -4,18 +4,10 @@ import java.awt.Dimension;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-import javax.swing.AbstractListModel;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JList;
-import javax.swing.JScrollPane;
-import javax.swing.ListModel;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 
 import asmcup.genetics.Spawn;
-import asmcup.sandbox.FrontPanel;
-import asmcup.sandbox.Sandbox;
+import asmcup.sandbox.*;
 
 public class SpawnsWindow extends JFrame {
 	protected final Sandbox sandbox;
