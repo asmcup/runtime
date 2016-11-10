@@ -24,6 +24,8 @@ public class Evaluator {
 	public boolean temporal;
 	public boolean forceIO;
 	
+	public long scoringCount = 0;
+	
 	public int baseSeed = 0;
 	
 	public Evaluator() {
@@ -41,6 +43,7 @@ public class Evaluator {
 	
 	// TODO: Make more transparent for threading...
 	public float score(byte[] ram) {
+		scoringCount = 0;
 		Scorer scorer = new Scorer();
 		float score = 0.0f;
 
@@ -48,7 +51,7 @@ public class Evaluator {
 			score += scorer.calculate360(ram, Spawn.randomFromSeed(baseSeed + i));
 		}
 		
-		return score;
+		return score / scoringCount;
 	}
 	
 	protected class Scorer {
@@ -128,6 +131,7 @@ public class Evaluator {
 				score += 0.001f;
 			}
 			
+			scoringCount++;
 			return score;
 		}
 

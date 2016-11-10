@@ -13,13 +13,13 @@ public class SpawnEvaluator extends Evaluator {
 	@Override
 	public float score(byte[] ram) {
 		baseSeed = spawns.getCombinedSeed();
-		float score = super.score(ram);
+		float score = super.score(ram) * scoringCount;
 		
 		Scorer scorer = new Scorer();
 		for (Spawn spawn : spawns) {
 			score += scorer.calculate360(ram, spawn);
 		}
 		
-		return score;
+		return score / scoringCount;
 	}
 }
