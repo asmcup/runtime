@@ -27,6 +27,10 @@ public abstract class Item {
 	public static class Battery extends Item {
 		protected int value;
 		
+		public Battery() {
+			this(DEFAULT_VALUE);
+		}
+		
 		public Battery(int value) {
 			this.value = value;
 		}
@@ -38,12 +42,18 @@ public abstract class Item {
 		public int getVariant() {
 			return value / 25;
 		}
+		
+		public static final int DEFAULT_VALUE = 50;
 	}
 	
 	public static class Gold extends Item {
 		protected int value;
 		
-		public Gold(int value) {
+		public Gold() {
+			this(DEFAULT_VALUE);
+		}
+		
+		private Gold(int value) {
 			this.value = value;
 		}
 		
@@ -58,5 +68,7 @@ public abstract class Item {
 		public void collect(Robot robot) {
 			robot.addGold(value);
 		}
+		
+		public static final int DEFAULT_VALUE = 50;
 	}
 }
