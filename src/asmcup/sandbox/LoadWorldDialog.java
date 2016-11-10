@@ -16,7 +16,7 @@ public class LoadWorldDialog extends JFrame {
 	protected JSpinner spinnerX, spinnerY;
 	protected JSpinner spinnerFacing;
 	protected JButton loadButton = new JButton("Load");
-	protected JButton closeButton = new JButton("Close");
+	protected JButton showButton = new JButton("Get current");
 	
 	public LoadWorldDialog(Sandbox sandbox) {
 		this.sandbox = sandbox;
@@ -32,8 +32,8 @@ public class LoadWorldDialog extends JFrame {
 		panel.setBorder(BorderFactory.createTitledBorder("Spawn Location"));
 		
 		loadButton.addActionListener(e -> load());
-		closeButton.addActionListener(e -> close());
-		panel.addItems(loadButton, closeButton);
+		showButton.addActionListener(e -> update());
+		panel.addItems(loadButton, showButton);
 		
 		setTitle("Load World");
 		setResizable(false);
@@ -55,9 +55,5 @@ public class LoadWorldDialog extends JFrame {
 		spinnerX.setValue(sandbox.getRobot().getX());
 		spinnerY.setValue(sandbox.getRobot().getY());
 		spinnerFacing.setValue(sandbox.getRobot().getFacing());
-	}
-	
-	public void close() {
-		setVisible(false);
 	}
 }

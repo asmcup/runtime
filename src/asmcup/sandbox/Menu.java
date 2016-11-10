@@ -43,7 +43,6 @@ public class Menu extends JMenuBar {
 	}
 	
 	public void showLoadWorld() {
-		sandbox.loadWorld.update();
 		sandbox.loadWorld.setVisible(true);
 	}
 	
