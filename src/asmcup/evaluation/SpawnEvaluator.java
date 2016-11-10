@@ -20,6 +20,6 @@ public class SpawnEvaluator extends Evaluator {
 			score += scorer.calculate360(ram, spawn);
 		}
 		
-		return score / scoringCount;
+		return score / Math.max(scoringCount, 1);
 	}
 }
