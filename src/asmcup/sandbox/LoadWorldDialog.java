@@ -3,6 +3,10 @@ package asmcup.sandbox;
 import javax.swing.JFrame;
 import javax.swing.JButton;
 import javax.swing.JSpinner;
+
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 
 import asmcup.genetics.Spawn;
@@ -18,7 +22,7 @@ public class LoadWorldDialog extends JFrame {
 	protected JButton loadButton = new JButton("Load");
 	protected JButton closeButton = new JButton("Close");
 	
-	public LoadWorldDialog(Sandbox sandbox) {
+	public LoadWorldDialog(Sandbox sandbox) throws IOException {
 		this.sandbox = sandbox;
 		
 		spinnerSeed   = panel.createSpinner(0, Integer.MIN_VALUE, Integer.MAX_VALUE);
@@ -37,7 +41,7 @@ public class LoadWorldDialog extends JFrame {
 		
 		setTitle("Load World");
 		setResizable(false);
-		// TODO: Icon
+		setIconImage(ImageIO.read(getClass().getResource("/world.png")));
 		setContentPane(panel);
 		pack();
 	}

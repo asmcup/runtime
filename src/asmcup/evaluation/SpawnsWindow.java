@@ -1,7 +1,9 @@
 package asmcup.evaluation;
 
 import java.awt.Dimension;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -27,7 +29,7 @@ public class SpawnsWindow extends JFrame {
 	protected JButton applyButton = new JButton("Show");
 	protected JButton clearButton = new JButton("Clear");
 
-	public SpawnsWindow(Sandbox sandbox) {
+	public SpawnsWindow(Sandbox sandbox) throws IOException {
 		this.sandbox = sandbox;
 		spawns = sandbox.spawns;
 		//listModel = new SpawnListModel();
@@ -49,6 +51,7 @@ public class SpawnsWindow extends JFrame {
 		
 		setContentPane(panel);
 		setTitle("Spawn Manager");
+		setIconImage(ImageIO.read(getClass().getResource("/plus.png")));
 		setResizable(false);
 		pack();
 	}
