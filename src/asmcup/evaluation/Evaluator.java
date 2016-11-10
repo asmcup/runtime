@@ -57,7 +57,7 @@ public class Evaluator {
 			score += scorer.calculate360(ram, Spawn.randomFromSeed(baseSeed + i));
 		}
 		
-		return score / scoringCount;
+		return score / Math.max(scoringCount, 1);
 	}
 	
 	protected class Scorer {
