@@ -40,7 +40,7 @@ public class DecompilerTest {
 	@Test
 	public void testDump() throws UnsupportedEncodingException {
 		decompiler.dump(0xff, "blabla");
-		assertEquals("ff: blabla\n", out.toString("UTF-8"));
+		assertEquals(String.format("ff: blabla%n"), out.toString("UTF-8"));
 	}
 
 	@Test
@@ -84,7 +84,7 @@ public class DecompilerTest {
 		StringBuilder ret = new StringBuilder();
 		for (String line : lines) {
 			ret.append(line);
-			ret.append("\n");
+			ret.append(System.lineSeparator());
 		}
 
 		return ret.toString();
