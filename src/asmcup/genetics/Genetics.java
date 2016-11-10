@@ -21,13 +21,12 @@ public class Genetics extends JFrame {
 	protected JButton stopButton = new JButton("Stop");
 	protected Thread thread;
 	protected boolean running = false;
-	// TODO: This doesn't need to be a front panel
 	
 	public Genetics(Sandbox sandbox) throws IOException {
 		this.sandbox = sandbox;
 		
 		menu = new GeneticsMenu(this);
-		evaluator = new SpawnEvaluator(sandbox.spawns);
+		evaluator = new SpawnEvaluator(sandbox.spawns, false);
 		ga = new GeneticAlgorithm(evaluator);
 		evalPanel = new EvaluatorFrontPanel(evaluator);
 		gaPanel = new GAFrontPanel(ga);
@@ -40,7 +39,7 @@ public class Genetics extends JFrame {
 		stopButton.addActionListener(e -> stop());
 		
 		// The order is important here!
-		evalPanel.update();
+		evalPanel.updateEvaluator();
 		gaPanel.update();
 		
 		setTitle("Genetics");
@@ -68,7 +67,7 @@ public class Genetics extends JFrame {
 		evalPanel.setSpinnersEnabled(false);
 		gaPanel.setSpinnersEnabled(false);
 
-		evalPanel.update();
+		evalPanel.updateEvaluator();
 		gaPanel.update();
 		
 		thread = new Thread(new Runnable() {

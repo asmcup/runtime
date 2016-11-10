@@ -12,7 +12,10 @@ import asmcup.vm.VM;
 
 public class Evaluator {
 
+	final public boolean simplified;
+	
 	public int maxSimFrames;
+	public int directionsPerSpawn;
 	public int extraWorldCount;
 	public int idleMax;
 	public int idleIoMax;
@@ -26,16 +29,19 @@ public class Evaluator {
 	
 	public int baseSeed = 0;
 	
-	public Evaluator() {
+	public Evaluator(boolean simplified) {
+		this.simplified = simplified;
+		
 		maxSimFrames = 10 * 60;
+		directionsPerSpawn = simplified ? 1 : 8;
 		extraWorldCount = 0;
 		idleMax = 0;
 		idleIoMax = 0;
-		exploreReward = 4;
-		ramPenalty = 2;
+		exploreReward = simplified ? 0 : 4;
+		ramPenalty = simplified ? 0 : 2;
 		goldReward = 50;
-		batteryReward = 100;
-		temporal = true;
+		batteryReward = simplified ? 0 : 50;
+		temporal = simplified ? false : true;
 		forceIO = false;
 	}
 	
@@ -66,7 +72,7 @@ public class Evaluator {
 		public float calculate360(byte[] ram, Spawn spawn) {
 			float score = 0.0f;
 			
-			for (int turn = 0; turn < 360; turn += 45) {
+			for (float turn = 0; turn < 360f; turn += 360f / directionsPerSpawn) {
 				score += calculate(ram, spawn, (float)Math.toRadians(turn));
 			}
 			
