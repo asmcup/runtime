@@ -311,12 +311,15 @@ public class CompilerTest {
     	assertEquals(1, ram[3]);
     }
     
-    // FIXME: Disabled for now. Implementation has an issue (#135).
-    /*
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testPush8NonlabelAddress() {
-    	compiler.compile("push8 &2");
-    }*/
+        try {
+	    	compiler.compile("push8 &2");
+	        fail("Compiler did not fail on invalid label referencing.");
+        } catch (IllegalArgumentException e) {
+            assert(e.getMessage().startsWith("Invalid label"));
+        }
+    }
 
     @Test
     public void testParseComments() {
