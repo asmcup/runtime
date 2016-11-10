@@ -5,8 +5,8 @@ import asmcup.genetics.Spawn;
 public class SpawnEvaluator extends Evaluator {
 	final protected Spawns spawns;
 	
-	public SpawnEvaluator(Spawns spawns) {
-		super();
+	public SpawnEvaluator(Spawns spawns, boolean simplified) {
+		super(simplified);
 		this.spawns = spawns;
 	}
 	

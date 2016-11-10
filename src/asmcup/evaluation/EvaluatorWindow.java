@@ -22,7 +22,7 @@ public class EvaluatorWindow extends JFrame {
 	
 	public EvaluatorWindow(Sandbox sandbox) throws IOException {
 		this.sandbox = sandbox;
-		evaluator = new SpawnEvaluator(sandbox.spawns);
+		evaluator = new SpawnEvaluator(sandbox.spawns, true);
 		evalPanel = new EvaluatorFrontPanel(evaluator);
 
 		panel.addWideItem(evalPanel);
@@ -41,7 +41,7 @@ public class EvaluatorWindow extends JFrame {
 	}
 	
 	public void evaluate() {
-		evalPanel.update();
+		evalPanel.updateEvaluator();
 		if (!quickScoring()) {
 			// TODO: Threading, don't want to block the UI.
 			// Bit difficult with how Evaluator works though.
