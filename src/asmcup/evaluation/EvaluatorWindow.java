@@ -1,5 +1,8 @@
 package asmcup.evaluation;
 
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -17,7 +20,7 @@ public class EvaluatorWindow extends JFrame {
 	protected JButton stopButton = new JButton("Stop");
 	protected JLabel scoreLabel = new JLabel("0");
 	
-	public EvaluatorWindow(Sandbox sandbox) {
+	public EvaluatorWindow(Sandbox sandbox) throws IOException {
 		this.sandbox = sandbox;
 		evaluator = new SpawnEvaluator(sandbox.spawns);
 		evalPanel = new EvaluatorFrontPanel(evaluator);
@@ -33,7 +36,7 @@ public class EvaluatorWindow extends JFrame {
 		
 		setTitle("User Bot Evaluator");
 		setResizable(false);
-		// TODO: Icon
+		setIconImage(ImageIO.read(getClass().getResource("/gauge.png")));
 		pack();
 	}
 	
