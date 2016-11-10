@@ -9,6 +9,7 @@ public class EvaluatorFrontPanel extends FrontPanel {
 	// Note: These initial values are not authoritative, the ones in Evaluator are.
 	protected JSpinner frameSpinner = createSpinner(10 * 60, 1, 10 * 60 * 60 * 24);
 	protected JSpinner extraWorldSpinner = createSpinner(0, 0, 100);
+	protected JSpinner orientationSpinner = createSpinner(0, 0, 100);
 	protected JSpinner idleSpinner = createSpinner(0, 0, 1000 * 1000);
 	protected JSpinner idleIoSpinner = createSpinner(0, 0, 1000 * 1000);
 	protected JSpinner exploreSpinner = createSpinner(4, -1000, 1000);
@@ -24,7 +25,8 @@ public class EvaluatorFrontPanel extends FrontPanel {
 		
 		setBorder(BorderFactory.createTitledBorder("Evaluation Metrics"));
 		
-		addRow("Random Tests:", extraWorldSpinner, "Bots are evaluated in an additional set of random worlds");
+		addRow("Random Tests:", extraWorldSpinner, "Bots are evaluated in this many additional random worlds");
+		addRow("Orientations:", orientationSpinner, "Amount of facing directions evaluated for each start point");
 		addRow("Frames:", frameSpinner, "Maximum number of frames for the simulation (10 frames = 1 second)");
 		addRow("Gold Reward:", goldSpinner, "Number of points earned by collecting a gold item");
 		addRow("Battery Reward:", batterySpinner, "Number of points earned by collecting a battery item");
@@ -42,6 +44,7 @@ public class EvaluatorFrontPanel extends FrontPanel {
 	
 	public void updateSliders() {
 		extraWorldSpinner.setValue(evaluator.extraWorldCount);
+		orientationSpinner.setValue(evaluator.directionsPerSpawn);
 		frameSpinner.setValue(evaluator.maxSimFrames);
 		goldSpinner.setValue(evaluator.goldReward);
 		batterySpinner.setValue(evaluator.batteryReward);
@@ -56,6 +59,7 @@ public class EvaluatorFrontPanel extends FrontPanel {
 
 	public void updateEvaluator() {
 		evaluator.extraWorldCount = getInt(extraWorldSpinner);
+		evaluator.directionsPerSpawn = getInt(orientationSpinner);
 		evaluator.maxSimFrames = getInt(frameSpinner);
 		evaluator.goldReward = getInt(goldSpinner);
 		evaluator.batteryReward = getInt(batterySpinner);
