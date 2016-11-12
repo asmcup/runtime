@@ -161,9 +161,14 @@ public class World {
 			break;
 		}
 	}
-	
+
 	public Item getItem(float x, float y) {
 		return getCellXY(x, y).getItem(x, y);
+	}
+	
+	public void addItem(float x, float y, Item item) {
+		item.position(x, y);
+		getCellXY(x, y).addItem(item);
 	}
 	
 	protected void tickItems(Robot robot) {

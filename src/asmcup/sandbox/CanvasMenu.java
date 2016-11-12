@@ -41,11 +41,15 @@ public class CanvasMenu extends JPopupMenu {
 	}
 	
 	public void addGoldItem(ActionEvent e) {
-		
+		Mouse mouse = sandbox.mouse;
+		Item gold = new Item.Gold();
+		sandbox.getWorld().addItem(mouse.getWorldX(), mouse.getWorldY(), gold);
 	}
 	
 	public void addBatteryItem(ActionEvent e) {
-		
+		Mouse mouse = sandbox.mouse;
+		Item battery = new Item.Battery();
+		sandbox.getWorld().addItem(mouse.getWorldX(), mouse.getWorldY(), battery);
 	}
 	
 	public void addGeneticSpawn(ActionEvent e) {
