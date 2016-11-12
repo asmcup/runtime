@@ -1,9 +1,22 @@
 package asmcup.decompiler;
 
+import java.io.*;
+
 import asmcup.compiler.VMFuncTable;
 import asmcup.vm.VMConsts;
 
 public class Decompiler implements VMConsts {
+	
+	private final PrintStream out;
+
+	public Decompiler() {
+		out = System.out;
+	}
+	
+	public Decompiler(PrintStream out) {
+		this.out = out;
+	}
+	
 	public void decompile(byte[] ram) {
 		int pc = 0;
 		int end = 255;
@@ -34,7 +47,7 @@ public class Decompiler implements VMConsts {
 	}
 	
 	public void dump(int pc, String s) {
-		System.out.printf("%02x: %s%n", pc, s);
+		out.printf("L%02x: %s%n", pc, s);
 	}
 
 	public int decompileCommand(byte[] ram, int pc) {
