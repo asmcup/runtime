@@ -13,6 +13,7 @@ import javax.swing.border.BevelBorder;
 import javax.swing.text.PlainDocument;
 
 import asmcup.compiler.Compiler;
+import asmcup.decompiler.Decompiler;
 
 public class CodeEditor extends JFrame {
 	protected final Sandbox sandbox;
@@ -129,6 +130,17 @@ public class CodeEditor extends JFrame {
 		}
 	}
 	
+	public void decompile() {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		try {
+			Decompiler decompiler = new Decompiler(new PrintStream(out, false, "UTF-8"));
+			decompiler.decompile(sandbox.getROM());
+			editor.setText(out.toString("UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			sandbox.showError("Unsupported encoding...");
+		}
+	}
+	
 	public File findFileSave() {
 		return Utils.findFileSave(sandbox.frame, "asm", "Source File (.asm)");
 	}
@@ -206,6 +218,8 @@ public class CodeEditor extends JFrame {
 					KeyStroke.getKeyStroke(KeyEvent.VK_E, ActionEvent.CTRL_MASK)));
 			menu.add(item("Compile", e -> compile(), null));
 			menu.add(item("Flash", e -> flash(), null));
+			menu.addSeparator();
+			menu.add(item("Decompile current ROM", e -> decompile(), null));
 			add(menu);
 		}
 	}

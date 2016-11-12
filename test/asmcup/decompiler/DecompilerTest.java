@@ -19,28 +19,14 @@ public class DecompilerTest {
 	private final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
 	@Before
-	public void setUp() {
-		decompiler = new Decompiler();
-	}
-
-	@Before
-	public void setUpStreams() {
-		try {
-			System.setOut(new PrintStream(out, false, "UTF-8"));
-		} catch (UnsupportedEncodingException e) {
-			fail(e.getMessage());
-		}
-	}
-
-	@After
-	public void cleanUpStreams() {
-		System.setOut(null);
+	public void setUp() throws UnsupportedEncodingException {
+		decompiler = new Decompiler(new PrintStream(out, false, "UTF-8"));
 	}
 
 	@Test
 	public void testDump() throws UnsupportedEncodingException {
 		decompiler.dump(0xff, "blabla");
-		assertEquals(String.format("ff: blabla%n"), out.toString("UTF-8"));
+		assertEquals(String.format("Lff: blabla%n"), out.toString("UTF-8"));
 	}
 
 	@Test
@@ -60,23 +46,25 @@ public class DecompilerTest {
 				"jmp ($cc)"
 				// https://github.com/asmcup/runtime/issues/99
 				// "popf ($a)",
-				// "pop8 [$b]"
+				// "pop8 [$b]",
+				// https://github.com/asmcup/runtime/issues/186
+				// "pushf $ab"
 		));
 
 		decompiler.decompile(ram);
 
 		assertEquals(getProgram(
 				// "start:" label produces no output!
-				"00: c_0",
-				"01: push8 #$2a",
-				"03: pushf 42.000000",
-				"08: pushf $00",
-				"0a: popf $fa",
-				"0c: pop8 $fb",
-				"0e: push8 $fc",
-				"10: jmp $00",
-				"12: jnz $00",
-				"14: jmp [$cc]"
+				"L00: c_0",
+				"L01: push8 #$2a",
+				"L03: pushf 42.000000",
+				"L08: pushf $00",
+				"L0a: popf $fa",
+				"L0c: pop8 $fb",
+				"L0e: push8 $fc",
+				"L10: jmp $00",
+				"L12: jnz $00",
+				"L14: jmp [$cc]"
 		), out.toString("UTF-8"));
 	}
 
