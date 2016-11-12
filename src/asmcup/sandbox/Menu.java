@@ -126,6 +126,16 @@ public class Menu extends JMenuBar {
 			sandbox.loadROM(rom);
 		} catch (Exception e) {
 			e.printStackTrace();
+			sandbox.showError("Unable to load ROM: " + e.getMessage());
+		}
+	}
+	
+	public void saveROM() {
+		try {
+			Utils.write(sandbox.frame, "bin", "Program Binary", sandbox.getROM());
+		} catch (Exception e) {
+			e.printStackTrace();
+			sandbox.showError("Unable to save ROM: " + e.getMessage());
 		}
 	}
 	
@@ -166,6 +176,7 @@ public class Menu extends JMenuBar {
 	protected void addRobotMenu() {
 		JMenu menu = new JMenu("Robot");
 		menu.add(item("Load ROM...", e-> loadROM()));
+		menu.add(item("Save ROM...", e-> saveROM()));
 		menu.add(item("Paste ROM", e-> pasteROM()));
 		menu.add(item("Copy ROM", e -> copyROM()));
 		menu.addSeparator();
