@@ -12,7 +12,7 @@ public class FrontPanel extends JPanel {
 	protected GridBagConstraints cWideItem = new GridBagConstraints();
 	protected GridBagConstraints cItemLeft = new GridBagConstraints();
 	protected GridBagConstraints cItemRight = new GridBagConstraints();
-	protected ArrayList<JSpinner> spinners = new ArrayList<>();
+	protected ArrayList<JComponent> components = new ArrayList<>();
 	protected int currentRow = 0;
 	
 	public FrontPanel() {
@@ -50,13 +50,19 @@ public class FrontPanel extends JPanel {
 	public JSpinner createSpinner(Number value, Comparable min, Comparable max, Number step) {
 		SpinnerModel model = new SpinnerNumberModel(value, min, max, step);
 		JSpinner spinner = new JSpinner(model);
-		spinners.add(spinner);
+		components.add(spinner);
 		return spinner;
 	}
 	
-	public void setSpinnersEnabled(boolean enabled) {
-		for (JSpinner spinner : spinners) {
-			spinner.setEnabled(enabled);
+	public JCheckBox createCheckBox() {
+		JCheckBox checkbox = new JCheckBox();
+		components.add(checkbox);
+		return checkbox;
+	}
+	
+	public void setComponentsEnabled(boolean enabled) {
+		for (JComponent component : components) {
+			component.setEnabled(enabled);
 		}
 	}
 	

@@ -64,8 +64,8 @@ public class Genetics extends JFrame {
 		
 		startButton.setEnabled(false);
 		stopButton.setEnabled(true);
-		evalPanel.setSpinnersEnabled(false);
-		gaPanel.setSpinnersEnabled(false);
+		evalPanel.setComponentsEnabled(false);
+		gaPanel.setComponentsEnabled(false);
 
 		evalPanel.updateEvaluator();
 		gaPanel.update();
@@ -89,8 +89,8 @@ public class Genetics extends JFrame {
 		running = false;
 		startButton.setEnabled(true);
 		stopButton.setEnabled(false);
-		evalPanel.setSpinnersEnabled(true);
-		gaPanel.setSpinnersEnabled(true);
+		evalPanel.setComponentsEnabled(true);
+		gaPanel.setComponentsEnabled(true);
 	}
 	
 	public void flash() {
