@@ -56,9 +56,13 @@ public class Compiler implements VMConsts {
 	public byte[] compile(String[] lines) {
 		init();
 		
-		for (String line : lines) {
-			currentLine++;
-			parseLine(line);
+		try {
+			for (String line : lines) {
+				currentLine++;
+				parseLine(line);
+			}
+		} catch (IllegalArgumentException e) {
+			rethrowWithLine(e, currentLine);
 		}
 		
 		pc = 0;
@@ -83,7 +87,7 @@ public class Compiler implements VMConsts {
 		ram = null;
 		return compiled;
 	}
-	
+
 	public byte[] compile(String source) {
 		return compile(source.split("\n"));
 	}
@@ -171,12 +175,12 @@ public class Compiler implements VMConsts {
 	}
 	
 	protected void db(String[] args) {
-		statements.add(new Statement() {
-			public int measure() {
+		statements.add(new Statement(currentLine) {
+			public int measureImpl() {
 				return args.length;
 			}
 			
-			public void compile() {
+			public void compileImpl() {
 				for (String s : args) {
 					write8(parseLiteral(s));
 				}
@@ -185,12 +189,12 @@ public class Compiler implements VMConsts {
 	}
 	
 	protected void dbf(String[] args) {
-		statements.add(new Statement() {
-			public int measure() {
+		statements.add(new Statement(currentLine) {
+			public int measureImpl() {
 				return args.length * 4;
 			}
 			
-			public void compile() {
+			public void compileImpl() {
 				for (String s : args) {
 					writeFloat(parseFloat(s));
 				}
@@ -382,7 +386,7 @@ public class Compiler implements VMConsts {
 				throw new IllegalArgumentException("Invalid label name: " + name);
 			}
 
-			statements.add(new Label(name));
+			statements.add(new Label(name, currentLine));
 			line = line.substring(pos + 1).trim();
 		}
 		
@@ -456,12 +460,12 @@ public class Compiler implements VMConsts {
 	}
 	
 	protected void reference(int op, int data, String s) {
-		statements.add(new Statement() {
-			public int measure() {
+		statements.add(new Statement(currentLine) {
+			public int measureImpl() {
 				return 2;
 			}
 			
-			public void compile() {
+			public void compileImpl() {
 				int addr = getAddress(s);
 				
 				writeOp(op, data);
@@ -475,12 +479,12 @@ public class Compiler implements VMConsts {
 	}
 	
 	protected void immediate(int op, int data, byte[] payload) {
-		statements.add(new Statement() {
-			public int measure() {
+		statements.add(new Statement(currentLine) {
+			public int measureImpl() {
 				return 1 + payload.length;
 			}
 			
-			public void compile() {
+			public void compileImpl() {
 				writeOp(op, data);
 				
 				for (byte b : payload) {
@@ -500,12 +504,12 @@ public class Compiler implements VMConsts {
 	}
 	
 	protected void immediateFloat(int op, int data, String s) {
-		statements.add(new Statement() {
-			public int measure() {
+		statements.add(new Statement(currentLine) {
+			public int measureImpl() {
 				return 5;
 			}
 			
-			public void compile() {
+			public void compileImpl() {
 				writeOp(op, data);
 				writeFloat(Float.parseFloat(s));
 			}
@@ -517,12 +521,12 @@ public class Compiler implements VMConsts {
 			throw new IllegalArgumentException("Cannot address a literal for relative instruction");
 		}
 		
-		statements.add(new Statement() {
-			public int measure() {
+		statements.add(new Statement(currentLine) {
+			public int measureImpl() {
 				return 1;
 			}
 			
-			public void compile() {
+			public void compileImpl() {
 				int addr = getAddress(s);
 				int r = addr - (pc + 1);
 				
@@ -546,6 +550,12 @@ public class Compiler implements VMConsts {
 	public int getCurrentLine() {
 		return currentLine;
 	}
+	
+	private void rethrowWithLine(IllegalArgumentException e, int currentLine) {
+		String messageWithLine =
+				String.format("%s on line %d", e.getMessage(), currentLine);
+		throw new IllegalArgumentException(messageWithLine, e);
+	}
 
 	/**
 	 * @return the number of bytes used
@@ -555,18 +565,42 @@ public class Compiler implements VMConsts {
 	}
 	
 	protected abstract class Statement {
-		public abstract int measure();
-		public abstract void compile();
+		public final int line;
+		
+		public Statement(int line) {
+			this.line = line;
+		}
+		
+		public int measure() {
+			try {
+				return measureImpl();
+			} catch (IllegalArgumentException e) {
+				rethrowWithLine(e, line);
+				return 0;
+			}
+		}
+		
+		public void compile() {
+			try {
+				compileImpl();
+			} catch (IllegalArgumentException e) {
+				rethrowWithLine(e, line);
+			}
+		}
+		
+		protected abstract int measureImpl();
+		protected abstract void compileImpl();
 	}
 	
 	protected class Label extends Statement {
 		final String name;
 		
-		public Label(String name) {
+		public Label(String name, int line) {
+			super(line);
 			this.name = name;
 		}
 		
-		public int measure() {
+		public int measureImpl() {
 			if (labels.containsKey(name)) {
 				throw new IllegalArgumentException(String.format("Redefined label '%s'", name));
 			}
@@ -574,7 +608,7 @@ public class Compiler implements VMConsts {
 			return 0;
 		}
 		
-		public void compile() {
+		public void compileImpl() {
 			
 		}
 	}

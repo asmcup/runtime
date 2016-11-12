@@ -110,8 +110,7 @@ public class CodeEditor extends JFrame {
 			statusLabel.setText(String.format("Bytes used: %d", compiler.getBytesUsed()));
 		} catch (Exception e) {
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(this,
-					String.format("%s on line %d", e.getMessage(), compiler.getCurrentLine()));
+			JOptionPane.showMessageDialog(this, e.getMessage());
 			return false;
 		}
 		

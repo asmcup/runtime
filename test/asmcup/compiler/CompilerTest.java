@@ -24,7 +24,7 @@ public class CompilerTest {
             compiler.compile("push8 notfoundlabel");
             fail("Compiler did not fail on undefined label.");
         } catch (IllegalArgumentException e) {
-            assertEquals("Cannot find label 'notfoundlabel'", e.getMessage());
+            assert(e.getMessage().startsWith("Cannot find label 'notfoundlabel'"));
         }
     }
 
@@ -34,7 +34,7 @@ public class CompilerTest {
             compiler.compile("undefinedfunction #0");
             fail("Compiler did not fail on undefined function.");
         } catch (IllegalArgumentException e) {
-            assertEquals("Unknown function undefinedfunction", e.getMessage());
+            assert(e.getMessage().startsWith("Unknown function undefinedfunction"));
         }
     }
 
@@ -44,7 +44,7 @@ public class CompilerTest {
             compiler.compile("label:\nlabel:");
             fail("Compiler did not fail on redefined label.");
         } catch (IllegalArgumentException e) {
-            assertEquals("Redefined label 'label'", e.getMessage());
+            assert(e.getMessage().startsWith("Redefined label 'label'"));
         }
     }
 
