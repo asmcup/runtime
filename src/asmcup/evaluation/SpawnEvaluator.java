@@ -16,7 +16,7 @@ public class SpawnEvaluator extends Evaluator {
 		float score = super.score(ram) * scoringCount;
 		
 		Scorer scorer = new Scorer();
-		for (Spawn spawn : spawns) {
+		for (Spawn spawn : spawns.getIterable()) {
 			score += scorer.calculate360(ram, spawn);
 		}
 		

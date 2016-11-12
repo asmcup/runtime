@@ -277,7 +277,7 @@ public class Sandbox {
 		
 		g.setColor(Color.PINK);
 		
-		for (Spawn spawn : spawns) {
+		for (Spawn spawn : spawns.getIterable()) {
 			int x = screenX(spawn.x);
 			int y = screenY(spawn.y);
 			

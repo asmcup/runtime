@@ -14,7 +14,6 @@ public class SpawnsWindow extends JFrame {
 	protected final Spawns spawns;
 	protected final FrontPanel panel = new FrontPanel();
 	protected JList<Spawn> spawnList;
-	protected ListModel<Spawn> listModel;
 
 	protected JButton addButton = new JButton("Add current");
 	protected JButton deleteButton = new JButton("Delete");
@@ -54,16 +53,24 @@ public class SpawnsWindow extends JFrame {
 	}
 	
 	public void deleteOne() {
+		selectLastIfNone();
 		int index = spawnList.getSelectedIndex();
-		if (index != -1) {
-			spawns.remove(index);
-		}
+		// Error handling happens in there. Can't trust JList apparently.
+		spawns.remove(index);
+		selectLastIfNone();
 	}
 	
 	public void applyOne() {
-		int index = spawnList.getSelectedIndex();
-		if (index != -1) {
-			sandbox.loadSpawn(spawns.get(index));
+		selectLastIfNone();
+		Spawn spawn = spawnList.getSelectedValue();
+		if (spawn != null) {
+			sandbox.loadSpawn(spawn);
+		}
+	}
+	
+	public void selectLastIfNone() {
+		if (spawnList.getSelectedValue() == null) {
+			spawnList.setSelectedIndex(spawns.size() - 1);
 		}
 	}
 	
