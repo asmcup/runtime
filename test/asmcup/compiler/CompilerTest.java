@@ -210,22 +210,27 @@ public class CompilerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseLiteralError() {
-        Compiler.parseLiteral("notaliteral");
+        Compiler.parseLiteralByte("notaliteral");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseLiteralNAN() {
-        Compiler.parseLiteral("#nan");
+        Compiler.parseLiteralByte("#nan");
     }
 
     @Test
     public void testParseLiteral() {
-        assertEquals(42, Compiler.parseLiteral("#42"));
+        assertEquals(42, Compiler.parseLiteralByte("#42"));
     }
 
     @Test
     public void testParseLiteralHex() {
-        assertEquals(0xff, Compiler.parseLiteral("#$ff"));
+        assertEquals(0xff, Compiler.parseLiteralByte("#$ff"));
+    }
+
+    @Test
+    public void testParseLiteralNegative() {
+        assertEquals(0xff, Compiler.parseLiteralByte("#-1"));
     }
     
     @Test
