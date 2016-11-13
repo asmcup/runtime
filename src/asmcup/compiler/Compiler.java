@@ -182,7 +182,7 @@ public class Compiler implements VMConsts {
 			
 			public void compileImpl() {
 				for (String s : args) {
-					write8(parseLiteral(s));
+					write8(parseLiteralByte(s));
 				}
 			}
 		});
@@ -219,7 +219,7 @@ public class Compiler implements VMConsts {
 	}
 	
 	protected void pushLiteral8(String s) {
-		switch (parseLiteral(s)) {
+		switch (parseLiteralByte(s)) {
 		case 0:
 			immediate(OP_FUNC, F_C_0, NO_DATA);
 			break;
@@ -409,25 +409,25 @@ public class Compiler implements VMConsts {
 		return args;
 	}
 	
-	protected static int parseLiteral(String s) {
+	protected static int parseLiteralByte(String s) {
 		if (!isLiteral(s)) {
 			throw new IllegalArgumentException("Expected #");
 		}
 		
-		return parseValue(s.substring(1));
+		return parseByteValue(s.substring(1));
 	}
 	
-	protected static int parseValue(String s) {
+	protected static int parseByteValue(String s) {
 		if (RobotConstsTable.contains(s)) {
-			return RobotConstsTable.get(s);
+			return RobotConstsTable.get(s) & 0xFF;
 		}
 
 		try {
 			if (s.startsWith("$")) {
-				return Integer.parseInt(s.substring(1), 16);
+				return Integer.parseInt(s.substring(1), 16) & 0xFF;
 			}
 			
-			return Integer.parseInt(s, 10);
+			return Integer.parseInt(s, 10) & 0xFF;
 		}
 		catch (NumberFormatException e) {
 			throw new IllegalArgumentException("Invalid value: " + s);
@@ -447,7 +447,7 @@ public class Compiler implements VMConsts {
 			
 			addr = labels.get(s);
 		} else {
-			addr = parseValue(s);
+			addr = parseByteValue(s);
 		}
 		return addr;
 	}
@@ -499,7 +499,7 @@ public class Compiler implements VMConsts {
 	}
 	
 	protected void immediate(int op, int data, String s) {
-		byte[] payload = new byte[] { (byte)parseLiteral(s) };
+		byte[] payload = new byte[] { (byte)parseLiteralByte(s) };
 		immediate(op, data, payload);
 	}
 	
