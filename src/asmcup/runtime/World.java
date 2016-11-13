@@ -215,6 +215,6 @@ public class World {
 	public static final int TILES_PER_CELL = 20;
 	public static final int CELL_SIZE = TILES_PER_CELL * TILE_SIZE;
 	public static final int CELL_COUNT = 0xFF;
-	public static final int SIZE = TILE_SIZE * TILES_PER_CELL * CELL_COUNT;
+	public static final int SIZE = TILE_SIZE * TILES_PER_CELL * (CELL_COUNT + 1);
 	public static final int CENTER = SIZE / 2;
 }
