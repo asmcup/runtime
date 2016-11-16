@@ -231,7 +231,7 @@ public class Robot {
 		
 		float tx = x + (float)StrictMath.cos(facing) * s;
 		float ty = y + (float)StrictMath.sin(facing) * s;
-		int radius = COLLIDE_RADIUS;
+		int radius = COLLIDE_RANGE;
 		
 		if (!world.isSolid(tx, ty, radius)) {
 			x = tx;
@@ -282,6 +282,12 @@ public class Robot {
 				}
 				
 				lazerEnd = i * RAY_INTERVAL;
+				return;
+			}
+
+			Robot robot = world.getRobot(tx, ty);
+			if (robot != null && robot != this) {
+				robot.damage(LAZER_DAMAGE);
 				return;
 			}
 		}
@@ -422,6 +428,15 @@ public class Robot {
 			}
 		}
 		
+		Robot robot = world.getRobot(sx, sy);
+		
+		if ((sensorIgnore & SENSOR_ROBOT) == 0) {
+			if (robot != null && robot != this) {
+				// TODO: Add alliance once implemented!
+				return SENSOR_ROBOT;
+			}
+		}
+		
 		return 0;
 	}
 	
@@ -470,6 +485,7 @@ public class Robot {
 	public static final float FREQUENCY_MAX = 1000 * 10;
 	public static final int LAZER_RANGE = 100;
 	public static final int LAZER_BATTERY_COST = 4;
+	public static final int LAZER_DAMAGE = 1024;
 
 	public static final int SENSOR_WALL = 1;
 	public static final int SENSOR_HAZARD = 2;
@@ -482,5 +498,5 @@ public class Robot {
 	public static final int RAY_STEPS = 64;
 	public static final int RAY_RANGE = RAY_INTERVAL * RAY_STEPS;
 	
-	public static final int COLLIDE_RADIUS = 10;
+	public static final int COLLIDE_RANGE = 10;
 }

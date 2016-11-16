@@ -182,6 +182,16 @@ public class World {
 		item.collect(robot);
 		cell.removeItem(item);
 	}
+	
+	public Robot getRobot(float x, float y) {
+		for (Robot robot : robots) {
+			if (Math.abs(robot.getX() - x) < Robot.COLLIDE_RANGE
+			 && Math.abs(robot.getY() - y) < Robot.COLLIDE_RANGE) {
+				return robot;
+			}
+		}
+		return null;
+	}
 
 	public void mark(Robot robot, int offset, int value) {
 		int key = robot.getColumn() | (robot.getRow() << 16);
