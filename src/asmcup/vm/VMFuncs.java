@@ -83,5 +83,8 @@ public interface VMFuncs {
 	public static final int F_FT8 = 59;
 	public static final int F_FTF = 60;
 	
+	public static final int F_NOP61 = 61;
+	public static final int F_NOP62 = 62;
+	
 	public static final int F_IO = 63;
 }

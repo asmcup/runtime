@@ -55,7 +55,7 @@ public class DecompilerTest {
 				// "start:" label produces no output!
 				"L00: c_0",
 				"L01: push8 #$2a",
-				"L03: pushf 42.000000",
+				"L03: pushf #42.000000",
 				"L08: pushf $00",
 				"L0a: popf $fa",
 				"L0c: pop8 $fb",
@@ -70,9 +70,17 @@ public class DecompilerTest {
 	}
 
 	@Test
-	public void testFuzzedPatterns() throws UnsupportedEncodingException {
+	public void testFuzzedPattern0() throws UnsupportedEncodingException {
 		testFuzzedWithPadding(0);
+	}
+
+	@Test
+	public void testFuzzedPattern1() throws UnsupportedEncodingException {
 		testFuzzedWithPadding(1);
+	}
+
+	@Test
+	public void testFuzzedPattern4() throws UnsupportedEncodingException {
 		testFuzzedWithPadding(4);
 	}
 	
@@ -99,16 +107,11 @@ public class DecompilerTest {
 		Compiler compiler = new Compiler();
 		
 		decompiler.decompile(ram);
-		ram = compiler.compile(out.toString("UTF-8"));
-		// It is possible that the compiler collapsed e.g. a verbose (2-byte)
-		// push8 #0
-		// into the constant function form, so we run another cycle.
-		out.reset();
-		decompiler.decompile(ram);
+		System.out.println(out.toString("UTF-8"));
 		byte[] newRam = compiler.compile(out.toString());
 		
 		for (int i = 0; i < 256; i++) {
-			assert(ram[i] == newRam[i]);
+			assertEquals(ram[i], newRam[i]);
 		}
 	}
 

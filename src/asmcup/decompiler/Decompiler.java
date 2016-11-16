@@ -31,7 +31,7 @@ public class Decompiler implements VMConsts {
 	}
 
 	public int read8(byte[] ram, int pc) {
-		return ram[pc] & 0xFF;
+		return ram[pc & 0xFF] & 0xFF;
 	}
 
 	public int read16(byte[] ram, int pc) {
@@ -97,7 +97,7 @@ public class Decompiler implements VMConsts {
 		}
 		
 		int r = data - 32;
-		addr = pc + r;
+		addr = (pc + r) & 0xFF;
 		dump(pc, String.format("pop8 $%02x ; relative %d", addr, r));
 		return 1;
 	}
@@ -141,7 +141,7 @@ public class Decompiler implements VMConsts {
 			return 2;
 		case MAGIC_PUSH_FLOAT_IMMEDIATE:
 			f = readFloat(ram, pc + 1);
-			dump(pc, String.format("pushf %f", f));
+			dump(pc, String.format("pushf #%f", f));
 			return 5;
 		case MAGIC_PUSH_FLOAT_MEMORY:
 			addr = read8(ram, pc + 1);
