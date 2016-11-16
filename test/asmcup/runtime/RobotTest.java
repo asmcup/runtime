@@ -139,6 +139,17 @@ public class RobotTest {
 		robot.handleIO(world);
 		assertEquals(1.0f, vm.popFloat(), 0.0001f);
 	}
+	
+	@Test
+	public void testIOLazer() {
+		World world = new World();
+		VM vm = robot.getVM();
+		vm.pushFloat(1.0f);
+		vm.push8(Robot.IO_LASER);
+		vm.setIO(true);
+		robot.handleIO(world);
+		assertEquals(1.0f, robot.getLazer(), 0.0001f);
+	}
 
 	@Test
 	public void testIOCompass() {
@@ -213,6 +224,73 @@ public class RobotTest {
 		assertEquals(42, vm.pop8());
 	}
 	
+	@Test
+	public void testSensorNothing() {
+		World world = generateEmptyWorld((int) robot.getX(), (int) robot.getY(), Robot.RAY_RANGE + 10);
+		world.addRobot(robot);
+		VM vm = robot.getVM();
+
+		vm.push8(Robot.IO_SENSOR);
+		vm.setIO(true);
+		robot.handleIO(world);
+		
+		assertEquals(vm.pop8() & 0b111111, 0);
+		assertEquals(vm.popFloat(), Robot.RAY_RANGE, 5.0f);
+	}
+	
+	@Test
+	public void testSensorWall() {
+		testSensorHitTile(Cell.TILE_WALL, Robot.SENSOR_WALL);
+	}
+
+	@Test
+	public void testSensorObstacle() {
+		testSensorHitTile(Cell.TILE_OBSTACLE, Robot.SENSOR_OBSTACLE);
+	}
+	
+	@Test
+	public void testSensorHazard() {
+		testSensorHitTile(Cell.TILE_HAZARD, Robot.SENSOR_HAZARD);
+	}
+	
+	protected void testSensorHitTile(int tile, int expectedSensorValue) {
+		World world = generateEmptyWorld((int) robot.getX(), (int) robot.getY(), 100);
+		world.addRobot(robot);
+		VM vm = robot.getVM();
+		float xOffset = 60.0f;
+		world.setTileXY(robot.getX() + xOffset, robot.getY(), tile);
+
+		vm.push8(Robot.IO_SENSOR);
+		vm.setIO(true);
+		robot.handleIO(world);
+		// Saw a wall...
+		assertEquals(vm.pop8() & 0b111111, expectedSensorValue);
+		// ...closeby.
+		assertEquals(vm.popFloat(), xOffset, World.TILE_SIZE);
+	}
+	
+	@Test
+	public void testSensorOtherBot() {
+		World world = generateEmptyWorld((int) robot.getX(), (int) robot.getY(), 50);
+		world.addRobot(robot);
+		VM vm = robot.getVM();
+		
+		float xOffset = 30.0f;
+		
+		Robot dummy = new Robot(13);
+		dummy.position(robot.getX() + xOffset, robot.getY());
+		world.addRobot(dummy);
+
+		vm.push8(Robot.IO_SENSOR);
+		vm.setIO(true);
+		robot.handleIO(world);
+		// Saw a robot...
+		assertEquals(vm.pop8() & 0b111111, Robot.SENSOR_ROBOT);
+		// ...closeby.
+		assertEquals(vm.popFloat(), xOffset, Robot.COLLIDE_RANGE);
+	}
+	
+	@Test
 	public void testBeamAngle() {
 		World world = generateEmptyWorld((int) robot.getX(), (int) robot.getY(), 50);
 		VM vm = robot.getVM();
@@ -233,6 +311,20 @@ public class RobotTest {
 		vm.setIO(true);
 		robot.handleIO(world);
 		assertEquals((float)-Math.PI * 0.75f, robot.getBeamAngle(), 0.0001f);
+	}
+	
+	@Test
+	public void testLazerDamage() {
+		World world = generateEmptyWorld((int) robot.getX(), (int) robot.getY(), 50);
+		Robot dummy = new Robot(13);
+		dummy.position(robot.getX() + 30, robot.getY());
+		world.addRobot(robot);
+		world.addRobot(dummy);
+		
+		int initialBattery = dummy.getBattery();
+		robot.setLazer(1.0f);
+		robot.tick(world);
+		assert(dummy.getBattery() < initialBattery);
 	}
 
 	private World generateEmptyWorld(int x, int y, int radius) {
