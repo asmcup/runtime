@@ -14,6 +14,11 @@ public class Cell {
 		this.cellY = cellY;
 		
 		Generator gen = new Generator(world, this);
+
+		if (cellX == 0 || cellY == 0 || cellX == World.CELL_COUNT || cellY == World.CELL_COUNT) {
+			gen.square(gen.same(TILE_HAZARD, 3), 0, 0, World.TILES_PER_CELL);
+			return;
+		}
 		
 		gen.square(gen.variantRare(TILE_GROUND), 0, 0, World.TILES_PER_CELL);
 		
