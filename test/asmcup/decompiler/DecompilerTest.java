@@ -69,6 +69,49 @@ public class DecompilerTest {
 		), out.toString("UTF-8"));
 	}
 
+	@Test
+	public void testFuzzedPatterns() throws UnsupportedEncodingException {
+		testFuzzedWithPadding(0);
+		testFuzzedWithPadding(1);
+		testFuzzedWithPadding(4);
+	}
+	
+	public void testFuzzedWithPadding(int pad) throws UnsupportedEncodingException {
+		int step = pad + 1;
+		byte[] ram = new byte[256];
+		
+		int instruction = 0;
+		for (int repeats = 0; repeats < step; repeats++) {
+			for (int i = 0; i < 256; i++) {
+				if (i % step == 0) {
+					ram[i] = (byte)(instruction++ & 0xFF);
+				} else {
+					ram[i] = 0;
+				}
+			}
+			
+			checkDecompileCompileIdentity(ram);
+		}
+	}
+	
+	private void checkDecompileCompileIdentity(byte[] ram)
+			throws UnsupportedEncodingException {
+		Compiler compiler = new Compiler();
+		
+		decompiler.decompile(ram);
+		ram = compiler.compile(out.toString("UTF-8"));
+		// It is possible that the compiler collapsed e.g. a verbose (2-byte)
+		// push8 #0
+		// into the constant function form, so we run another cycle.
+		out.reset();
+		decompiler.decompile(ram);
+		byte[] newRam = compiler.compile(out.toString());
+		
+		for (int i = 0; i < 256; i++) {
+			assert(ram[i] == newRam[i]);
+		}
+	}
+
 	private static String getProgram(String... lines) {
 		StringBuilder ret = new StringBuilder();
 		for (String line : lines) {
