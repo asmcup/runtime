@@ -43,7 +43,8 @@ public class DecompilerTest {
 				"push8 $fc",
 				"jmp start",
 				"jnz start",
-				"jmp ($cc)"
+				"jmp ($cc)",
+				"db8 #$f4" // function 0xf4 is unused
 				// https://github.com/asmcup/runtime/issues/99
 				// "popf ($a)",
 				// "pop8 [$b]",
@@ -64,7 +65,8 @@ public class DecompilerTest {
 				"L0e: push8 $fc",
 				"L10: jmp $00",
 				"L12: jnz $00",
-				"L14: jmp [$cc]"
+				"L14: jmp [$cc]",
+				"L16: db8 #$f4"
 		), out.toString("UTF-8"));
 	}
 
