@@ -196,7 +196,7 @@ public class Compiler implements VMConsts {
 			
 			public void compileImpl() {
 				for (String s : args) {
-					writeFloat(parseFloat(s));
+					writeFloat(parseLiteralFloat(s));
 				}
 			}
 		});
@@ -266,10 +266,10 @@ public class Compiler implements VMConsts {
 	protected void pushf(String[] args) {
 		String s = expectOne(args);
 		
-		if (isSymbol(s)) {
-			pushMemoryFloat(s);
-		} else {
+		if (isLiteral(s)) {
 			pushLiteralFloat(s);
+		} else {
+			pushMemoryFloat(s);
 		}
 	}
 	
@@ -278,7 +278,7 @@ public class Compiler implements VMConsts {
 	}
 	
 	protected void pushLiteralFloat(String s) {
-		float f = parseFloat(s);
+		float f = parseLiteralFloat(s);
 		
 		if (f == -1.0f) {
 			immediate(OP_FUNC, F_C_M1F, NO_DATA);
@@ -430,7 +430,31 @@ public class Compiler implements VMConsts {
 			return Integer.parseInt(s, 10) & 0xFF;
 		}
 		catch (NumberFormatException e) {
-			throw new IllegalArgumentException("Invalid value: " + s);
+			// Accommodate for recent change to float literals
+			try {
+				Float.parseFloat(s);
+			} catch (NumberFormatException ef) {
+				// Ok, this simply isn't a number.
+				throw new IllegalArgumentException(String.format("Invalid value: %s", s));
+			}
+			// It's a valid float but not an int. Maybe the user meant a literal?
+			throw new IllegalArgumentException(String.format("Invalid value: %s" +
+					"%nNote: Float literals must begin with '#'."
+					+ " This is a recent change that might cause the problem", s));
+		}
+	}
+	
+	protected static float parseLiteralFloat(String s) {
+		if (!isLiteral(s)) {
+			throw new IllegalArgumentException("Float literals must begin with '#'."
+					+ " This is a recent change that might cause the problem");
+		}
+		
+		try {
+			return Float.parseFloat(s.substring(1));
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException(
+					String.format("Invalid float value: %s", s));
 		}
 	}
 
@@ -438,11 +462,12 @@ public class Compiler implements VMConsts {
 		int addr;
 
 		if (isLiteral(s)) {
-			throw new IllegalArgumentException("Cannot address a literal as jump target");
+			throw new IllegalArgumentException("Cannot address a literal");
 		}
 		if (isSymbol(s)) {
 			if (!labels.containsKey(s)) {
-				throw new IllegalArgumentException(String.format("Cannot find label '%s'", s));
+				throw new IllegalArgumentException(
+						String.format("Cannot find label '%s'", s));
 			}
 			
 			addr = labels.get(s);
@@ -450,13 +475,6 @@ public class Compiler implements VMConsts {
 			addr = parseByteValue(s);
 		}
 		return addr;
-	}
-	
-	protected static float parseFloat(String s) {
-		if (isLiteral(s)) {
-			s = s.substring(1);
-		}
-		return Float.parseFloat(s);
 	}
 	
 	protected void reference(int op, int data, String s) {
@@ -511,7 +529,7 @@ public class Compiler implements VMConsts {
 			
 			public void compileImpl() {
 				writeOp(op, data);
-				writeFloat(Float.parseFloat(s));
+				writeFloat(parseLiteralFloat(s));
 			}
 		});
 	}

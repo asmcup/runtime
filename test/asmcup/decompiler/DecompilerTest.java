@@ -36,19 +36,17 @@ public class DecompilerTest {
 				"start:",
 				"push8 #0",
 				"push8 #42",
-				"pushf 42.0",
+				"pushf #42.0",
 				"pushf start",
 				"popf $fa",
 				"pop8 $fb",
 				"push8 $fc",
 				"jmp start",
 				"jnz start",
-				"jmp ($cc)"
-				// https://github.com/asmcup/runtime/issues/99
-				// "popf ($a)",
-				// "pop8 [$b]",
-				// https://github.com/asmcup/runtime/issues/186
-				// "pushf $ab"
+				"jmp ($cc)",
+				"popf ($a)",
+				"pop8 [$b]",
+				"pushf $ab"
 		));
 
 		decompiler.decompile(ram);
@@ -64,7 +62,10 @@ public class DecompilerTest {
 				"L0e: push8 $fc",
 				"L10: jmp $00",
 				"L12: jnz $00",
-				"L14: jmp [$cc]"
+				"L14: jmp [$cc]",
+				"L16: popf [$0a]",
+				"L18: pop8 [$0b]",
+				"L1a: pushf $ab"
 		), out.toString("UTF-8"));
 	}
 
