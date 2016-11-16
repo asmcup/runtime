@@ -70,7 +70,12 @@ public class Decompiler implements VMConsts {
 	}
 	
 	public int decompileFunc(byte[] ram, int pc, int data) {
-		dump(pc, VMFuncTable.unparse(data));
+		String func = VMFuncTable.unparse(data);
+		if (func == null) { // function not found. Treat it as db8
+			dump(pc, "db8 #$" + Integer.toHexString(OP_FUNC | data << 2));
+			return 1;
+		}
+		dump(pc, func);
 		return 1;
 	}
 	
