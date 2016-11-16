@@ -1,4 +1,4 @@
-Version:   1.6.1 (Beta)
+Version:   1.7.0 (Beta)
 Homepage:  asmcup.github.io
 Project:   github.com/asmcup/runtime
 
