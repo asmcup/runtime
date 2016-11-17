@@ -108,9 +108,10 @@ public class DecompilerTest {
 		
 		decompiler.decompile(ram);
 		System.out.println(out.toString("UTF-8"));
-		byte[] newRam = compiler.compile(out.toString());
+		byte[] newRam = compiler.compile(out.toString("UTF-8"));
 		
 		for (int i = 0; i < 256; i++) {
+			System.out.println(String.format("%d: %d | %d", i, ram[i], newRam[i]));
 			assertEquals(ram[i], newRam[i]);
 		}
 	}
