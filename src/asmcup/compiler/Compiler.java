@@ -546,13 +546,20 @@ public class Compiler implements VMConsts {
 			
 			public void compileImpl() {
 				int addr = getAddress(s);
+				// Allowed range: -32 to 31
 				int r = addr - (pc + 1);
-				
-				if (r < -32 || r > 31) {
-					throw new IllegalArgumentException("Address is not within range");
+				r = (r + 32) & 0xFF;
+				// Allowed range now: 0 to 63
+				if ((r >> 6) != 0 || 
+					(r == 31) || // (and not one of the magics)
+					(r == 32) ||
+					(r == 33) ||
+					(r == 0))    // This would technically work for jnzr
+				{
+					throw new IllegalArgumentException("Unacceptable target address distance");
 				}
 				
-				writeOp(op, 32 + r);
+				writeOp(op, r);
 			}
 		});
 	}

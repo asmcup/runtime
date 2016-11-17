@@ -253,7 +253,7 @@ public class CompilerTest {
     
     public void testPushesRelative() {
     	compiler.compile("label: dbf #0.0 \n push8r label");
-    	compiler.compile("push8r 5 \n push8r $0a");
+    	compiler.compile("push8r 5 \n push8r $fa");
     }
     
     @Test
@@ -264,12 +264,24 @@ public class CompilerTest {
     @Test
     public void testPopsRelative() {
     	compiler.compile("label: dbf #0.0 \n pop8r label");
-    	compiler.compile("pop8r 7 \n pop8r $0a");
+    	compiler.compile("pop8r 7 \n pop8r $fa");
     }
 
     @Test
     public void testPopsIndirect() {
     	compiler.compile("pop8 [13] \n pop8 [$cd] \n popf [13] \n popf [$cd]");
+    }
+    
+    @Test
+    public void testJumps() {
+    	compiler.compile("jmp 37 \n jnz 13 \n jmp [11]");
+    	compiler.compile("jmp $37 \n jnz $13 \n jmp [$11]");
+    }
+    
+    @Test
+    public void testJumpsRelative() {
+    	compiler.compile("label: dbf #0.0 \n jnzr label");
+    	compiler.compile("jnzr 07 \n jnzr $fa");
     }
 
     @Test
@@ -315,7 +327,7 @@ public class CompilerTest {
     @Test 
     public void testIllegalFloatPush8() {
         try {
-        	compiler.compile("push8 13.1");
+        	compiler.compile("push8 #13.1");
             fail("Compiler did not fail on push8 with a float.");
         } catch (IllegalArgumentException e) {
             assert(e.getMessage().startsWith("Invalid value"));
