@@ -68,6 +68,45 @@ public class DecompilerTest {
 				"L1a: pushf $ab"
 		), out.toString("UTF-8"));
 	}
+	
+	@Test 
+	public void testIdentityByteConstants() throws UnsupportedEncodingException {
+		byte[] ram = (new Compiler()).compile(getProgram(
+				"push8 #-1",
+				"push8 #0",
+				"push8 #1",
+				"push8 #2",
+				"push8 #3",
+				"push8 #4",
+				"push8 #5",
+				"push8 #6",
+				"push8 #255",
+				"push8 #256",
+				"push8 #257",
+				"push8 #-1000",
+				"push8 #1001"
+		));
+		
+		checkDecompileCompileIdentity(ram);
+	}
+	
+	@Test 
+	public void testIdentityFloatConstants() throws UnsupportedEncodingException {
+		byte[] ram = (new Compiler()).compile(getProgram(
+				"pushf #1.0",
+				"pushf #-0.0",
+				"pushf #42",
+				"pushf #NaN",
+				"pushf #0.1",
+				"pushf #7.0",
+				"pushf #7.0e20",
+				"pushf #13.37e-20",
+				"pushf #Infinity",
+				"pushf #-Infinity"
+		));
+		
+		checkDecompileCompileIdentity(ram);
+	}
 
 	@Test
 	public void testFuzzedPattern0() throws UnsupportedEncodingException {
@@ -111,7 +150,7 @@ public class DecompilerTest {
 		byte[] newRam = compiler.compile(out.toString("UTF-8"));
 		
 		for (int i = 0; i < 256; i++) {
-			assertEquals(ram[i], newRam[i]);
+			assertEquals(String.format("Memory differs at %02x", i), ram[i], newRam[i]);
 		}
 	}
 

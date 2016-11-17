@@ -152,7 +152,7 @@ public class Decompiler implements VMConsts {
 	}
 	
 	protected int verbosePushByte(byte[] ram, int pc) {
-		// We just read a 2 byte push8 that would get condensed into the 1 byte
+		// We just read a 2 byte push8 that could get condensed into the 1 byte
 		// function call by the compiler. This may break programs when they are
 		// decompiled and then recompiled because addresses may change.
 		int value = read8(ram, pc + 1);
@@ -175,7 +175,7 @@ public class Decompiler implements VMConsts {
 	}
 	
 	protected int verbosePushFloat(byte[] ram, int pc) {
-		// We just read a 5 byte pushf that would get condensed into the 1 byte
+		// We just read a 5 byte pushf that could get condensed into the 1 byte
 		// function call by the compiler. This may break programs when they are
 		// decompiled and then recompiled because addresses may change.
 		float value = readFloat(ram, pc + 1);
