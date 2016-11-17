@@ -55,7 +55,7 @@ public class DecompilerTest {
 				// "start:" label produces no output!
 				"L00: c_0",
 				"L01: push8 #$2a",
-				"L03: pushf #42.000000",
+				"L03: pushf #4.200000000e+01",
 				"L08: pushf $00",
 				"L0a: popf $fa",
 				"L0c: pop8 $fb",
@@ -105,13 +105,12 @@ public class DecompilerTest {
 	private void checkDecompileCompileIdentity(byte[] ram)
 			throws UnsupportedEncodingException {
 		Compiler compiler = new Compiler();
+		out.reset();
 		
 		decompiler.decompile(ram);
-		System.out.println(out.toString("UTF-8"));
 		byte[] newRam = compiler.compile(out.toString("UTF-8"));
 		
 		for (int i = 0; i < 256; i++) {
-			System.out.println(String.format("%d: %d | %d", i, ram[i], newRam[i]));
 			assertEquals(ram[i], newRam[i]);
 		}
 	}

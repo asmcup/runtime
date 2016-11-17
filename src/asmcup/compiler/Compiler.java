@@ -548,18 +548,18 @@ public class Compiler implements VMConsts {
 				int addr = getAddress(s);
 				// Allowed range: -32 to 31
 				int r = addr - (pc + 1);
-				r = (r + 32) & 0xFF;
+				int data = (r + 32) & 0xFF;
 				// Allowed range now: 0 to 63
-				if ((r >> 6) != 0 || 
-					(r == 31) || // (and not one of the magics)
-					(r == 32) ||
-					(r == 33) ||
-					(r == 0))    // This would technically work for jnzr
+				if ((data >> 6) != 0 || 
+					(data == 31) || // (and not one of the magics)
+					(data == 32) ||
+					(data == 33) ||
+					((data == 0) && (op != OP_BRANCH)))
 				{
 					throw new IllegalArgumentException("Unacceptable target address distance");
 				}
 				
-				writeOp(op, r);
+				writeOp(op, data);
 			}
 		});
 	}

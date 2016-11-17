@@ -97,7 +97,7 @@ public class Decompiler implements VMConsts {
 		}
 		
 		int r = data - 32;
-		addr = (pc + r) & 0xFF;
+		addr = (pc + r + 1) & 0xFF;
 		dump(pc, String.format("pop8r $%02x ; relative %d", addr, r));
 		return 1;
 	}
@@ -121,7 +121,7 @@ public class Decompiler implements VMConsts {
 		}
 		
 		int r = data - 32;
-		addr = (pc + r) & 0xFF;
+		addr = (pc + r + 1) & 0xFF;
 		dump(pc, String.format("jnzr $%02x  ; relative %d", addr, r));
 		return 1;
 	}
@@ -146,7 +146,7 @@ public class Decompiler implements VMConsts {
 		}
 
 		int r = data - 32;
-		addr = (pc + r) & 0xFF;
+		addr = (pc + r + 1) & 0xFF;
 		dump(pc, String.format("push8r $%02x  ; relative %d", addr, r));
 		return 1;
 	}
@@ -185,9 +185,9 @@ public class Decompiler implements VMConsts {
 			value == 3.0f  || Float.isInfinite(value)) {
 			int instruction = (MAGIC_PUSH_FLOAT_IMMEDIATE << 2) + OP_PUSH;
 			dump(pc,   String.format("db8 #$%02x  ; verbose pushf #value", instruction));
-			dump(pc+1, String.format("dbf #%f  ; (continued)", value));
+			dump(pc+1, String.format("dbf #%.9e  ; (continued)", value));
 		} else {
-			dump(pc, String.format("pushf #%f", value));
+			dump(pc, String.format("pushf #%.9e", value));
 		}
 		return 5;
 	}
