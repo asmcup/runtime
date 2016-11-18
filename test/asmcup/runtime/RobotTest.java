@@ -1,6 +1,8 @@
 package asmcup.runtime;
 
+import asmcup.runtime.World.TILE;
 import asmcup.vm.VM;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,7 +23,7 @@ public class RobotTest {
 
 	@Test
 	public void testAccelerometer() {
-		World world = generateEmptyWorld((int) robot.getX(), (int) robot.getY(), 50);
+		World world = generateEmptyWorld((int)robot.getX(), (int)robot.getY(), 50);
 		// Read Accelerometer
 		VM vm = robot.getVM();
 		vm.push8(Robot.IO_ACCELEROMETER);
@@ -67,7 +69,7 @@ public class RobotTest {
 
 	@Test
 	public void testMotor() {
-		World world = generateEmptyWorld((int) robot.getX(), (int) robot.getY(), 50);
+		World world = generateEmptyWorld((int)robot.getX(), (int)robot.getY(), 50);
 		float x = robot.getX();
 		float y = robot.getY();
 		robot.setMotor(1.0f);
@@ -226,7 +228,7 @@ public class RobotTest {
 	
 	@Test
 	public void testSensorNothing() {
-		World world = generateEmptyWorld((int) robot.getX(), (int) robot.getY(), Robot.RAY_RANGE + 10);
+		World world = generateEmptyWorld((int)robot.getX(), (int)robot.getY(), Robot.RAY_RANGE + 10);
 		world.addRobot(robot);
 		VM vm = robot.getVM();
 
@@ -240,21 +242,21 @@ public class RobotTest {
 	
 	@Test
 	public void testSensorWall() {
-		testSensorHitTile(Cell.TILE_WALL, Robot.SENSOR_WALL);
+		testSensorHitTile(TILE.WALL, Robot.SENSOR_WALL);
 	}
 
 	@Test
 	public void testSensorObstacle() {
-		testSensorHitTile(Cell.TILE_OBSTACLE, Robot.SENSOR_OBSTACLE);
+		testSensorHitTile(TILE.OBSTACLE, Robot.SENSOR_OBSTACLE);
 	}
 	
 	@Test
 	public void testSensorHazard() {
-		testSensorHitTile(Cell.TILE_HAZARD, Robot.SENSOR_HAZARD);
+		testSensorHitTile(TILE.HAZARD, Robot.SENSOR_HAZARD);
 	}
 	
 	protected void testSensorHitTile(int tile, int expectedSensorValue) {
-		World world = generateEmptyWorld((int) robot.getX(), (int) robot.getY(), 100);
+		World world = generateEmptyWorld((int)robot.getX(), (int)robot.getY(), 100);
 		world.addRobot(robot);
 		VM vm = robot.getVM();
 		float xOffset = 60.0f;
@@ -271,7 +273,7 @@ public class RobotTest {
 	
 	@Test
 	public void testSensorOtherBot() {
-		World world = generateEmptyWorld((int) robot.getX(), (int) robot.getY(), 50);
+		World world = generateEmptyWorld((int)robot.getX(), (int)robot.getY(), 50);
 		world.addRobot(robot);
 		VM vm = robot.getVM();
 		
@@ -292,7 +294,7 @@ public class RobotTest {
 	
 	@Test
 	public void testBeamAngle() {
-		World world = generateEmptyWorld((int) robot.getX(), (int) robot.getY(), 50);
+		World world = generateEmptyWorld((int)robot.getX(), (int)robot.getY(), 50);
 		VM vm = robot.getVM();
 		// Face west
 		robot.setFacing(0);
@@ -315,7 +317,7 @@ public class RobotTest {
 	
 	@Test
 	public void testLazerDamage() {
-		World world = generateEmptyWorld((int) robot.getX(), (int) robot.getY(), 50);
+		World world = generateEmptyWorld((int)robot.getX(), (int)robot.getY(), 50);
 		Robot dummy = new Robot(13);
 		dummy.position(robot.getX() + 30, robot.getY());
 		world.addRobot(robot);
@@ -331,7 +333,7 @@ public class RobotTest {
 		World world = new World();
 		for (int i = x - radius; i < x + radius; i += World.TILE_SIZE) {
 			for (int j = y - radius; j < y + radius; j += World.TILE_SIZE) {
-				world.setTileXY(i, j, Cell.TILE_GROUND);
+				world.setTileXY(i, j, TILE.GROUND);
 			}
 		}
 
