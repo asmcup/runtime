@@ -30,7 +30,7 @@ public class Spawn {
 		// TODO ? Make this the job of world ("deterministic" random)?
 		// TODO needs to check for an isSpawnable
 		
-		while (world.isSolid(sx, sy, 25)) {
+		while (!world.canSpawnRobotAt(sx, sy)) {
 			sx += (random.nextFloat() - 0.5f) * World.CELL_SIZE;
 			sy += (random.nextFloat() - 0.5f) * World.CELL_SIZE;
 		}
