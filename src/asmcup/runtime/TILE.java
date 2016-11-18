@@ -19,19 +19,19 @@ public enum TILE {; // Courtesy of http://stackoverflow.com/a/9618724
 		public boolean presentIn(int tile); 
 	}
 
-	public static TileProperty IS_GROUND   = isType(GROUND);
-	public static TileProperty IS_HAZARD   = isType(HAZARD);
-	public static TileProperty IS_WALL     = isType(WALL);
-	public static TileProperty IS_OBSTACLE = isType(OBSTACLE);
-	public static TileProperty IS_FLOOR    = isType(FLOOR);
+	public static final TileProperty IS_GROUND   = isType(GROUND);
+	public static final TileProperty IS_HAZARD   = isType(HAZARD);
+	public static final TileProperty IS_WALL     = isType(WALL);
+	public static final TileProperty IS_OBSTACLE = isType(OBSTACLE);
+	public static final TileProperty IS_FLOOR    = isType(FLOOR);
 	
 	public static TileProperty isType(int type) {
 		return (int tile) -> (tile & TYPE_BITS) == type;
 	}
 
-	public static TileProperty IS_SOLID       = isSolid();
-	public static TileProperty IS_SPAWNABLE   = isSpawnable();
-	public static TileProperty IS_UNSPAWNABLE = not(IS_SPAWNABLE);
+	public static final TileProperty IS_SOLID       = isSolid();
+	public static final TileProperty IS_SPAWNABLE   = isSpawnable();
+	public static final TileProperty IS_UNSPAWNABLE = not(IS_SPAWNABLE);
 
 	public static TileProperty isSolid() {
 		return (int tile) -> {

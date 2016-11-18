@@ -231,7 +231,6 @@ public class Robot {
 		
 		float tx = x + (float)StrictMath.cos(facing) * s;
 		float ty = y + (float)StrictMath.sin(facing) * s;
-		int radius = COLLIDE_RANGE;
 		
 		if (world.canRobotGoTo(tx, ty)) {
 			x = tx;
