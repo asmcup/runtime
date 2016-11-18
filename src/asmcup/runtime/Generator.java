@@ -2,8 +2,6 @@ package asmcup.runtime;
 
 import java.util.Random;
 
-import asmcup.runtime.World.TILE;
-
 public class Generator {
 	protected final World world;
 	protected final Cell cell;

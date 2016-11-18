@@ -2,8 +2,6 @@ package asmcup.runtime;
 
 import java.util.*;
 
-import asmcup.runtime.World.TILE;
-
 public class Cell {
 	protected final World world;
 	protected final int cellX, cellY;

@@ -1,6 +1,5 @@
 package asmcup.runtime;
 
-import asmcup.runtime.World.TILE;
 import asmcup.vm.VM;
 
 public class Robot {

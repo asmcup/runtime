@@ -1,7 +1,5 @@
 package asmcup.runtime;
 
-import asmcup.runtime.World.TILE;
-
 import org.junit.Test;
 
 import java.util.HashMap;

@@ -15,7 +15,7 @@ import asmcup.evaluation.SpawnsWindow;
 import asmcup.genetics.*;
 import asmcup.runtime.*;
 import asmcup.runtime.Robot;
-import asmcup.runtime.World.TILE;
+import asmcup.runtime.TILE;
 
 public class Sandbox {
 	public final Mouse mouse;
