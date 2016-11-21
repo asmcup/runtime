@@ -250,10 +250,13 @@ public class Sandbox {
 			return;
 		}
 		
-		Graphics g = backBuffer.getGraphics();
+		Graphics2D g = (Graphics2D)backBuffer.getGraphics();
 		
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, WIDTH, HEIGHT);
+		
+		AffineTransform originalTransform = g.getTransform();
+		g.translate(WIDTH/2 - panX, HEIGHT/2 - panY);
 		
 		int left = (int)Math.floor((panX - WIDTH/2.0) / World.CELL_SIZE);
 		int right = (int)Math.ceil((panX + WIDTH/2.0) / World.CELL_SIZE);
@@ -278,12 +281,14 @@ public class Sandbox {
 		g.setColor(Color.PINK);
 		
 		for (Spawn spawn : spawns.getIterable()) {
-			int x = screenX(spawn.x);
-			int y = screenY(spawn.y);
+			int x = (int)spawn.x;
+			int y = (int)spawn.y;
 			
 			g.drawLine(x - 4, y, x + 4, y);
 			g.drawLine(x, y - 4, x, y + 4);
 		}
+		
+		g.setTransform(originalTransform);
 		
 		if (paused) {
 			g.setColor(Color.WHITE);
@@ -291,23 +296,7 @@ public class Sandbox {
 		}
 	}
 	
-	public int screenX(float x) {
-		return (int)(WIDTH/2 + x - panX);
-	}
-	
-	public int screenY(float y) {
-		return (int)(HEIGHT/2 + y - panY);
-	}
-	
-	public int screenX(int x) {
-		return (WIDTH/2 + x - panX);
-	}
-	
-	public int screenY(int y) {
-		return (HEIGHT/2 + y - panY);
-	}
-	
-	protected void drawCell(Graphics g, Cell cell) {
+	protected void drawCell(Graphics2D g, Cell cell) {
 		int left = cell.getX() * World.TILES_PER_CELL;
 		int right = left + World.TILES_PER_CELL;
 		int top = cell.getY() * World.TILES_PER_CELL;
@@ -326,8 +315,8 @@ public class Sandbox {
 		
 		if (showGrid) {
 			g.setColor(Color.WHITE);
-			int x = WIDTH/2 + left * World.TILE_SIZE - panX;
-			int y = HEIGHT/2 + top * World.TILE_SIZE - panY;
+			int x = left * World.TILE_SIZE;
+			int y = top * World.TILE_SIZE;
 			g.drawRect(x, y, World.CELL_SIZE, World.CELL_SIZE);
 			
 			String msg = String.format("%d, %d", cell.getX(), cell.getY());
@@ -338,9 +327,9 @@ public class Sandbox {
 		}
 	}
 	
-	protected void drawTile(Graphics g, int col, int row, int tile) {
-		int x = WIDTH/2 + col * World.TILE_SIZE - panX;
-		int y = HEIGHT/2 + row * World.TILE_SIZE - panY;
+	protected void drawTile(Graphics2D g, int col, int row, int tile) {
+		int x = col * World.TILE_SIZE;
+		int y = row * World.TILE_SIZE;
 		int variant = (tile >> 3) & 0b11;
 		
 		switch (tile & 0b111) {
@@ -363,39 +352,38 @@ public class Sandbox {
 		}
 	}
 	
-	protected void drawRobot(Graphics lg, Robot robot) {
-		Graphics2D g = (Graphics2D)lg;
-		int sx = screenX(robot.getX());
-		int sy = screenY(robot.getY());
+	protected void drawRobot(Graphics2D g, Robot robot) {
+		int rx = (int)robot.getX();
+		int ry = (int)robot.getY();
 		AffineTransform t = g.getTransform();
 		
-		g.rotate(robot.getFacing(), sx, sy);
-		g.drawImage(bot, sx - World.TILE_HALF, sy - World.TILE_HALF, null);
+		g.rotate(robot.getFacing(), rx, ry);
+		g.drawImage(bot, rx - World.TILE_HALF, ry - World.TILE_HALF, null);
 		g.setTransform(t);
 		
-		g.rotate(robot.getBeamAngle(), sx, sy);
+		g.rotate(robot.getBeamAngle(), rx, ry);
 		
 		if (robot.getLazerEnd() > 0) {
 			int w = (int)(robot.getLazerEnd());
 			g.setColor(Color.RED);
-			g.drawLine(sx, sy, sx + w, sy);
+			g.drawLine(rx, ry, rx + w, ry);
 		}
 		
 		if (world.getFrame() - robot.getSensorFrame() < 3) {
 			int w = (int)(robot.getSensor());
 			g.setColor(Color.BLUE);
-			g.drawLine(sx, sy, sx + w, sy);
+			g.drawLine(rx, ry, rx + w, ry);
 		}
 		
 		g.setTransform(t);
 		
 		if (showGrid) {
 			g.setColor(Color.RED);
-			g.fillRect(sx - 1, sy - 1, 3, 3);
+			g.fillRect(rx - 1, ry - 1, 3, 3);
 		}
 	}
 	
-	protected void drawItem(Graphics g, Item item) {
+	protected void drawItem(Graphics2D g, Item item) {
 		if (item instanceof Item.Battery) {
 			drawItemBattery(g, (Item.Battery)item);
 		} else if (item instanceof Item.Gold) {
@@ -404,23 +392,23 @@ public class Sandbox {
 		
 		if (showGrid) {
 			g.setColor(Color.RED);
-			g.fillRect(screenX(item.getX()), screenY(item.getY()), 2, 2);
+			g.fillRect((int)item.getX(), (int)item.getY(), 2, 2);
 		}
 	}
 	
-	protected void drawItemBattery(Graphics g, Item.Battery battery) {
-		int x = screenX(battery.getX());
-		int y = screenY(battery.getY());
+	protected void drawItemBattery(Graphics2D g, Item.Battery battery) {
+		int x = (int)battery.getX();
+		int y = (int)battery.getY();
 		drawVariant(g, batteryImg, x - 16, y - 16, battery.getVariant());
 	}
 	
-	protected void drawItemGold(Graphics g, Item.Gold gold) {
-		int x = screenX(gold.getX());
-		int y = screenY(gold.getY());
+	protected void drawItemGold(Graphics2D g, Item.Gold gold) {
+		int x = (int)gold.getX();
+		int y = (int)gold.getY();
 		drawVariant(g, coins, x - 16, y - 16, gold.getVariant());
 	}
 	
-	protected void drawVariant(Graphics g, Image[] imgs, int x, int y, int variant) {
+	protected void drawVariant(Graphics2D g, Image[] imgs, int x, int y, int variant) {
 		g.drawImage(imgs[variant], x, y, null);
 	}
 
