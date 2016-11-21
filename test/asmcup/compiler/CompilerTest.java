@@ -234,15 +234,9 @@ public class CompilerTest {
     }
     
     @Test
-    public void testParseFloats() {
-        assertEquals(1.23456f, Compiler.parseFloat("1.23456"), 0.0001);
-        assertEquals(12000f, Compiler.parseFloat("12e3"), 0.1);
-    }
-
-    @Test
     public void testParseLiteralFloats() {
-        assertEquals(1.23456f, Compiler.parseFloat("#1.23456"), 0.0001);
-        assertEquals(12000f, Compiler.parseFloat("#12e3"), 0.1);
+        assertEquals(1.23456f, Compiler.parseLiteralFloat("#1.23456"), 0.0001);
+        assertEquals(12000f, Compiler.parseLiteralFloat("#12e3"), 0.1);
     }
 
     @Test
@@ -254,11 +248,11 @@ public class CompilerTest {
     @Test
     public void testPushes() {
     	compiler.compile("push8 #13 \n push8 37 \n push8 #$ab \n push8 $cd \n" + 
-				"pushf 1.2");
+				"pushf #1.2 \n pushf 12 \n pushf $34");
     }
     
     public void testPushesRelative() {
-    	compiler.compile("label: dbf 0.0 \n push8r label");
+    	compiler.compile("label: dbf #0.0 \n push8r label");
     	compiler.compile("push8r 5 \n push8r $0a");
     }
     
@@ -269,7 +263,7 @@ public class CompilerTest {
     
     @Test
     public void testPopsRelative() {
-    	compiler.compile("label: dbf 0.0 \n pop8r label");
+    	compiler.compile("label: dbf #0.0 \n pop8r label");
     	compiler.compile("pop8r 7 \n pop8r $0a");
     }
 
@@ -295,6 +289,36 @@ public class CompilerTest {
             fail("Compiler did not fail on referencing a literal.");
         } catch (IllegalArgumentException e) {
             assert(e.getMessage().startsWith("Cannot address a literal"));
+        }
+    }
+    
+    @Test 
+    public void testNonLiteralFloatDbf() {
+        try {
+        	compiler.compile("dbf 13.1");
+            fail("Compiler did not fail on non-literal float.");
+        } catch (IllegalArgumentException e) {
+            assert(e.getMessage().startsWith("Float literals must"));
+        }
+    }
+    
+    @Test 
+    public void testNonLiteralFloatPushf() {
+        try {
+        	compiler.compile("pushf 13.1");
+            fail("Compiler did not fail on non-literal float.");
+        } catch (IllegalArgumentException e) {
+            assert(e.getMessage().startsWith("Invalid value"));
+        }
+    }
+    
+    @Test 
+    public void testIllegalFloatPush8() {
+        try {
+        	compiler.compile("push8 13.1");
+            fail("Compiler did not fail on push8 with a float.");
+        } catch (IllegalArgumentException e) {
+            assert(e.getMessage().startsWith("Invalid value"));
         }
     }
     
