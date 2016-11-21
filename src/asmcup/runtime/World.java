@@ -43,73 +43,85 @@ public class World {
 		robots.remove(robot);
 	}
 	
-	public Cell getCell(int cellX, int cellY) {
-		int key = Cell.key(cellX, cellY);
+	public Cell getCell(int cellCol, int cellRow) {
+		int key = Cell.key(cellCol, cellRow);
 		Cell cell = cells.get(key);
 		
 		if (cell == null) {
-			cell = new Cell(this, cellX, cellY);
+			cell = new Cell(this, cellCol, cellRow);
 			cells.put(key, cell);
+			cell.generate();
 		}
 		
 		return cell;
 	}
 	
-	public Cell getCellXY(int x, int y) {
-		return getCell(x / CELL_SIZE, y / CELL_SIZE);
-	}
-	
 	public Cell getCellXY(float x, float y) {
-		return getCellXY((int)x, (int)y);
+		return getCell((int)(x / CELL_SIZE), (int)(y / CELL_SIZE));
 	}
 	
-	public int getTile(int column, int row) {
-		int cellX = column / TILES_PER_CELL;
-		int cellY = row / TILES_PER_CELL;
-		Cell cell = getCell(cellX, cellY);
-		return cell.getTile(column - cellX * TILES_PER_CELL,
-		                    row - cellY * TILES_PER_CELL);
+	public int getTile(int tileCol, int tileRow) {
+		int cellCol = tileCol / TILES_PER_CELL;
+		int cellRow = tileRow / TILES_PER_CELL;
+		Cell cell = getCell(cellCol, cellRow);
+		return cell.getTile(tileCol - cellCol * TILES_PER_CELL,
+		                    tileRow - cellRow * TILES_PER_CELL);
 	}
 	
 	public int getTileXY(float x, float y) {
+		if (x < 0 || y < 0 || x > SIZE || y > SIZE) {
+			return TILE.WALL;
+		}
 		return getTile((int)(x / TILE_SIZE), (int)(y / TILE_SIZE));
 	}
 	
-	public boolean isSolid(float x, float y) {
-		if (x < 0 || y < 0 || x > SIZE || y > SIZE) {
-			return true;
-		}
-		
-		int left = (int)(x / CELL_SIZE) * CELL_SIZE;
-		int top = (int)(y / CELL_SIZE) * CELL_SIZE;
-		return getCellXY(x, y).isSolidXY(x - left, y - top);
+	public boolean checkTile(TILE.TileProperty prop, float x, float y) {
+		int tile = getTileXY(x, y);
+		return prop.presentIn(tile);
 	}
 	
-	public boolean isSolid(float x, float y, float r) {
-		return isSolid(x, y) || isSolid(x - r, y - r) || isSolid(x + r, y + r) || isSolid(x - r, y + r)
-				|| isSolid(x + r, y - r);
+	public boolean isSolid(float x, float y) {
+		return checkTile(TILE.IS_SOLID, x, y);
+	}
+	
+	public boolean isHazard(float x, float y) {
+		return checkTile(TILE.IS_HAZARD, x, y);
+	}
+	
+	public boolean isObstacle(float x, float y) {
+		return checkTile(TILE.IS_OBSTACLE, x, y);
+	}
+	
+	public boolean checkTileNear(TILE.TileProperty prop, float x, float y, float r) {
+		return checkTile(prop, x, y)
+				|| checkTile(prop, x - r, y - r) || checkTile(prop, x + r, y + r)
+				|| checkTile(prop, x - r, y + r) || checkTile(prop, x + r, y - r);
+	}
+
+	public boolean isSolidNear(float x, float y, float r) {
+		return checkTileNear(TILE.IS_SOLID, x, y, r);
+	}
+	
+	public boolean isUnspawnableNear(float x, float y, float r) {
+		return checkTileNear(TILE.IS_UNSPAWNABLE, x, y, r);
+	}
+	
+	public boolean canRobotGoTo(float x, float y) {
+		return !isSolidNear(x, y, Robot.COLLIDE_RANGE);
+	}
+
+	public boolean canSpawnRobotAt(float x, float y) {
+		return !isUnspawnableNear(x, y, Robot.COLLIDE_RANGE);
 	}
 	
 	public int getHazard(float x, float y) {
 		int tile = getTileXY(x, y);
 		
-		if ((tile & 0b111) != Cell.TILE_HAZARD) {
+		if ((tile & 0b111) != TILE.HAZARD) {
 			return -1;
 		}
 		
 		return tile >> 3;
-	}
-	
-	public boolean isHazard(float x, float y) {
-		return isTile(x, y, Cell.TILE_HAZARD);
-	}
-	
-	public boolean isObstacle(float x, float y) {
-		return isTile(x, y, Cell.TILE_OBSTACLE);
-	}
-	
-	public boolean isTile(float x, float y, int type) {
-		return (getTileXY(x, y) & 0b111) == type;
 	}
 	
 	public void setTileXY(float x, float y, int value) {
@@ -131,7 +143,7 @@ public class World {
 		do {
 			x = (int)(StrictMath.random() * SIZE);
 			y = (int)(StrictMath.random() * SIZE);
-		} while (isSolid(x, y, 32));
+		} while (!canSpawnRobotAt(x, y));
 		robot.position(x, y);
 	}
 	

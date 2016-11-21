@@ -231,16 +231,15 @@ public class Robot {
 		
 		float tx = x + (float)StrictMath.cos(facing) * s;
 		float ty = y + (float)StrictMath.sin(facing) * s;
-		int radius = COLLIDE_RANGE;
 		
-		if (!world.isSolid(tx, ty, radius)) {
+		if (world.canRobotGoTo(tx, ty)) {
 			x = tx;
 			y = ty;
 			ramming = true;
-		} else if (!world.isSolid(tx, y, radius)) {
+		} else if (world.canRobotGoTo(tx, y)) {
 			x = tx;
 			ramming = true;
-		} else if (!world.isSolid(x, ty, radius)) {
+		} else if (world.canRobotGoTo(x, ty)) {
 			y = ty;
 			ramming = true;
 		} else {
@@ -271,14 +270,14 @@ public class Robot {
 			int type = tile & 0b111;
 			int variant = (tile >> 3) & 0b11;
 			
-			if (type == Cell.TILE_WALL) {
+			if (type == TILE.WALL) {
 				lazerEnd = i * RAY_INTERVAL;
 				return;
 			}
 			
-			if (type == Cell.TILE_OBSTACLE) {
+			if (type == TILE.OBSTACLE) {
 				if (variant >= 2) {
-					world.setTileXY(tx, ty, Cell.TILE_GROUND);
+					world.setTileXY(tx, ty, TILE.GROUND);
 				}
 				
 				lazerEnd = i * RAY_INTERVAL;
@@ -389,12 +388,12 @@ public class Robot {
 	}
 	
 	protected int sensorPoint(World world, float sx, float sy) {
-		int tileVariation = world.getTileXY(sx, sy) & Cell.TILE_VARIATION_BITS;
+		int tileVariation = world.getTileXY(sx, sy) & TILE.VARIATION_BITS;
 		// In the tile, variation is stored in the 4th and 5th bit.
 		// We need it at the 7th and 8th bit.
 		tileVariation = tileVariation << 3;
 		
-		if (world.isTile(sx, sy, Cell.TILE_WALL)) {
+		if (world.checkTile(TILE.IS_WALL, sx, sy)) {
 			if ((sensorIgnore & SENSOR_WALL) == 0) {
 				return SENSOR_WALL | tileVariation;
 			} else {
@@ -403,13 +402,13 @@ public class Robot {
 		}
 		
 		if ((sensorIgnore & SENSOR_HAZARD) == 0) {
-			if (world.isTile(sx, sy, Cell.TILE_HAZARD)) {
+			if (world.checkTile(TILE.IS_HAZARD, sx, sy)) {
 				return SENSOR_HAZARD | tileVariation;
 			}
 		}
 
 		if ((sensorIgnore & SENSOR_OBSTACLE) == 0) {
-			if (world.isTile(sx, sy, Cell.TILE_OBSTACLE)) {
+			if (world.checkTile(TILE.IS_OBSTACLE, sx, sy)) {
 				return SENSOR_OBSTACLE | tileVariation;
 			}
 		}

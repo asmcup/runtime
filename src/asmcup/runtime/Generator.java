@@ -110,7 +110,7 @@ public class Generator {
 			} else if (p < 33) {
 				rubble(col, row);
 			} else {
-				set(variant(Cell.TILE_OBSTACLE), col, row);
+				set(variant(TILE.OBSTACLE), col, row);
 			}
 		}
 		
@@ -121,7 +121,7 @@ public class Generator {
 		int count = 1 + nextInt(20);
 		
 		for (int i=0; i < count; i++) {
-			set(variant(Cell.TILE_WALL), col, row);
+			set(variant(TILE.WALL), col, row);
 			
 			if (chance(50)) {
 				col = wiggle(col);
@@ -151,7 +151,7 @@ public class Generator {
 		}
 		
 		for (int i=0; i < count; i++) {
-			set(variantRare(Cell.TILE_HAZARD), col, row);
+			set(variantRare(TILE.HAZARD), col, row);
 			col = wiggle(col);
 			row = wiggle(row);
 		}
@@ -179,13 +179,13 @@ public class Generator {
 		itemBonus = 10;
 		
 		if (chance(80)) {
-			wall = same(Cell.TILE_WALL);
+			wall = same(TILE.WALL);
 		} else {
-			wall = same(Cell.TILE_HAZARD);
+			wall = same(TILE.HAZARD);
 			itemBonus += 3 * ((wall.tile(0, 0) >> 3) & 0b11);
 		}
 		
-		rect(same(Cell.TILE_FLOOR), wpad, hpad, width, height);
+		rect(same(TILE.FLOOR), wpad, hpad, width, height);
 		outline(wall, wpad, hpad, width, height);
 		maze();
 		exits();
@@ -213,7 +213,7 @@ public class Generator {
 	}
 	
 	public void hmaze() {
-		TileFunc floor = same(Cell.TILE_FLOOR);
+		TileFunc floor = same(TILE.FLOOR);
 		int row = hpad + 2 + nextInt(3);
 		int bottom = hpad + height - 2;
 
@@ -226,7 +226,7 @@ public class Generator {
 	}
 	
 	public void vmaze() {
-		TileFunc floor = same(Cell.TILE_FLOOR);
+		TileFunc floor = same(TILE.FLOOR);
 		int col = wpad + 2 + nextInt(3);
 		int right = wpad + width - 2;
 
@@ -273,10 +273,10 @@ public class Generator {
 		}
 		
 		if (chance(33)) {
-			set(same(Cell.TILE_OBSTACLE, 2 + nextInt(2)), col, row);
+			set(same(TILE.OBSTACLE, 2 + nextInt(2)), col, row);
 			itemBonus += 5;
 		} else {
-			set(variant(Cell.TILE_GROUND), col, row);
+			set(variant(TILE.GROUND), col, row);
 		}
 		
 		return true;
@@ -293,7 +293,7 @@ public class Generator {
 	}
 	
 	public boolean isSolidRoom(int col, int row) {
-		return isInsideRoom(col, row) && cell.isSolid(col, row);
+		return isInsideRoom(col, row) && world.isSolid(col, row);
 	}
 	
 	public boolean isInsideRoom(int col, int row) {
@@ -320,23 +320,20 @@ public class Generator {
 	}
 	
 	public void spawnItem(Item item) {
-		int left = cell.getX() * World.CELL_SIZE;
-		int top = cell.getY() * World.CELL_SIZE;
-		int col = 0, row = 0;
+		int left = cell.getX() * World.CELL_SIZE + World.TILE_HALF;
+		int top  = cell.getY() * World.CELL_SIZE + World.TILE_HALF;
+		int x = 0, y = 0;
 		
-		for (int i=0; i < 20; i++) {
-			col = roomCol(1);
-			row = roomRow(1);
+		for (int i = 0; i < 20; i++) {
+			x = left + roomCol(1) * World.TILE_SIZE;
+			y = top  + roomRow(1) * World.TILE_SIZE;
 			
-			if (cell.isSpawnable(col, row)) {
+			if (world.checkTile(TILE.IS_SPAWNABLE, x, y)) {
 				break;
 			}
 		}
 		
-		float x = col * World.TILE_SIZE + World.TILE_HALF;
-		float y = row * World.TILE_SIZE + World.TILE_HALF;
-		
-		item.position(left + x, top + y);
+		item.position(x, y);
 		cell.addItem(item);
 	}
 	

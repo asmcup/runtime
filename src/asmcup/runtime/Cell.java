@@ -12,15 +12,17 @@ public class Cell {
 		this.world = world;
 		this.cellX = cellX;
 		this.cellY = cellY;
-		
+	}
+	
+	public void generate() {
 		Generator gen = new Generator(world, this);
-
+		
 		if (cellX == 0 || cellY == 0 || cellX == World.CELL_COUNT || cellY == World.CELL_COUNT) {
-			gen.square(gen.same(TILE_HAZARD, 3), 0, 0, World.TILES_PER_CELL);
+			gen.square(gen.same(TILE.HAZARD, 3), 0, 0, World.TILES_PER_CELL);
 			return;
 		}
 		
-		gen.square(gen.variantRare(TILE_GROUND), 0, 0, World.TILES_PER_CELL);
+		gen.square(gen.variantRare(TILE.GROUND), 0, 0, World.TILES_PER_CELL);
 		
 		if (gen.chance(33)) {
 			gen.room();
@@ -75,46 +77,12 @@ public class Cell {
 		items.remove(item);
 	}
 	
-	public int getTile(int col, int row) {
+	protected int getTile(int col, int row) {
 		return tiles[clampTile(col) + (clampTile(row) * World.TILES_PER_CELL)];
 	}
 	
-	public static int clampTile(int i) {
+	private static int clampTile(int i) {
 		return StrictMath.max(0, StrictMath.min(World.TILES_PER_CELL - 1, i));
-	}
-	
-	public int getTileXY(float x, float y) {
-		return getTile((int)(x / World.TILE_SIZE), (int)(y / World.TILE_SIZE));
-	}
-	
-	public boolean isSolid(int col, int row) {
-		switch (getTile(col, row) & TILE_TYPE_BITS) {
-		case TILE_WALL:
-		case TILE_OBSTACLE:
-			return true;
-		}
-		
-		return false;
-	}
-	
-	public boolean isSpawnable(int col, int row) {
-		switch (getTile(col, row) & TILE_TYPE_BITS) {
-		case TILE_HAZARD:
-		case TILE_WALL:
-		case TILE_OBSTACLE:
-			return false;
-		}
-		
-		return true;
-	}
-	
-	public boolean isSolidXY(float x, float y) {
-		return isSolid((int)(x / World.TILE_SIZE), (int)(y / World.TILE_SIZE));
-	}
-	
-	public boolean isSolidXY(float x, float y, float r) {
-		return isSolidXY(x, y) || isSolidXY(x - r, y - r) || isSolidXY(x + r, y + r) || isSolidXY(x - r, y + r)
-				|| isSolidXY(x + r, y - r);
 	}
 	
 	public void setTile(int col, int row, int value) {
@@ -128,13 +96,4 @@ public class Cell {
 		
 		tiles[col + (row * World.TILES_PER_CELL)] = value;
 	}
-	
-	public static final int TILE_GROUND = 0;
-	public static final int TILE_HAZARD = 1;
-	public static final int TILE_WALL = 2;
-	public static final int TILE_OBSTACLE = 3;
-	public static final int TILE_FLOOR = 4;
-
-	public static final int TILE_TYPE_BITS = 0b111; 
-	public static final int TILE_VARIATION_BITS = 0b11000; 
 }

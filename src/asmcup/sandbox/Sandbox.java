@@ -15,6 +15,7 @@ import asmcup.evaluation.SpawnsWindow;
 import asmcup.genetics.*;
 import asmcup.runtime.*;
 import asmcup.runtime.Robot;
+import asmcup.runtime.TILE;
 
 public class Sandbox {
 	public final Mouse mouse;
@@ -304,7 +305,7 @@ public class Sandbox {
 		
 		for (int row=top; row < bottom; row++) {
 			for (int col=left; col < right; col++) {
-				int tile = cell.getTile(col - left, row - top);
+				int tile = world.getTile(col,  row);
 				drawTile(g, col, row, tile);
 			}
 		}
@@ -333,20 +334,20 @@ public class Sandbox {
 		int variant = (tile >> 3) & 0b11;
 		
 		switch (tile & 0b111) {
-		case Cell.TILE_GROUND:
+		case TILE.GROUND:
 			drawVariant(g, ground, x, y, variant);
 			break;
-		case Cell.TILE_OBSTACLE:
+		case TILE.OBSTACLE:
 			drawVariant(g, ground, x, y, variant ^ 0b11);
 			drawVariant(g, obstacles, x, y, variant);
 			break;
-		case Cell.TILE_WALL:
+		case TILE.WALL:
 			drawVariant(g, wall, x, y, variant);
 			break;
-		case Cell.TILE_HAZARD:
+		case TILE.HAZARD:
 			drawVariant(g, hazards, x, y, variant);
 			break;
-		case Cell.TILE_FLOOR:
+		case TILE.FLOOR:
 			drawVariant(g, floor, x, y, variant);
 			break;
 		}
