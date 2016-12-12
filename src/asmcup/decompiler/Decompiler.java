@@ -31,7 +31,7 @@ public class Decompiler implements VMConsts {
 	}
 
 	public int read8(byte[] ram, int pc) {
-		return ram[pc] & 0xFF;
+		return ram[pc & 0xFF] & 0xFF;
 	}
 
 	public int read16(byte[] ram, int pc) {
@@ -97,8 +97,8 @@ public class Decompiler implements VMConsts {
 		}
 		
 		int r = data - 32;
-		addr = pc + r;
-		dump(pc, String.format("pop8 $%02x ; relative %d", addr, r));
+		addr = (pc + r + 1) & 0xFF;
+		dump(pc, String.format("pop8r $%02x ; relative %d", addr, r));
 		return 1;
 	}
 	
@@ -121,8 +121,8 @@ public class Decompiler implements VMConsts {
 		}
 		
 		int r = data - 32;
-		addr = (pc + r) & 0xFF;
-		dump(pc, String.format("jnz $%02x  ; relative %d", addr, r));
+		addr = (pc + r + 1) & 0xFF;
+		dump(pc, String.format("jnzr $%02x  ; relative %d", addr, r));
 		return 1;
 	}
 
@@ -132,17 +132,13 @@ public class Decompiler implements VMConsts {
 
 		switch (data) {
 		case MAGIC_PUSH_BYTE_IMMEDIATE:
-			addr = read8(ram, pc + 1);
-			dump(pc, String.format("push8 #$%02x", addr));
-			return 2;
+			return verbosePushByte(ram, pc);
 		case MAGIC_PUSH_BYTE_MEMORY:
 			addr = read8(ram, pc + 1);
 			dump(pc, String.format("push8 $%02x", addr));
 			return 2;
 		case MAGIC_PUSH_FLOAT_IMMEDIATE:
-			f = readFloat(ram, pc + 1);
-			dump(pc, String.format("pushf %f", f));
-			return 5;
+			return verbosePushFloat(ram, pc);
 		case MAGIC_PUSH_FLOAT_MEMORY:
 			addr = read8(ram, pc + 1);
 			dump(pc, String.format("pushf $%02x", addr));
@@ -150,8 +146,49 @@ public class Decompiler implements VMConsts {
 		}
 
 		int r = data - 32;
-		addr = (pc + r) & 0xFF;
-		dump(pc, String.format("push8 $%02x  ; relative %d", addr, r));
+		addr = (pc + r + 1) & 0xFF;
+		dump(pc, String.format("push8r $%02x  ; relative %d", addr, r));
 		return 1;
+	}
+	
+	protected int verbosePushByte(byte[] ram, int pc) {
+		// We just read a 2 byte push8 that could get condensed into the 1 byte
+		// function call by the compiler. This may break programs when they are
+		// decompiled and then recompiled because addresses may change.
+		int value = read8(ram, pc + 1);
+		
+		switch (value) {
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+		case 255:
+			int instruction = (MAGIC_PUSH_BYTE_IMMEDIATE << 2) + OP_PUSH;
+			dump(pc,   String.format("db8 #$%02x  ; verbose push8 #value", instruction));
+			dump(pc+1, String.format("db8 #$%02x  ; (continued)", value));
+			break;
+		default:
+			dump(pc, String.format("push8 #$%02x", value));
+		}
+		return 2;
+	}
+	
+	protected int verbosePushFloat(byte[] ram, int pc) {
+		// We just read a 5 byte pushf that could get condensed into the 1 byte
+		// function call by the compiler. This may break programs when they are
+		// decompiled and then recompiled because addresses may change.
+		float value = readFloat(ram, pc + 1);
+		
+		if (value == -1.0f || value == 0.0f ||
+			value == 1.0f  || value == 2.0f ||
+			value == 3.0f  || Float.isInfinite(value)) {
+			int instruction = (MAGIC_PUSH_FLOAT_IMMEDIATE << 2) + OP_PUSH;
+			dump(pc,   String.format("db8 #$%02x  ; verbose pushf #value", instruction));
+			dump(pc+1, String.format("dbf #%.9e  ; (continued)", value));
+		} else {
+			dump(pc, String.format("pushf #%.9e", value));
+		}
+		return 5;
 	}
 }
