@@ -290,7 +290,7 @@ public class Compiler implements VMConsts {
 			immediate(OP_FUNC, F_C_2F, NO_DATA);
 		} else if (f == 3.0f) {
 			immediate(OP_FUNC, F_C_3F, NO_DATA);
-		} else if (Float.isInfinite(f)) {
+		} else if (Float.isInfinite(f) && f > 0) {
 			immediate(OP_FUNC, F_C_INF, NO_DATA);
 		} else {
 			immediateFloat(OP_PUSH, MAGIC_PUSH_FLOAT_IMMEDIATE, s);
