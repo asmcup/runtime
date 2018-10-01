@@ -42,14 +42,13 @@ There are four basic types of operations:
 
 ## Values and Addressing
 
-Literal values are denoted by a `#` in front of them. Float values can only be literals,
-so the `#` can be omitted for float literals.
+Literal values are denoted by a `#` in front of them.
 Any values that are not literals are taken to be memory addresses.
 Values preceded by a `$` are interpreted as hexadecimal, otherwise they
 will be treated as decimals.
 
 For example, `pushf #1.0` and `pushf 1.0` will push the float value 1.0 to the stack.
-`pushf 1` would however push the content of the float (4 bytes of memory starting at)
+`pushf 1` would however push the content of the float (4 bytes of memory) starting at
 address 1 to the stack, as would `pushf $01`. Another legal example would be
 `push8 #$ff`, which pushes the literal value 255 to the stack.
 
