@@ -47,7 +47,7 @@ Any values that are not literals are taken to be memory addresses.
 Values preceded by a `$` are interpreted as hexadecimal, otherwise they
 will be treated as decimals.
 
-For example, `pushf #1.0` and `pushf 1.0` will push the float value 1.0 to the stack.
+For example, `pushf #1.0` will push the float value 1.0 to the stack.
 `pushf 1` would however push the content of the float (4 bytes of memory) starting at
 address 1 to the stack, as would `pushf $01`. Another legal example would be
 `push8 #$ff`, which pushes the literal value 255 to the stack.
@@ -55,8 +55,8 @@ address 1 to the stack, as would `pushf $01`. Another legal example would be
 ## FUNC opcode
 
 There are 63 total functions. Note that each of these instructions
-are the same size (1 byte) but that they can modify the stack differently.
-The *In* column is the number of bytes popped from the stack.
+are the same size (1 byte) but that they can modify the stack differently.  
+The *In* column is the number of bytes popped from the stack.  
 The *Out* column is the number of bytes pushed to the stack.
 
 Value | Command   | In | Out | Notes
@@ -132,7 +132,7 @@ Here are the basic ways to push data onto the stack:
 
 Statement     | Size | Description
 --------------|------|--------------------------
-pushf 0.1     | 5    | Push immediate float to stack
+pushf #0.1    | 5    | Push immediate float to stack
 push8 #42     | 2    | Push immediate byte to stack
 push8 $f0     | 2    | Push value at memory address 0xf0 to stack
 push8r $f0    | 1    | Push value at memory address 0xf0. Only legal if executed within 31 bytes of the target address
@@ -141,7 +141,7 @@ push8r $f0    | 1    | Push value at memory address 0xf0. Only legal if executed
 thereby saving ROM space but being restricted to nearby addresses.
 
 Note that the compiler will transform pushes of common constants into function calls
-as appropriate. For example, `pushf 0.0` would be translated into function call c_0f
+as appropriate. For example, `pushf #0.0` would be translated into function call c_0f
 instead of the push, thereby only using 1 byte of memory instead of 5.
 
 ## POP opcode
@@ -187,7 +187,7 @@ Statement     | Size | Description
 --------------|------|--------------------------
 db8 #$f0      | 1    | Data byte (replaced by 0xf0 in ROM)
 db #$f0       | 1    | Same as db8
-dbf 0.1       | 4    | Data bytes from float
+dbf #0.1      | 4    | Data bytes from float
 
 A common idiom is using `myVar: db8 #0` to create named variables.
 This allows using statements like `push8 myVar`.
@@ -203,7 +203,7 @@ push8 &half_speed
 jsr
 
 half_speed:
-  pushf 0.5
+  pushf #0.5
   push8 #IO_MOTOR
   io
   ret
@@ -221,8 +221,8 @@ push8 #1
 ft8
 ; The stack is now (from top to bottom): 13 37 13
 
-pushf 1.3
-pushf 3.7
+pushf #1.3
+pushf #3.7
 push8 #4  ; ! 
 ftf
 ; Same as above, with floats.
@@ -302,7 +302,7 @@ Another way to change the sensor (and laser) beam behavior is to set the angle
 at which it is cast:
 
 ```
-pushf -1.0
+pushf #-1.0
 push8 #IO_BEAM_DIRECTION
 io
 ```
@@ -315,17 +315,17 @@ sensor and the laser!
 
 ```
 ; Maximum Speed
-pushf 1.0
+pushf #1.0
 push8 #IO_MOTOR
 io
 
 ; Unpower motor
-pushf 0.0
+pushf #0.0
 push8 #IO_MOTOR
 io
 
 ; Reverse
-pushf -1.0
+pushf #-1.0
 push8 #IO_MOTOR
 io
 ```
@@ -334,11 +334,11 @@ io
 
 ```
 ; Steer right
-pushf 1.0
+pushf #1.0
 push8 #IO_STEER
 io
 
-pushf -1.0
+pushf #-1.0
 push8 #IO_STEER
 io
 ```
@@ -380,12 +380,12 @@ not fully powered (which results in reduced range) or hits something early.
 
 ```
 ; Full power laser
-pushf 1.0
+pushf #1.0
 push8 #IO_LASER
 io
 
 ; Laser off
-pushf 0.0
+pushf #0.0
 push8 #IO_LASER
 io
 ```
