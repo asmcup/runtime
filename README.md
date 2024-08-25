@@ -1,6 +1,10 @@
 [![Build Status](https://travis-ci.org/asmcup/runtime.svg)](https://travis-ci.org/asmcup/runtime)
 [![Join the chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/asmcup/Lobby)
 
+<a href="https://www.buymeacoffee.com/krisives" target="_blank"><img
+src="https://cdn.buymeacoffee.com/buttons/v2/arial-orange.png" alt="Buy Me A
+Coffee" height="50px" ></a>
+
 # asmcup
 
 `asmcup` is a game where players create small and limited programs
